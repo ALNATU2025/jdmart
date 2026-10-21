@@ -5,3 +5,4 @@ export 'order.dart';
 export 'product.dart';
 export 'promo_banner.dart';
 export 'review.dart';
+export 'job.dart';

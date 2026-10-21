@@ -13,6 +13,8 @@ service cloud.firestore {
     function hasProfile() { return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)); }
     function str(v, min, max) { return v is string && v.size() >= min && v.size() <= max; }
     function validPhoneOrNull(v) { return v == null || (v is string && v.matches('^[+]232[0-9]{8}$')); }
+    // Admins get the `admin` claim at sign-in (functions/src/admin.ts).
+    function isAdmin() { return signedIn() && request.auth.token.admin == true; }
 
     // ---- Users ---------------------------------------------------------------
     match /users/{uid} {
@@ -30,16 +32,20 @@ service cloud.firestore {
         && request.resource.data.salesCount == 0
         && request.resource.data.createdAt == request.time;
 
-      allow update: if isUser(uid)
+      allow update: if (isUser(uid)
         && changed().hasOnly(['name', 'city', 'bio', 'avatarUrl', 'contactPhone'])
         && str(request.resource.data.name, 2, 60)
         && str(request.resource.data.bio, 0, 200)
-        && validPhoneOrNull(request.resource.data.contactPhone);
+        && validPhoneOrNull(request.resource.data.contactPhone)
+      ) || (
+        isAdmin() && changed().hasOnly(['verified']) && request.resource.data.verified is bool
+      );
 
       allow delete: if false; // use the deleteAccount function
 
       match /private/{doc} {
-        allow read, write: if isUser(uid);
+        allow read: if isUser(uid) || isAdmin();
+        allow write: if isUser(uid);
       }
       match /wishlist/{productId} {
         allow read, delete: if isUser(uid);
@@ -70,7 +76,8 @@ service cloud.firestore {
 
     match /products/{productId} {
       allow read: if resource.data.status != 'hidden'
-        || (signedIn() && resource.data.sellerId == request.auth.uid);
+        || (signedIn() && resource.data.sellerId == request.auth.uid)
+        || isAdmin();
 
       allow create: if hasProfile()
         && request.resource.data.keys().hasOnly([
@@ -97,9 +104,14 @@ service cloud.firestore {
         ) || (
           // anyone signed in may add one view
           signedIn() && changed().hasOnly(['views']) && request.resource.data.views == resource.data.views + 1
+        ) || (
+          // admins: feature, hide or restore any listing
+          isAdmin() && changed().hasOnly(['status', 'featured'])
+          && request.resource.data.status in ['active', 'sold', 'hidden']
+          && request.resource.data.featured is bool
         );
 
-      allow delete: if signedIn() && resource.data.sellerId == request.auth.uid;
+      allow delete: if (signedIn() && resource.data.sellerId == request.auth.uid) || isAdmin();
 
       match /reviews/{uid} {
         allow read: if true;
@@ -116,8 +128,9 @@ service cloud.firestore {
 
     // ---- Orders & payments (server-written) -------------------------------------
     match /orders/{orderId} {
-      allow read: if signedIn()
-        && (resource.data.buyerId == request.auth.uid || resource.data.sellerId == request.auth.uid);
+      allow read: if (signedIn()
+        && (resource.data.buyerId == request.auth.uid || resource.data.sellerId == request.auth.uid))
+        || isAdmin();
       allow write: if false;
     }
     match /checkouts/{checkoutId} {
@@ -163,14 +176,155 @@ service cloud.firestore {
     }
     match /banners/{id} {
       allow read: if true;
-      allow write: if false; // edit in the Firebase console
+      allow create, update: if isAdmin()
+        && str(request.resource.data.title, 1, 80)
+        && request.resource.data.active is bool
+        && request.resource.data.order is int;
+      allow delete: if isAdmin();
     }
     match /reports/{id} {
       allow create: if signedIn()
         && request.resource.data.reporterId == request.auth.uid
         && request.resource.data.keys().hasOnly(['productId', 'reporterId', 'reason', 'status', 'createdAt'])
         && str(request.resource.data.reason, 2, 200);
-      allow read, update, delete: if false;
+      allow read, delete: if isAdmin();
+      allow update: if isAdmin() && changed().hasOnly(['status']);
+    }
+    match /admins/{email} {
+      allow read: if isAdmin();
+      allow write: if false; // adminSetRole function (super admin only)
+    }
+
+    // ---- Jobs ---------------------------------------------------------------------------
+    function jobCategory(v) {
+      return v in ['sales', 'it', 'education', 'health', 'hospitality', 'construction', 'driving',
+                   'finance', 'ngo', 'agric', 'domestic', 'media', 'security', 'other'];
+    }
+    function validJob(d) {
+      return str(d.title, 4, 80)
+        && str(d.company, 2, 80)
+        && str(d.description, 20, 4000)
+        && jobCategory(d.categoryId)
+        && d.type in ['Full-time', 'Part-time', 'Contract', 'Internship', 'Temporary', 'Volunteer']
+        && str(d.city, 2, 40)
+        && str(d.salary, 0, 60)
+        && str(d.contactEmail, 0, 100)
+        && validPhoneOrNull(d.contactPhone)
+        && d.keywords is list && d.keywords.size() <= 200;
+    }
+
+    match /jobs/{jobId} {
+      allow read: if resource.data.status != 'hidden'
+        || (signedIn() && resource.data.ownerId == request.auth.uid)
+        || isAdmin();
+
+      allow create: if hasProfile()
+        && request.resource.data.keys().hasOnly([
+             'title', 'company', 'description', 'categoryId', 'type', 'city', 'salary', 'contactEmail',
+             'contactPhone', 'keywords', 'ownerId', 'ownerName', 'status', 'applicationsCount', 'createdAt', 'updatedAt'])
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.ownerName == userDoc(request.auth.uid).name
+        && request.resource.data.status == 'open'
+        && request.resource.data.applicationsCount == 0
+        && request.resource.data.createdAt == request.time
+        && validJob(request.resource.data);
+
+      allow update: if (
+          signedIn() && resource.data.ownerId == request.auth.uid
+          && changed().hasOnly(['title', 'company', 'description', 'categoryId', 'type', 'city', 'salary',
+                                'contactEmail', 'contactPhone', 'keywords', 'status', 'updatedAt'])
+          && validJob(request.resource.data)
+          && (
+            (resource.data.status != 'hidden' && request.resource.data.status in ['open', 'closed'])
+            || (resource.data.status == 'hidden' && request.resource.data.status == 'hidden')
+          )
+        ) || (
+          isAdmin() && changed().hasOnly(['status'])
+          && request.resource.data.status in ['open', 'closed', 'hidden']
+        );
+
+      allow delete: if (signedIn() && resource.data.ownerId == request.auth.uid) || isAdmin();
+
+      // One application per person: the document id is the applicant's uid.
+      match /applications/{applicantId} {
+        allow read: if isUser(applicantId)
+          || (signedIn() && resource.data.ownerId == request.auth.uid)
+          || isAdmin();
+
+        allow create: if isUser(applicantId) && hasProfile()
+          && request.resource.data.keys().hasOnly([
+               'jobId', 'jobTitle', 'company', 'ownerId', 'applicantId', 'applicantName', 'phone', 'email',
+               'message', 'cvUrl', 'cvName', 'status', 'createdAt'])
+          && request.resource.data.applicantId == applicantId
+          && request.resource.data.jobId == jobId
+          && request.resource.data.ownerId == get(/databases/$(database)/documents/jobs/$(jobId)).data.ownerId
+          && get(/databases/$(database)/documents/jobs/$(jobId)).data.status == 'open'
+          && request.resource.data.ownerId != applicantId
+          && request.resource.data.status == 'new'
+          && str(request.resource.data.applicantName, 1, 60)
+          && str(request.resource.data.phone, 0, 20)
+          && str(request.resource.data.email, 0, 100)
+          && str(request.resource.data.message, 0, 1500)
+          && (request.resource.data.cvUrl == null || str(request.resource.data.cvUrl, 1, 2000))
+          && (request.resource.data.cvName == null || str(request.resource.data.cvName, 1, 200))
+          && request.resource.data.createdAt == request.time;
+
+        // The employer can shortlist / decline.
+        allow update: if signedIn() && resource.data.ownerId == request.auth.uid
+          && changed().hasOnly(['status'])
+          && request.resource.data.status in ['new', 'shortlisted', 'rejected'];
+
+        allow delete: if isUser(applicantId) || isAdmin();
+      }
+    }
+
+    // "My applications" (collection group query by applicantId).
+    match /{path=**}/applications/{appId} {
+      allow read: if signedIn()
+        && (resource.data.applicantId == request.auth.uid || resource.data.ownerId == request.auth.uid || isAdmin());
+    }
+
+    // ---- Talent profiles (CVs) ---------------------------------------------------------------
+    function validTalent(d) {
+      return str(d.name, 2, 60)
+        && str(d.headline, 4, 80)
+        && jobCategory(d.categoryId)
+        && str(d.city, 2, 40)
+        && d.skills is list && d.skills.size() <= 20
+        && str(d.summary, 0, 3000)
+        && d.experienceYears is int && d.experienceYears >= 0 && d.experienceYears <= 60
+        && str(d.education, 0, 1000)
+        && validPhoneOrNull(d.phone)
+        && str(d.email, 0, 100)
+        && (d.cvUrl == null || str(d.cvUrl, 1, 2000))
+        && (d.cvName == null || str(d.cvName, 1, 200))
+        && (d.photoUrl == null || d.photoUrl is string)
+        && d.openToWork is bool
+        && d.visible is bool
+        && d.keywords is list && d.keywords.size() <= 200;
+    }
+
+    match /talent/{uid} {
+      // Contact details: signed-in members only.
+      allow read: if signedIn() && (resource.data.visible == true || isUser(uid) || isAdmin());
+
+      allow create: if isUser(uid) && hasProfile()
+        && request.resource.data.keys().hasOnly([
+             'name', 'headline', 'categoryId', 'city', 'skills', 'summary', 'experienceYears', 'education',
+             'phone', 'email', 'cvUrl', 'cvName', 'photoUrl', 'openToWork', 'visible', 'keywords',
+             'createdAt', 'updatedAt'])
+        && request.resource.data.createdAt == request.time
+        && validTalent(request.resource.data);
+
+      allow update: if isUser(uid)
+        && request.resource.data.keys().hasOnly([
+             'name', 'headline', 'categoryId', 'city', 'skills', 'summary', 'experienceYears', 'education',
+             'phone', 'email', 'cvUrl', 'cvName', 'photoUrl', 'openToWork', 'visible', 'keywords',
+             'createdAt', 'updatedAt'])
+        && !changed().hasAny(['createdAt'])
+        && validTalent(request.resource.data);
+
+      allow delete: if isUser(uid) || isAdmin();
     }
   }
 }

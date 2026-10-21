@@ -304,6 +304,47 @@ class SmoothPageTransitionsBuilder extends PageTransitionsBuilder {
   }
 }
 
+/// Gently bobs its child up and down forever (decorations, illustrations).
+class Floating extends StatefulWidget {
+  final Widget child;
+  final double distance;
+  final Duration period;
+
+  /// 0–1: where in the cycle this one starts, so neighbours don't move in sync.
+  final double phase;
+  const Floating({
+    super.key,
+    required this.child,
+    this.distance = 6,
+    this.period = const Duration(milliseconds: 2400),
+    this.phase = 0,
+  });
+
+  @override
+  State<Floating> createState() => _FloatingState();
+}
+
+class _FloatingState extends State<Floating> with SingleTickerProviderStateMixin {
+  late final AnimationController _c =
+      AnimationController(vsync: this, duration: widget.period, value: widget.phase)..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+        animation: _c,
+        child: widget.child,
+        builder: (_, child) => Transform.translate(
+          offset: Offset(0, (Curves.easeInOut.transform(_c.value) * 2 - 1) * widget.distance),
+          child: child,
+        ),
+      );
+}
+
 /// Soft brand-tinted shadow used on cards.
 List<BoxShadow> softShadow([double strength = 1]) => [
       BoxShadow(

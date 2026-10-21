@@ -17,6 +17,7 @@ import { logger } from "firebase-functions";
 import { defineSecret } from "firebase-functions/params";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 import nodemailer from "nodemailer";
+import { roleClaims, syncClaims } from "./admin";
 import { REGION } from "./region";
 
 export const GMAIL_USER = defineSecret("GMAIL_USER");
@@ -144,12 +145,19 @@ export const verifyLoginCode = onCall({ region: REGION }, async (req) => {
   let uid: string;
   try {
     const user = await auth.getUserByEmail(email);
+    if (user.disabled) {
+      throw new HttpsError("permission-denied", "This account has been suspended. Please contact JDMart support.");
+    }
     uid = user.uid;
     if (!user.emailVerified) await auth.updateUser(uid, { emailVerified: true });
   } catch (e) {
     if ((e as { code?: string }).code !== "auth/user-not-found") throw e;
     uid = (await auth.createUser({ email, emailVerified: true })).uid;
   }
-  const token = await auth.createCustomToken(uid);
+
+  // Admin roles travel in the token (checked by the security rules).
+  const claims = await roleClaims(email);
+  await syncClaims(uid, claims);
+  const token = await auth.createCustomToken(uid, { ...claims });
   return { token };
 });

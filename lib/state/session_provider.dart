@@ -26,11 +26,18 @@ class SessionProvider extends ChangeNotifier {
   bool _authResolved = false;
   bool _profileResolved = false;
   String _phone = '';
+  bool _isAdmin = false;
+  bool _isSuperAdmin = false;
 
   User? get authUser => _authUser;
   AppUser? get profile => _profile;
   String? get uid => _authUser?.uid;
   String get email => _authUser?.email ?? '';
+
+  /// Admin console access (from the `admin` / `superAdmin` sign-in claims,
+  /// set by the server; Firestore rules enforce the same claims).
+  bool get isAdmin => _isAdmin;
+  bool get isSuperAdmin => _isSuperAdmin;
 
   /// The user's phone number (E.164), from their private account data.
   String get phone => _phone;
@@ -51,7 +58,10 @@ class SessionProvider extends ChangeNotifier {
     _profile = null;
     _profileResolved = false;
     _phone = '';
+    _isAdmin = false;
+    _isSuperAdmin = false;
     if (user != null) {
+      _loadClaims(user);
       _privateSub = _users.watchPrivate(user.uid).listen((d) {
         _phone = (d['phone'] ?? '') as String;
         notifyListeners();
@@ -71,6 +81,19 @@ class SessionProvider extends ChangeNotifier {
       _push.unregister(previous);
     }
     notifyListeners();
+  }
+
+  Future<void> _loadClaims(User user) async {
+    try {
+      final r = await user.getIdTokenResult(true);
+      if (_authUser?.uid != user.uid) return;
+      final c = r.claims ?? const <String, dynamic>{};
+      _isAdmin = c['admin'] == true;
+      _isSuperAdmin = c['superAdmin'] == true;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Could not read sign-in claims: $e');
+    }
   }
 
   Future<void> signOut() async {

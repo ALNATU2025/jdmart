@@ -6,9 +6,14 @@ import '../../core/theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
 import '../../data/repositories/user_repository.dart';
 import '../../shared/widgets/common.dart';
+import '../../shared/widgets/motion.dart';
 import '../../state/session_provider.dart';
 import '../../state/wishlist_provider.dart';
+import '../admin/admin_console_screen.dart';
 import '../auth/auth_guard.dart';
+import '../jobs/jobs_home_screen.dart';
+import '../jobs/my_jobs_screen.dart';
+import '../jobs/talent_edit_screen.dart';
 import '../orders/orders_screen.dart';
 import '../sell/my_listings_screen.dart';
 import '../sell/seller_hub_screen.dart';
@@ -102,17 +107,32 @@ class AccountScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
+          if (session.isAdmin)
+            _section('Admin', [
+              _tile(context, Icons.admin_panel_settings_rounded, 'Admin console',
+                  session.isSuperAdmin ? 'Super admin • manage everything' : 'Moderate and manage JDMart',
+                  const AdminConsoleScreen(),
+                  color: AppColors.navy),
+            ], index: 0),
           _section('Selling', [
             _tile(context, Icons.storefront_rounded, 'Seller Hub', 'Sales, earnings & alerts', const SellerHubScreen(),
                 color: AppColors.orange),
             _tile(context, Icons.inventory_2_outlined, 'My listings', 'Edit, mark sold or relist', const MyListingsScreen()),
             _tile(context, Icons.point_of_sale_rounded, 'Sales orders', 'Orders from your buyers',
                 const OrdersScreen(sellerView: true)),
-          ]),
+          ], index: 1),
           _section('Buying', [
             _tile(context, Icons.receipt_long_outlined, 'My orders', 'Track your purchases', const OrdersScreen()),
             _tile(context, Icons.favorite_border_rounded, 'Saved items', '$saved saved', const WishlistScreen()),
-          ]),
+          ], index: 2),
+          _section('Jobs', [
+            _tile(context, Icons.work_rounded, 'Jobs board', 'Find jobs or find talent', const JobsHomeScreen(),
+                color: AppColors.orange),
+            _tile(context, Icons.work_history_outlined, 'My jobs & applications', 'Your posts and applications',
+                const MyJobsScreen()),
+            _tile(context, Icons.badge_outlined, 'My CV profile', 'Let employers find and contact you',
+                const TalentEditScreen(), color: AppColors.success),
+          ], index: 3),
           _section('Help & legal', [
             if (AppConfig.supportWhatsApp.isNotEmpty || AppConfig.supportPhone.isNotEmpty)
               ListTile(
@@ -142,7 +162,7 @@ class AccountScreen extends StatelessWidget {
               onTap: () => _safety(context),
             ),
             ..._legalTiles(),
-          ]),
+          ], index: 4),
           _section('Account', [
             ListTile(
               leading: const Icon(Icons.logout_rounded, color: AppColors.navy),
@@ -159,7 +179,7 @@ class AccountScreen extends StatelessWidget {
               subtitle: const Text('Removes your profile, listings, saved items and chats'),
               onTap: () => _deleteAccount(context),
             ),
-          ]),
+          ], index: 5),
           const Padding(
             padding: EdgeInsets.all(24),
             child: Text('JDMart • Made in Sierra Leone 🇸🇱',
@@ -207,7 +227,9 @@ class AccountScreen extends StatelessWidget {
     }
   }
 
-  Widget _section(String title, List<Widget> children) => Padding(
+  Widget _section(String title, List<Widget> children, {int index = 0}) => FadeSlideIn(
+        delay: Motion.stagger(index, stepMs: 60),
+        child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,10 +241,11 @@ class AccountScreen extends StatelessWidget {
             ),
             Container(
               clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18)),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), boxShadow: softShadow()),
               child: Column(children: children),
             ),
           ],
+        ),
         ),
       );
 

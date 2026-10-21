@@ -148,6 +148,30 @@ must be handled from Monime as well. Agree these terms with your sellers before 
    transit; account deletion available in the app) and add the **Privacy Policy URL**.
 5. Start with **Internal testing**, then **Closed testing**, then **Production**.
 
+## Admin console
+
+The **super admin** is `alusinebarrie578@gmail.com` (set in `functions/src/admin.ts` and
+`lib/core/config/app_config.dart`; keep both the same). After deploying, sign in to the app with that email
+(sign out and back in if you were already signed in). **Account → Admin console** then appears, with:
+
+- **Dashboard**: users, listings, orders, open jobs, CVs and open reports.
+- **Listings**: feature on the home page, hide/unhide, delete.
+- **Reports**: open the reported listing, hide or delete it, or dismiss the report.
+- **Users**: verified-seller badge, view phone/email, suspend or restore an account (suspended users are
+  signed out and can't sign in).
+- **Orders**: every order with status and totals.
+- **Jobs & CVs**: hide or delete job posts and fake CV profiles.
+- **Banners**: add home-page banners (with an optional image), switch them on/off, delete.
+- **Admin team** (super admin only): add or remove admins by email. New admins get access the next time they
+  sign in.
+
+## Jobs
+
+Members can **post jobs**, **apply** (with a message and a CV file), and create a **CV profile** that employers
+can browse under **Find talent** (signed-in members only) and contact by call, WhatsApp or email.
+Employers see applicants under the job and can shortlist them (the applicant gets a notification).
+CV files are PDF or Word, max 5 MB, stored in Storage under `cvs/{uid}/`.
+
 ## After launch: what to add next
 
 - **Better search**: when you have thousands of listings, add the Algolia or Typesense Firebase extension.

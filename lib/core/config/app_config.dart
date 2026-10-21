@@ -4,6 +4,10 @@ class AppConfig {
   static const appName = 'JDMart';
   static const tagline = 'Buy Smart. Sell Faster.';
 
+  /// Owner of the app: full admin console access, can add other admins.
+  /// Must match SUPER_ADMIN_EMAIL in functions/src/admin.ts.
+  static const superAdminEmail = 'alusinebarrie578@gmail.com';
+
   // TODO(go-live): replace with your real support channels.
   static const supportPhone = '';
   static const supportWhatsApp = '';

@@ -42,6 +42,19 @@ export const deleteAccount = onCall({ region: REGION }, async (req) => {
   sold.docs.forEach((d) => writer.update(d.ref, { sellerName: "Deleted user" }));
   await writer.close();
 
+  // Jobs: my job posts (their applications are removed by onJobDeleted),
+  // my applications to other jobs, and my CV profile and files.
+  const [myJobs, myApps] = await Promise.all([
+    db.collection("jobs").where("ownerId", "==", uid).get(),
+    db.collectionGroup("applications").where("applicantId", "==", uid).get(),
+  ]);
+  const jobWriter = db.bulkWriter();
+  myJobs.docs.forEach((d) => jobWriter.delete(d.ref));
+  myApps.docs.forEach((d) => jobWriter.delete(d.ref));
+  jobWriter.delete(db.collection("talent").doc(uid));
+  await jobWriter.close();
+  await getStorage().bucket().deleteFiles({ prefix: `cvs/${uid}/` }).catch((e) => logger.warn(e));
+
   await anonymiseChats(uid);
   await db.recursiveDelete(db.collection("users").doc(uid)); // profile, private data, wishlist, purchases
   await db.collection("sellerStats").doc(uid).delete();

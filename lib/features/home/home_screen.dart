@@ -14,6 +14,7 @@ import '../../shared/widgets/product_card.dart';
 import '../../state/session_provider.dart';
 import '../account/wishlist_screen.dart';
 import '../catalog/search_screen.dart';
+import '../jobs/jobs_home_screen.dart';
 import '../shell/main_shell.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -101,6 +102,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SliverToBoxAdapter(child: _CategoryStrip()),
+            const SliverToBoxAdapter(
+              child: FadeSlideIn(delay: Duration(milliseconds: 260), child: _JobsPromo()),
+            ),
             _strip(_deals, const _FlashDealsHeader()),
             _strip(_featured, const SectionHeader(title: 'Featured')),
             const SliverToBoxAdapter(child: _SellPromo()),
@@ -542,4 +546,91 @@ class _SellPromo extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Entry to JDMart Jobs: find work, hire, share a CV.
+class _JobsPromo extends StatelessWidget {
+  const _JobsPromo();
+
+  @override
+  Widget build(BuildContext context) {
+    void open(int tab) =>
+        Navigator.push(context, MaterialPageRoute(builder: (_) => JobsHomeScreen(initialTab: tab)));
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
+      child: Pressable(
+        scale: 0.98,
+        onTap: () => open(0),
+        child: Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF022A95), AppColors.blue, Color(0xFF3B5BDB)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(22),
+            boxShadow: [BoxShadow(color: AppColors.blue.withValues(alpha: 0.3), blurRadius: 18, offset: const Offset(0, 8))],
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                right: -18,
+                top: -18,
+                child: Floating(
+                  distance: 5,
+                  child: Icon(Icons.work_rounded, size: 120, color: Colors.white.withValues(alpha: 0.10)),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(gradient: AppColors.orangeGradient, borderRadius: BorderRadius.circular(20)),
+                      child: const Text('NEW • JDMart Jobs',
+                          style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 0.5)),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text('Find work. Hire talent.',
+                        style: TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.w800)),
+                    const SizedBox(height: 4),
+                    const Text('Post jobs, apply in minutes or share your CV with employers.',
+                        style: TextStyle(color: Colors.white70, fontSize: 12.5, height: 1.4)),
+                    const SizedBox(height: 14),
+                    Row(
+                      children: [
+                        _pill(Icons.search_rounded, 'Find jobs', () => open(0)),
+                        const SizedBox(width: 8),
+                        _pill(Icons.groups_rounded, 'Find talent', () => open(1)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _pill(IconData icon, String label, VoidCallback onTap) => Pressable(
+        scale: 0.92,
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(30)),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 17, color: AppColors.blue),
+              const SizedBox(width: 6),
+              Text(label, style: const TextStyle(color: AppColors.blue, fontWeight: FontWeight.w700, fontSize: 13)),
+            ],
+          ),
+        ),
+      );
 }

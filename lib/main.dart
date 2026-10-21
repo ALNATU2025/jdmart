@@ -8,7 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'core/config/app_config.dart';
 import 'core/theme/app_theme.dart';
+import 'data/repositories/admin_repository.dart';
 import 'data/repositories/chat_repository.dart';
+import 'data/repositories/job_repository.dart';
 import 'data/repositories/misc_repositories.dart';
 import 'data/repositories/order_repository.dart';
 import 'data/repositories/product_repository.dart';
@@ -42,6 +44,8 @@ Future<void> main() async {
   final wishlistRepo = WishlistRepository(db);
   final banners = BannerRepository(db);
   final media = MediaRepository(FirebaseStorage.instance);
+  final jobs = JobRepository(db, FirebaseStorage.instance);
+  final admin = AdminRepository(db, functions, FirebaseStorage.instance);
 
   final session = SessionProvider(AuthService(FirebaseAuth.instance, functions), users, PushService(users));
   final cart = CartProvider(products);
@@ -66,6 +70,8 @@ Future<void> main() async {
         Provider.value(value: chats),
         Provider.value(value: banners),
         Provider.value(value: media),
+        Provider.value(value: jobs),
+        Provider.value(value: admin),
         ChangeNotifierProvider.value(value: session),
         ChangeNotifierProvider.value(value: cart),
         ChangeNotifierProvider.value(value: wishlist),

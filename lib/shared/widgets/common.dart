@@ -94,7 +94,7 @@ class EmptyState extends StatelessWidget {
           child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _Floating(
+            Floating(
               child: Container(
                 padding: const EdgeInsets.all(26),
                 decoration: BoxDecoration(
@@ -125,31 +125,6 @@ class EmptyState extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Gentle up-and-down bob for empty-state illustrations.
-class _Floating extends StatefulWidget {
-  final Widget child;
-  const _Floating({required this.child});
-
-  @override
-  State<_Floating> createState() => _FloatingState();
-}
-
-class _FloatingState extends State<_Floating> with SingleTickerProviderStateMixin {
-  late final AnimationController _c =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 2400))..repeat(reverse: true);
-  late final Animation<Offset> _y = Tween(begin: const Offset(0, -0.04), end: const Offset(0, 0.04))
-      .animate(CurvedAnimation(parent: _c, curve: Curves.easeInOut));
-
-  @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => SlideTransition(position: _y, child: widget.child);
 }
 
 class LoadingView extends StatelessWidget {
