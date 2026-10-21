@@ -12,6 +12,7 @@ import 'category_products_screen.dart';
 import 'main_shell.dart';
 import 'search_screen.dart';
 import 'wishlist_screen.dart';
+import '../widgets/category_icon.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -191,7 +192,7 @@ class _BannerCarouselState extends State<_BannerCarousel> {
                       Positioned(
                         right: -20,
                         bottom: -24,
-                        child: Icon(c.icon, size: 150, color: Colors.white.withOpacity(0.16)),
+                        child: CategoryIcon(category: c, size: 150, opacity: 0.22),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(20),
@@ -271,11 +272,12 @@ class _CategoryStrip extends StatelessWidget {
                   Container(
                     width: 58,
                     height: 58,
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: c.color.withOpacity(0.12),
                       borderRadius: BorderRadius.circular(18),
                     ),
-                    child: Icon(c.icon, color: c.color, size: 28),
+                    child: CategoryIcon(category: c, size: 38),
                   ),
                   const SizedBox(height: 6),
                   Text(c.name.split(' ').first,

@@ -68,7 +68,10 @@ lib/
   widgets/                   Product card and grid, product image, shared UI
   screens/                   Splash, onboarding, auth, home, search, product, cart, checkout,
                              orders, chats, account, sell/ (add product, my listings, seller hub)
-assets/images/               logo.png, logo_mark.png (app icon), logo_mark_transparent.png
+assets/images/               logo.png, logo_mark.png (app icon), logo_mark_transparent.png,
+                             and the 12 category icons: phone.png, electronics.png, fashion.png,
+                             home_furniture.png, groceries.png, health_beauty.png, property.png,
+                             vehicle.png, agriculture.png, baby_kids.png, sport.png, others.png
 ```
 
 ## Going live (next steps)

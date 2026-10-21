@@ -11,6 +11,7 @@ import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
 import '../../widgets/product_image.dart';
 import '../product_detail_screen.dart';
+import '../../widgets/category_icon.dart';
 
 class AddProductScreen extends StatefulWidget {
   final Product? existing;
@@ -260,7 +261,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         .map((c) => DropdownMenuItem(
                               value: c.id,
                               child: Row(children: [
-                                Icon(c.icon, size: 18, color: c.color),
+                                CategoryIcon(category: c, size: 22),
                                 const SizedBox(width: 10),
                                 Text(c.name),
                               ]),

@@ -6,6 +6,7 @@ import '../providers/product_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import '../widgets/product_card.dart';
+import '../widgets/category_icon.dart';
 
 class SearchScreen extends StatefulWidget {
   final String? categoryId;
@@ -173,7 +174,7 @@ class _SearchScreenState extends State<SearchScreen> {
           runSpacing: 8,
           children: SeedData.categories
               .map((c) => ActionChip(
-                    avatar: Icon(c.icon, size: 16, color: c.color),
+                    avatar: CategoryIcon(category: c, size: 18),
                     label: Text(c.name),
                     onPressed: () => setState(() => _category = c.id),
                   ))

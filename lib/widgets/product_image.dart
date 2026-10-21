@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import '../data/seed_data.dart';
+import 'category_icon.dart';
 
 /// Shows a product photo from a URL or local file. When a product has no
 /// photo (e.g. demo data), it renders branded category artwork instead, so the
@@ -56,9 +57,9 @@ class ProductImage extends StatelessWidget {
           Positioned(
             right: -iconSize * 0.4,
             bottom: -iconSize * 0.4,
-            child: Icon(c.icon, size: iconSize * 2.2, color: c.color.withOpacity(0.10)),
+            child: CategoryIcon(category: c, size: iconSize * 2.2, opacity: 0.12),
           ),
-          Center(child: Icon(c.icon, size: iconSize, color: c.color)),
+          Center(child: CategoryIcon(category: c, size: iconSize * 1.3)),
         ],
       ),
     );

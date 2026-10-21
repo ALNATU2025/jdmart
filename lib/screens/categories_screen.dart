@@ -5,6 +5,7 @@ import '../providers/product_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import 'category_products_screen.dart';
+import '../widgets/category_icon.dart';
 
 class CategoriesScreen extends StatelessWidget {
   const CategoriesScreen({super.key});
@@ -44,12 +45,12 @@ class CategoriesScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: c.color.withOpacity(0.12),
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: Icon(c.icon, color: c.color, size: 28),
+                    child: CategoryIcon(category: c, size: 40),
                   ),
                   const Spacer(),
                   Text(c.name,
