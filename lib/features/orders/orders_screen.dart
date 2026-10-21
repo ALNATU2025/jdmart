@@ -5,6 +5,7 @@ import '../../core/utils/formatters.dart';
 import '../../data/models/order.dart';
 import '../../data/repositories/order_repository.dart';
 import '../../shared/widgets/common.dart';
+import '../../shared/widgets/motion.dart';
 import '../../shared/widgets/product_image.dart';
 import '../../state/session_provider.dart';
 import 'order_detail_screen.dart';
@@ -46,6 +47,7 @@ class OrdersScreen extends StatelessWidget {
           ),
         ),
         body: StreamView<List<Order>>(
+          loading: const ListSkeleton(),
           id: '$uid-$sellerView',
           create: () => sellerView ? repo.forSeller(uid) : repo.forBuyer(uid),
           builder: (_, all) => TabBarView(
@@ -64,7 +66,10 @@ class OrdersScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 itemCount: list.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (_, i) => OrderTile(order: list[i], sellerView: sellerView),
+                itemBuilder: (_, i) => FadeSlideIn(
+                  delay: Motion.stagger(i),
+                  child: OrderTile(order: list[i], sellerView: sellerView),
+                ),
               );
             }),
           ),

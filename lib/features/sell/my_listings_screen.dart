@@ -5,6 +5,7 @@ import '../../core/utils/formatters.dart';
 import '../../data/models/product.dart';
 import '../../data/repositories/product_repository.dart';
 import '../../shared/widgets/common.dart';
+import '../../shared/widgets/motion.dart';
 import '../../shared/widgets/product_image.dart';
 import '../../state/session_provider.dart';
 import '../catalog/product_detail_screen.dart';
@@ -71,7 +72,9 @@ class MyListingsScreen extends StatelessWidget {
             : p.isSold
                 ? 'Sold'
                 : '${p.stock} left';
-        return InkWell(
+        return FadeSlideIn(
+          delay: Motion.stagger(i),
+          child: InkWell(
           borderRadius: BorderRadius.circular(18),
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(productId: p.id))),
           child: Container(
@@ -139,6 +142,7 @@ class MyListingsScreen extends StatelessWidget {
               ],
             ),
           ),
+        ),
         );
       },
     );

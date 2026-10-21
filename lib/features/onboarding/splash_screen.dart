@@ -49,7 +49,16 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           Center(
             child: ScaleTransition(
               scale: scale,
-              child: Image.asset('assets/images/logo.png', width: 240),
+              child: Container(
+                padding: const EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [AppColors.orange.withValues(alpha: 0.10), Colors.white.withValues(alpha: 0)],
+                  ),
+                ),
+                child: Image.asset('assets/images/logo.png', width: 240),
+              ),
             ),
           ),
           Positioned(

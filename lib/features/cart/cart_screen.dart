@@ -4,6 +4,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
 import '../../data/models/cart_item.dart';
 import '../../shared/widgets/common.dart';
+import '../../shared/widgets/motion.dart';
 import '../../shared/widgets/product_image.dart';
 import '../../shared/widgets/qty_stepper.dart';
 import '../../state/cart_provider.dart';
@@ -92,10 +93,15 @@ class _CartScreenState extends State<CartScreen> {
                       ],
                     ),
                   ),
-                ...cart.items.map((item) => Padding(
+                for (final (i, item) in cart.items.indexed)
+                  FadeSlideIn(
+                    key: ValueKey(item.productId),
+                    delay: Motion.stagger(i),
+                    child: Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: _CartTile(item: item),
-                    )),
+                    ),
+                  ),
               ],
             ),
       bottomNavigationBar: cart.availableItems.isEmpty
@@ -114,7 +120,19 @@ class _CartScreenState extends State<CartScreen> {
                     children: [
                       const Text('Subtotal', style: TextStyle(color: AppColors.grey)),
                       const Spacer(),
-                      Text(Fmt.price(cart.subtotal), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                      AnimatedSwitcher(
+                        duration: Motion.medium,
+                        transitionBuilder: (c, a) => FadeTransition(
+                          opacity: a,
+                          child: SlideTransition(
+                            position: Tween(begin: const Offset(0, 0.4), end: Offset.zero).animate(a),
+                            child: c,
+                          ),
+                        ),
+                        child: Text(Fmt.price(cart.subtotal),
+                            key: ValueKey(cart.subtotal),
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                      ),
                     ],
                   ),
                   if (cart.savings > 0)

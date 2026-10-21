@@ -64,7 +64,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onPageChanged: (i) => setState(() => _page = i),
                 itemBuilder: (_, i) {
                   final (icon, title, body, color) = _pages[i];
-                  return Padding(
+                  return AnimatedBuilder(
+                    animation: _pc,
+                    builder: (_, child) {
+                      // Content drifts and fades as the page is swiped.
+                      final page = _pc.hasClients && _pc.position.haveDimensions ? (_pc.page ?? 0) : 0.0;
+                      final d = (page - i).clamp(-1.0, 1.0).toDouble();
+                      return Opacity(
+                        opacity: 1 - d.abs() * 0.6,
+                        child: Transform.translate(
+                          offset: Offset(d * -60, 0),
+                          child: Transform.scale(scale: 1 - d.abs() * 0.12, child: child),
+                        ),
+                      );
+                    },
+                    child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -74,7 +88,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           Container(
                             width: 180,
                             height: 180,
-                            decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(
+                                colors: [color.withValues(alpha: 0.22), color.withValues(alpha: 0.04)],
+                              ),
+                              boxShadow: [BoxShadow(color: color.withValues(alpha: 0.18), blurRadius: 40, spreadRadius: 4)],
+                            ),
                             child: Icon(icon, size: 90, color: color),
                           ),
                         const SizedBox(height: 40),
@@ -86,6 +106,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             style: const TextStyle(fontSize: 15, color: AppColors.grey, height: 1.5)),
                       ],
                     ),
+                    ),
                   );
                 },
               ),
@@ -95,7 +116,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               children: List.generate(
                 _pages.length,
                 (i) => AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
+                  duration: const Duration(milliseconds: 320),
+                  curve: Curves.easeOutCubic,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   width: _page == i ? 26 : 8,
                   height: 8,
@@ -111,7 +133,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: ElevatedButton(
                 onPressed: () => last
                     ? _finish(login: true)
-                    : _pc.nextPage(duration: const Duration(milliseconds: 350), curve: Curves.easeOut),
+                    : _pc.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOutCubic),
                 child: Text(last ? 'Get Started' : 'Next'),
               ),
             ),

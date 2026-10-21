@@ -9,6 +9,7 @@ import '../../data/repositories/misc_repositories.dart';
 import '../../data/repositories/product_repository.dart';
 import '../../shared/widgets/category_icon.dart';
 import '../../shared/widgets/common.dart';
+import '../../shared/widgets/motion.dart';
 import '../../shared/widgets/product_card.dart';
 import '../../state/session_provider.dart';
 import '../account/wishlist_screen.dart';
@@ -72,16 +73,32 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 4),
               ],
             ),
-            SliverToBoxAdapter(child: _Greeting(name: name)),
-            const SliverToBoxAdapter(child: _SearchBar()),
+            SliverToBoxAdapter(child: FadeSlideIn(child: _Greeting(name: name))),
+            const SliverToBoxAdapter(
+              child: FadeSlideIn(delay: Duration(milliseconds: 60), child: _SearchBar()),
+            ),
             SliverToBoxAdapter(
-              child: StreamBuilder<List<PromoBanner>>(
-                stream: _banners,
-                builder: (_, s) => (s.data?.isNotEmpty ?? false) ? _BannerCarousel(s.data!) : const SizedBox(height: 4),
+              child: FadeSlideIn(
+                delay: const Duration(milliseconds: 120),
+                child: StreamBuilder<List<PromoBanner>>(
+                  stream: _banners,
+                  builder: (_, s) => _BannerCarousel([
+                    ..._builtInSlides,
+                    for (final b in s.data ?? const <PromoBanner>[])
+                      _Slide(
+                        banner: b,
+                        glow: AppColors.blue,
+                        onTap: (c) => _openCategory(c, b.categoryId),
+                      ),
+                  ]),
+                ),
               ),
             ),
             SliverToBoxAdapter(
-              child: SectionHeader(title: 'Categories', action: 'See all', onAction: () => MainShell.goTo(context, 1)),
+              child: FadeSlideIn(
+                delay: const Duration(milliseconds: 180),
+                child: SectionHeader(title: 'Categories', action: 'See all', onAction: () => MainShell.goTo(context, 1)),
+              ),
             ),
             const SliverToBoxAdapter(child: _CategoryStrip()),
             _strip(_deals, const _FlashDealsHeader()),
@@ -94,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (s.hasError) {
                   return SliverToBoxAdapter(child: ErrorView(error: s.error, onRetry: () => setState(_load)));
                 }
-                if (!s.hasData) return const SliverToBoxAdapter(child: LoadingView());
+                if (!s.hasData) return const ProductGridSkeleton();
                 if (s.data!.isEmpty) {
                   return SliverToBoxAdapter(
                     child: EmptyState(
@@ -123,7 +140,9 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (_, s) {
             final items = s.data ?? const <Product>[];
             if (items.isEmpty) return const SizedBox.shrink();
-            return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [header, ProductStrip(items)]);
+            return FadeSlideIn(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [header, ProductStrip(items)]),
+            );
           },
         ),
       );
@@ -158,15 +177,16 @@ class _SearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
-      child: GestureDetector(
+      child: Pressable(
+        scale: 0.98,
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchScreen())),
         child: Container(
-          height: 52,
+          height: 54,
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.border),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: softShadow(),
           ),
           child: Row(
             children: [
@@ -177,7 +197,7 @@ class _SearchBar extends StatelessWidget {
               ),
               Container(
                 padding: const EdgeInsets.all(7),
-                decoration: BoxDecoration(color: AppColors.blue, borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(gradient: AppColors.brandGradient, borderRadius: BorderRadius.circular(11)),
                 child: const Icon(Icons.tune_rounded, color: Colors.white, size: 18),
               ),
             ],
@@ -188,33 +208,75 @@ class _SearchBar extends StatelessWidget {
   }
 }
 
+/// One slide of the home carousel: a built-in banner image or a banner from Firestore.
+class _Slide {
+  final String? asset;
+  final PromoBanner? banner;
+  final Color glow;
+  final void Function(BuildContext context) onTap;
+  const _Slide({this.asset, this.banner, required this.glow, required this.onTap});
+}
+
+void _openCategory(BuildContext context, String? categoryId) => Navigator.push(
+    context, MaterialPageRoute(builder: (_) => SearchScreen(categoryId: categoryId, autofocus: false)));
+
+/// Built-in promo banners shipped with the app (assets/images/banner1-3.png).
+final List<_Slide> _builtInSlides = [
+  _Slide(
+    asset: 'assets/images/banner1.png',
+    glow: const Color(0xFF1A2DB8),
+    onTap: (c) => _openCategory(c, 'electronics'),
+  ),
+  _Slide(
+    asset: 'assets/images/banner2.png',
+    glow: const Color(0xFFF26A0A),
+    onTap: (c) => _openCategory(c, 'fashion'),
+  ),
+  _Slide(
+    asset: 'assets/images/banner3.png',
+    glow: const Color(0xFF5B2BC0),
+    onTap: (c) => MainShell.goTo(c, 1),
+  ),
+];
+
 class _BannerCarousel extends StatefulWidget {
-  final List<PromoBanner> banners;
-  const _BannerCarousel(this.banners);
+  final List<_Slide> slides;
+  const _BannerCarousel(this.slides);
 
   @override
   State<_BannerCarousel> createState() => _BannerCarouselState();
 }
 
 class _BannerCarouselState extends State<_BannerCarousel> {
+  /// Width / height of the banner artwork.
+  static const _aspect = 1440 / 316;
   final _pc = PageController(viewportFraction: 0.92);
   int _i = 0;
+  bool _touching = false;
   Timer? _t;
 
   static const _gradients = [
     AppColors.brandGradient,
     AppColors.orangeGradient,
-    LinearGradient(colors: [Color(0xFF15803D), Color(0xFF22C55E)]),
+    LinearGradient(colors: [Color(0xFF5B2BC0), Color(0xFF8B5CF6)]),
   ];
 
   @override
   void initState() {
     super.initState();
     _t = Timer.periodic(const Duration(seconds: 5), (_) {
-      if (!_pc.hasClients || widget.banners.length < 2) return;
-      _pc.animateToPage((_i + 1) % widget.banners.length,
-          duration: const Duration(milliseconds: 450), curve: Curves.easeOut);
+      final n = widget.slides.length;
+      if (_touching || !_pc.hasClients || n < 2) return;
+      _pc.animateToPage((_i + 1) % n, duration: const Duration(milliseconds: 700), curve: Curves.easeInOutCubic);
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    for (final s in _builtInSlides) {
+      precacheImage(AssetImage(s.asset!), context);
+    }
   }
 
   @override
@@ -226,81 +288,131 @@ class _BannerCarouselState extends State<_BannerCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    final banners = widget.banners;
-    return Column(
-      children: [
-        const SizedBox(height: 14),
-        SizedBox(
-          height: 150,
-          child: PageView.builder(
-            controller: _pc,
-            itemCount: banners.length,
-            onPageChanged: (i) => setState(() => _i = i),
-            itemBuilder: (_, i) {
-              final b = banners[i];
-              final g = _gradients[i % _gradients.length];
-              final cat = b.categoryId == null ? null : Catalog.category(b.categoryId!);
-              return GestureDetector(
-                onTap: () => Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => SearchScreen(categoryId: b.categoryId, autofocus: false))),
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 5),
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(gradient: g, borderRadius: BorderRadius.circular(20)),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      if (b.imageUrl != null)
-                        CachedNetworkImage(imageUrl: b.imageUrl!, fit: BoxFit.cover)
-                      else if (cat != null)
-                        Positioned(right: -20, bottom: -24, child: CategoryIcon(category: cat, size: 150, opacity: 0.22)),
-                      Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(b.title,
-                                style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w800)),
-                            const SizedBox(height: 4),
-                            Text(b.subtitle, style: TextStyle(color: Colors.white.withValues(alpha: 0.92), fontSize: 13)),
-                            const SizedBox(height: 12),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
-                              child: Text('Shop now',
-                                  style: TextStyle(color: g.colors.first, fontWeight: FontWeight.w700, fontSize: 12)),
-                            ),
-                          ],
+    final slides = widget.slides;
+    return LayoutBuilder(builder: (context, box) {
+      // Keep banners a sensible size on wide screens (web / tablets).
+      final width = box.maxWidth > 1100 ? 1100.0 : box.maxWidth;
+      final height = (width * 0.92 - 12) / _aspect;
+      return Center(
+        child: SizedBox(
+          width: width,
+          child: Column(
+            children: [
+              const SizedBox(height: 16),
+              Listener(
+                onPointerDown: (_) => _touching = true,
+                onPointerUp: (_) => _touching = false,
+                onPointerCancel: (_) => _touching = false,
+                child: SizedBox(
+                  height: height + 14, // room for the glow shadow
+                  child: PageView.builder(
+                    controller: _pc,
+                    itemCount: slides.length,
+                    onPageChanged: (i) => setState(() => _i = i),
+                    itemBuilder: (_, i) => AnimatedBuilder(
+                      animation: _pc,
+                      builder: (_, child) {
+                        // Neighbouring slides shrink slightly for a depth effect.
+                        final page = _pc.hasClients && _pc.position.haveDimensions ? (_pc.page ?? _i.toDouble()) : _i.toDouble();
+                        final d = (page - i).abs().clamp(0.0, 1.0).toDouble();
+                        return Transform.scale(scale: 1 - d * 0.06, child: Opacity(opacity: 1 - d * 0.35, child: child));
+                      },
+                      child: _slide(slides[i], i, height),
+                    ),
+                  ),
+                ),
+              ),
+              if (slides.length > 1) ...[
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    slides.length,
+                    (i) => GestureDetector(
+                      onTap: () => _pc.animateToPage(i, duration: Motion.slow, curve: Curves.easeInOutCubic),
+                      child: AnimatedContainer(
+                        duration: Motion.medium,
+                        curve: Motion.curve,
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        width: _i == i ? 22 : 7,
+                        height: 7,
+                        decoration: BoxDecoration(
+                          gradient: _i == i ? AppColors.orangeGradient : null,
+                          color: _i == i ? null : AppColors.border,
+                          borderRadius: BorderRadius.circular(7),
                         ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _slide(_Slide s, int i, double height) {
+    final Widget content;
+    if (s.asset != null) {
+      content = Image.asset(s.asset!, fit: BoxFit.cover, filterQuality: FilterQuality.medium, gaplessPlayback: true);
+    } else {
+      final b = s.banner!;
+      final g = _gradients[i % _gradients.length];
+      final cat = b.categoryId == null ? null : Catalog.category(b.categoryId!);
+      content = DecoratedBox(
+        decoration: BoxDecoration(gradient: g),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (b.imageUrl != null)
+              CachedNetworkImage(imageUrl: b.imageUrl!, fit: BoxFit.cover)
+            else if (cat != null)
+              Positioned(right: -10, bottom: -14, child: CategoryIcon(category: cat, size: height, opacity: 0.22)),
+            if (b.imageUrl == null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(b.title, style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w800)),
+                      const SizedBox(height: 2),
+                      Text(b.subtitle, style: TextStyle(color: Colors.white.withValues(alpha: 0.92), fontSize: 13)),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+                        child: Text('Shop now',
+                            style: TextStyle(color: g.colors.first, fontWeight: FontWeight.w700, fontSize: 12)),
                       ),
                     ],
                   ),
                 ),
-              );
-            },
-          ),
-        ),
-        if (banners.length > 1) ...[
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              banners.length,
-              (i) => AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                margin: const EdgeInsets.symmetric(horizontal: 3),
-                width: _i == i ? 18 : 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: _i == i ? AppColors.blue : AppColors.border,
-                  borderRadius: BorderRadius.circular(6),
-                ),
               ),
-            ),
+          ],
+        ),
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(6, 0, 6, 14),
+      child: Pressable(
+        scale: 0.98,
+        onTap: () => s.onTap(context),
+        child: Container(
+          height: height,
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [BoxShadow(color: s.glow.withValues(alpha: 0.28), blurRadius: 16, offset: const Offset(0, 7))],
           ),
-        ],
-      ],
+          child: content,
+        ),
+      ),
     );
   }
 }
@@ -319,9 +431,12 @@ class _CategoryStrip extends StatelessWidget {
         separatorBuilder: (_, __) => const SizedBox(width: 14),
         itemBuilder: (_, i) {
           final c = Catalog.categories[i];
-          return GestureDetector(
-            onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => SearchScreen(categoryId: c.id, autofocus: false))),
+          return FadeSlideIn(
+            delay: const Duration(milliseconds: 200) + Motion.stagger(i, stepMs: 35, maxSteps: 10),
+            offset: const Offset(0.25, 0),
+            child: Pressable(
+            scale: 0.9,
+            onTap: () => _openCategory(context, c.id),
             child: SizedBox(
               width: 68,
               child: Column(
@@ -330,7 +445,14 @@ class _CategoryStrip extends StatelessWidget {
                     width: 58,
                     height: 58,
                     padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(color: c.color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(18)),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [c.color.withValues(alpha: 0.16), c.color.withValues(alpha: 0.06)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(18),
+                    ),
                     child: CategoryIcon(category: c, size: 38),
                   ),
                   const SizedBox(height: 6),
@@ -340,6 +462,7 @@ class _CategoryStrip extends StatelessWidget {
                       style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w500)),
                 ],
               ),
+            ),
             ),
           );
         },
@@ -375,7 +498,16 @@ class _SellPromo extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Container(
         padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(color: AppColors.navy, borderRadius: BorderRadius.circular(20)),
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [AppColors.navy, Color(0xFF1E3A8A)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: [BoxShadow(color: AppColors.navy.withValues(alpha: 0.25), blurRadius: 18, offset: const Offset(0, 8))],
+        ),
         child: Row(
           children: [
             const Expanded(
@@ -391,10 +523,19 @@ class _SellPromo extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.orange, minimumSize: const Size(90, 44)),
-              onPressed: () => MainShell.goTo(context, -1),
-              child: const Text('Sell'),
+            Pressable(
+              scale: 0.92,
+              haptic: true,
+              onTap: () => MainShell.goTo(context, -1),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                decoration: BoxDecoration(
+                  gradient: AppColors.orangeGradient,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [BoxShadow(color: AppColors.orange.withValues(alpha: 0.4), blurRadius: 12, offset: const Offset(0, 4))],
+                ),
+                child: const Text('Sell', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15)),
+              ),
             ),
           ],
         ),

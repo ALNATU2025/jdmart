@@ -5,6 +5,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/models/order.dart';
 import '../../features/cart/cart_screen.dart';
 import '../../state/cart_provider.dart';
+import 'motion.dart';
 
 class JDLogo extends StatelessWidget {
   final double height;
@@ -89,13 +90,24 @@ class EmptyState extends StatelessWidget {
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(32),
-        child: Column(
+        child: FadeSlideIn(
+          child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.all(26),
-              decoration: const BoxDecoration(color: AppColors.blueLight, shape: BoxShape.circle),
-              child: Icon(icon, size: 52, color: AppColors.blue),
+            _Floating(
+              child: Container(
+                padding: const EdgeInsets.all(26),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [AppColors.blueLight, Color(0xFFF4F7FF)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  boxShadow: softShadow(),
+                ),
+                child: Icon(icon, size: 52, color: AppColors.blue),
+              ),
             ),
             const SizedBox(height: 20),
             Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
@@ -108,10 +120,36 @@ class EmptyState extends StatelessWidget {
               SizedBox(width: 220, child: ElevatedButton(onPressed: onAction, child: Text(actionLabel!))),
             ],
           ],
+          ),
         ),
       ),
     );
   }
+}
+
+/// Gentle up-and-down bob for empty-state illustrations.
+class _Floating extends StatefulWidget {
+  final Widget child;
+  const _Floating({required this.child});
+
+  @override
+  State<_Floating> createState() => _FloatingState();
+}
+
+class _FloatingState extends State<_Floating> with SingleTickerProviderStateMixin {
+  late final AnimationController _c =
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 2400))..repeat(reverse: true);
+  late final Animation<Offset> _y = Tween(begin: const Offset(0, -0.04), end: const Offset(0, 0.04))
+      .animate(CurvedAnimation(parent: _c, curve: Curves.easeInOut));
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => SlideTransition(position: _y, child: widget.child);
 }
 
 class LoadingView extends StatelessWidget {
@@ -122,7 +160,12 @@ class LoadingView extends StatelessWidget {
   Widget build(BuildContext context) => Center(
         child: Padding(
           padding: EdgeInsets.all(padding),
-          child: const CircularProgressIndicator(color: AppColors.orange, strokeWidth: 2.6),
+          // Appears after a short delay so quick loads don't flash a spinner.
+          child: const FadeSlideIn(
+            delay: Duration(milliseconds: 180),
+            offset: Offset.zero,
+            child: CircularProgressIndicator(color: AppColors.orange, strokeWidth: 2.6),
+          ),
         ),
       );
 }
@@ -220,7 +263,7 @@ class CartIconButton extends StatelessWidget {
       icon: Badge(
         isLabelVisible: count > 0,
         backgroundColor: AppColors.orange,
-        label: Text('$count'),
+        label: PopOnChange(value: count, child: Text('$count')),
         child: Icon(Icons.shopping_cart_outlined, color: color),
       ),
     );

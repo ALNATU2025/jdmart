@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/catalog.dart';
-import '../../core/theme/app_theme.dart';
 import '../../shared/widgets/category_icon.dart';
 import '../../shared/widgets/common.dart';
+import '../../shared/widgets/motion.dart';
 import 'search_screen.dart';
 
 class CategoriesScreen extends StatelessWidget {
@@ -26,16 +26,22 @@ class CategoriesScreen extends StatelessWidget {
         itemCount: Catalog.categories.length,
         itemBuilder: (_, i) {
           final c = Catalog.categories[i];
-          return InkWell(
-            borderRadius: BorderRadius.circular(20),
+          return FadeSlideIn(
+            delay: Motion.stagger(i, stepMs: 40, maxSteps: 12),
+            child: Pressable(
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (_) => SearchScreen(categoryId: c.id, autofocus: false))),
             child: Container(
               padding: const EdgeInsets.all(16),
+              clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
-                color: Colors.white,
+                gradient: LinearGradient(
+                  colors: [Colors.white, c.color.withValues(alpha: 0.07)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.border),
+                boxShadow: softShadow(),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,12 +52,20 @@ class CategoriesScreen extends StatelessWidget {
                     child: CategoryIcon(category: c, size: 40),
                   ),
                   const Spacer(),
-                  Text(c.name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5)),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(c.name,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5)),
+                      ),
+                      Icon(Icons.arrow_forward_rounded, size: 18, color: c.color),
+                    ],
+                  ),
                 ],
               ),
+            ),
             ),
           );
         },

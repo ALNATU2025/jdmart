@@ -5,6 +5,7 @@ import '../../core/utils/formatters.dart';
 import '../../data/models/chat.dart';
 import '../../data/repositories/chat_repository.dart';
 import '../../shared/widgets/common.dart';
+import '../../shared/widgets/motion.dart';
 import '../../shared/widgets/product_image.dart';
 import '../../state/session_provider.dart';
 import '../auth/auth_guard.dart';
@@ -27,6 +28,7 @@ class ChatsScreen extends StatelessWidget {
               onAction: () => ensureLoggedIn(context),
             )
           : StreamView<List<Conversation>>(
+              loading: const ListSkeleton(),
               id: uid,
               create: () => context.read<ChatRepository>().forUser(uid),
               builder: (_, all) {
@@ -41,7 +43,7 @@ class ChatsScreen extends StatelessWidget {
                 return ListView.separated(
                   itemCount: convos.length,
                   separatorBuilder: (_, __) => const Divider(height: 1, indent: 84),
-                  itemBuilder: (_, i) => _tile(context, convos[i], uid),
+                  itemBuilder: (_, i) => FadeSlideIn(delay: Motion.stagger(i), child: _tile(context, convos[i], uid)),
                 );
               },
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
@@ -9,6 +10,7 @@ import '../../state/cart_provider.dart';
 import '../../state/session_provider.dart';
 import '../../state/wishlist_provider.dart';
 import 'common.dart';
+import 'motion.dart';
 import 'product_image.dart';
 
 class ProductCard extends StatelessWidget {
@@ -22,14 +24,14 @@ class ProductCard extends StatelessWidget {
     final saved = context.select<WishlistProvider, bool>((w) => w.isSaved(p.id));
     final isMine = context.select<SessionProvider, bool>((s) => s.uid == p.sellerId);
 
-    return GestureDetector(
+    return Pressable(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(productId: p.id))),
       child: Container(
         width: width,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
-          boxShadow: [BoxShadow(color: AppColors.navy.withValues(alpha: 0.06), blurRadius: 14, offset: const Offset(0, 4))],
+          boxShadow: softShadow(),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,14 +78,18 @@ class ProductCard extends StatelessWidget {
                           customBorder: const CircleBorder(),
                           onTap: () async {
                             if (!await ensureLoggedIn(context)) return;
+                            HapticFeedback.lightImpact();
                             if (context.mounted) context.read<WishlistProvider>().toggle(p.id);
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(6),
-                            child: Icon(
-                              saved ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                              size: 18,
-                              color: saved ? AppColors.danger : AppColors.grey,
+                            child: PopOnChange(
+                              value: saved,
+                              child: Icon(
+                                saved ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                                size: 18,
+                                color: saved ? AppColors.danger : AppColors.grey,
+                              ),
                             ),
                           ),
                         ),
@@ -112,9 +118,10 @@ class ProductCard extends StatelessWidget {
                       ),
                       const Spacer(),
                       if (p.available && !isMine)
-                        InkWell(
-                          borderRadius: BorderRadius.circular(10),
+                        Pressable(
+                          scale: 0.85,
                           onTap: () {
+                            HapticFeedback.lightImpact();
                             final err = context.read<CartProvider>().add(p);
                             showSnack(context, err ?? 'Added to cart', error: err != null);
                           },
@@ -173,7 +180,11 @@ class ProductSliverGrid extends StatelessWidget {
           childAspectRatio: 0.6,
         ),
         delegate: SliverChildBuilderDelegate(
-          (ctx, i) => ProductCard(product: products[i]),
+          (ctx, i) => FadeSlideIn(
+            key: ValueKey(products[i].id),
+            delay: Motion.stagger(i % (cols * 2)),
+            child: ProductCard(product: products[i]),
+          ),
           childCount: products.length,
         ),
       ),
@@ -195,7 +206,11 @@ class ProductStrip extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
         itemCount: items.length,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (_, i) => ProductCard(product: items[i], width: 160),
+        itemBuilder: (_, i) => FadeSlideIn(
+          delay: Motion.stagger(i),
+          offset: const Offset(0.12, 0),
+          child: ProductCard(product: items[i], width: 160),
+        ),
       ),
     );
   }

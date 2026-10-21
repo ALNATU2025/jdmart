@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../shared/widgets/motion.dart';
 
 /// Brand colours sampled directly from the JDMart logo.
 class AppColors {
@@ -49,6 +50,45 @@ class AppTheme {
 
     return base.copyWith(
       textTheme: textTheme,
+      // Smooth fade-and-rise between pages everywhere; iOS keeps its native swipe-back.
+      pageTransitionsTheme: const PageTransitionsTheme(builders: {
+        TargetPlatform.android: SmoothPageTransitionsBuilder(),
+        TargetPlatform.fuchsia: SmoothPageTransitionsBuilder(),
+        TargetPlatform.windows: SmoothPageTransitionsBuilder(),
+        TargetPlatform.linux: SmoothPageTransitionsBuilder(),
+        TargetPlatform.macOS: SmoothPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      }),
+      cardTheme: CardThemeData(
+        color: Colors.white,
+        elevation: 0,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: const BorderSide(color: AppColors.border),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+        titleTextStyle: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.navy),
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        showDragHandle: true,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(26))),
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(color: AppColors.orange),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.blue,
+          textStyle: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
+      listTileTheme: const ListTileThemeData(iconColor: AppColors.navy),
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.white,
         foregroundColor: AppColors.navy,
@@ -108,9 +148,12 @@ class AppTheme {
         side: const BorderSide(color: AppColors.border),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),
-      snackBarTheme: const SnackBarThemeData(
+      snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.navy,
+        elevation: 4,
+        insetPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
       dividerColor: AppColors.border,
     );
