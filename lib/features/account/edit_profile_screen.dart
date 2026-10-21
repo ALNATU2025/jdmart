@@ -20,7 +20,7 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _form = GlobalKey<FormState>();
   late final TextEditingController _name;
-  late final TextEditingController _email = TextEditingController();
+  late final TextEditingController _phone;
   late final TextEditingController _bio;
   late String _city;
   bool _showPhone = true;
@@ -36,16 +36,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _bio = TextEditingController(text: u.bio);
     _city = Catalog.safeCity(u.city);
     _showPhone = u.contactPhone != null;
-    context.read<UserRepository>().getPrivate(u.id).then((p) {
-      if (!mounted) return;
-      _email.text = (p['email'] ?? '') as String;
-    });
+    _phone = TextEditingController(text: Fmt.display(s.phone));
   }
 
   @override
   void dispose() {
     _name.dispose();
-    _email.dispose();
+    _phone.dispose();
     _bio.dispose();
     super.dispose();
   }
@@ -70,9 +67,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         name: _name.text,
         city: _city,
         bio: _bio.text,
-        email: _email.text,
+        email: session.email,
         showPhone: _showPhone,
-        phone: session.phone,
+        phone: Fmt.e164(_phone.text),
         avatarUrl: url,
       );
       if (!mounted) return;
@@ -127,19 +124,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             const SizedBox(height: 14),
             TextFormField(
-              initialValue: Fmt.display(session.phone),
+              initialValue: session.email,
               enabled: false,
-              decoration: const InputDecoration(labelText: 'Phone (verified)'),
+              decoration: const InputDecoration(labelText: 'Sign-in email'),
             ),
             const SizedBox(height: 14),
             TextFormField(
-              controller: _email,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(labelText: 'Email (private)'),
-              validator: (v) {
-                if (v == null || v.trim().isEmpty) return null;
-                return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(v.trim()) ? null : 'Invalid email';
-              },
+              controller: _phone,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(labelText: 'Phone number (for deliveries)', hintText: '076 123456'),
+              validator: Fmt.validatePhone,
             ),
             const SizedBox(height: 14),
             DropdownButtonFormField<String>(

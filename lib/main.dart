@@ -43,7 +43,7 @@ Future<void> main() async {
   final banners = BannerRepository(db);
   final media = MediaRepository(FirebaseStorage.instance);
 
-  final session = SessionProvider(AuthService(FirebaseAuth.instance), users, PushService(users));
+  final session = SessionProvider(AuthService(FirebaseAuth.instance, functions), users, PushService(users));
   final cart = CartProvider(products);
   final wishlist = WishlistProvider(wishlistRepo);
 

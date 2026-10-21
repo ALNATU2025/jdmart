@@ -10,7 +10,7 @@ and for your Monime business account approval.
 
 | Need | Service | Why |
 |---|---|---|
-| Sign in | **Firebase Authentication** (phone number + SMS code) | Everyone in Sierra Leone has a phone number; no passwords to forget or leak. |
+| Sign in | **Firebase Authentication** + a 6-digit **email code sent from your Gmail** | No passwords to forget or leak, and no SMS costs. |
 | Database | **Cloud Firestore** | Real-time updates (chat, order status), works offline on patchy networks, scales automatically. |
 | Photos | **Firebase Storage** | Listing photos and avatars, protected by upload rules. |
 | Server logic | **Cloud Functions** (`functions/`) | Places orders and checks stock and prices on the server, confirms payments, sends notifications. Nothing important is trusted to the phone. |
@@ -23,9 +23,10 @@ offline sync for weak 3G/4G, nothing to patch or keep running, and a free tier l
 You only start paying once there is real traffic.
 
 **Costs.** Cloud Functions and scheduled jobs require the **Blaze (pay-as-you-go)** plan. A card is
-needed, but a small marketplace usually stays within the free monthly allowance. Phone sign-in SMS
-messages are charged per message after a small free quota, so check current prices in the Firebase
-console. Set a **budget alert** (Google Cloud console → Billing → Budgets) on day one.
+needed, but a small marketplace usually stays within the free monthly allowance. Sign-in emails go
+through your Gmail account at no cost, up to Gmail's sending limit (about 500 emails a day for a normal
+Gmail account, 2,000 for Google Workspace). Set a **budget alert** (Google Cloud console → Billing → Budgets)
+on day one.
 
 ---
 
@@ -41,7 +42,7 @@ console. Set a **budget alert** (Google Cloud console → Billing → Budgets) o
 1. Go to https://console.firebase.google.com → **Add project** → name it e.g. `jdmart-sl`.
 2. **Build → Firestore Database → Create database** in **production mode**. For the location, choose
    **`europe-west1` (Belgium)**, the region used by the functions. The location can't be changed later.
-3. **Build → Authentication → Get started → Sign-in method → Phone → Enable.**
+3. **Build → Authentication → Get started.** No sign-in provider needs to be switched on: JDMart signs users in with its own email code (step 3).
 4. **Build → Storage → Get started** (production mode).
 5. Upgrade to the **Blaze plan** (bottom-left gear → Usage and billing).
 6. In the project folder:
@@ -50,11 +51,25 @@ console. Set a **budget alert** (Google Cloud console → Billing → Budgets) o
    flutterfire configure    # pick your project; tick Android and iOS. This writes lib/firebase_options.dart
    cp .firebaserc.example .firebaserc   # then put your project id in it
    ```
-7. **Android phone sign-in needs your app's SHA fingerprints.** Run `cd android && ./gradlew signingReport`,
-   then copy the SHA-1 and SHA-256 into Firebase console → Project settings → Your apps → Android → Add fingerprint.
-   Do this again later with your **release/Play signing** key (Play Console → App integrity).
 
-## 3. Deploy the backend
+## 3. Set up the Gmail sender and deploy the backend
+
+Sign-in codes are emailed from a Gmail address you control. Use a dedicated account such as
+`jdmart.sl@gmail.com` (or a Google Workspace address like `no-reply@yourdomain.com`), not your personal one.
+
+1. Sign in to that Google account and turn on **2-Step Verification** (myaccount.google.com → Security).
+2. Create an **App password**: myaccount.google.com/apppasswords → name it "JDMart" → copy the 16-character password.
+   (Never paste this password into chats or commit it to GitHub; it only goes into the secret below.)
+3. Store the sender details as secrets:
+   ```bash
+   firebase functions:secrets:set GMAIL_USER            # e.g. jdmart.sl@gmail.com
+   firebase functions:secrets:set GMAIL_APP_PASSWORD    # the 16-character app password, no spaces
+   ```
+4. Allow the functions to create sign-in tokens. In the Google Cloud console → **IAM & Admin → IAM**,
+   find the service account `<project-number>-compute@developer.gserviceaccount.com` and add the role
+   **Service Account Token Creator**. Without it, verifying a code fails with a "signBlob" permission error.
+
+Then deploy:
 
 ```bash
 cd functions && npm install && cd ..
@@ -115,7 +130,7 @@ must be handled from Monime as well. Agree these terms with your sellers before 
 
 ## 7. Test before publishing (with real phones)
 
-- [ ] Sign up with a phone number, then sign out and sign back in
+- [ ] Sign up with an email address (check the code arrives, including in Spam), then sign out and sign back in
 - [ ] Post a listing with photos, edit it, mark it sold, relist it
 - [ ] On a second phone: search, save, chat with the seller, add to cart
 - [ ] Cash-on-delivery order: the seller gets a notification, then confirms → ships → delivers; the buyer can then review
@@ -128,10 +143,9 @@ must be handled from Monime as well. Agree these terms with your sellers before 
 1. Create a Google Play developer account (one-time fee) at https://play.google.com/console.
 2. Create an upload key and configure signing: https://docs.flutter.dev/deployment/android
 3. Build: `flutter build appbundle --release`, then upload `build/app/outputs/bundle/release/app-release.aab`.
-4. Complete **Data safety** (phone number, name, photos, messages, purchase history; data encrypted in
+4. Complete **Data safety** (email address, name, phone number, photos, messages, purchase history; data encrypted in
    transit; account deletion available in the app) and add the **Privacy Policy URL**.
-5. Add the Play signing SHA-1/SHA-256 to Firebase (step 2.7), or phone sign-in will fail in the store build.
-6. Start with **Internal testing**, then **Closed testing**, then **Production**.
+5. Start with **Internal testing**, then **Closed testing**, then **Production**.
 
 ## After launch: what to add next
 

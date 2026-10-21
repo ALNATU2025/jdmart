@@ -7,7 +7,7 @@ Sierra Leone's marketplace app, built with **Flutter** on a **Firebase** backend
 
 ## Features
 
-**Buyers:** phone-number sign-in (SMS code) · live listings feed with deals and featured items · search with filters
+**Buyers:** email sign-in with a 6-digit code sent from your Gmail · live listings feed with deals and featured items · search with filters
 (category, town, condition, price) · product pages with photo gallery, seller profile and reviews · saved items synced
 across phones · cart with one delivery fee per seller · checkout with Cash on Delivery or Mobile Money/Card · order
 tracking with push notifications · chat with sellers · report a listing

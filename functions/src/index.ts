@@ -17,3 +17,4 @@ export {
   monimeWebhook,
 } from "./triggers";
 export { deleteAccount } from "./account";
+export { requestLoginCode, verifyLoginCode } from "./emailAuth";

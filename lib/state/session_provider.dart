@@ -6,8 +6,8 @@ import '../data/repositories/user_repository.dart';
 import '../data/services/auth_service.dart';
 import '../data/services/push_service.dart';
 
-/// Who is signed in, and their profile. Guests can browse; buying, selling and
-/// chatting require a signed-in user with a profile.
+/// Who is signed in (by email code), and their profile. Guests can browse;
+/// buying, selling and chatting require a signed-in user with a profile.
 class SessionProvider extends ChangeNotifier {
   SessionProvider(this.auth, this._users, this._push) {
     _authSub = auth.changes.listen(_onAuth);
@@ -19,22 +19,27 @@ class SessionProvider extends ChangeNotifier {
 
   StreamSubscription<User?>? _authSub;
   StreamSubscription<AppUser?>? _profileSub;
+  StreamSubscription<Map<String, dynamic>>? _privateSub;
 
   User? _authUser;
   AppUser? _profile;
   bool _authResolved = false;
   bool _profileResolved = false;
+  String _phone = '';
 
   User? get authUser => _authUser;
   AppUser? get profile => _profile;
   String? get uid => _authUser?.uid;
-  String get phone => _authUser?.phoneNumber ?? '';
+  String get email => _authUser?.email ?? '';
+
+  /// The user's phone number (E.164), from their private account data.
+  String get phone => _phone;
 
   /// True once we know whether someone is signed in (and loaded their profile).
   bool get ready => _authResolved && (_authUser == null || _profileResolved);
   bool get isLoggedIn => _authUser != null && _profile != null;
 
-  /// Signed in with a phone number but hasn't completed the profile form yet.
+  /// Signed in by email but hasn't completed the profile form yet.
   bool get needsProfile => _authUser != null && _profileResolved && _profile == null;
 
   void _onAuth(User? user) {
@@ -42,9 +47,15 @@ class SessionProvider extends ChangeNotifier {
     _authUser = user;
     _authResolved = true;
     _profileSub?.cancel();
+    _privateSub?.cancel();
     _profile = null;
     _profileResolved = false;
+    _phone = '';
     if (user != null) {
+      _privateSub = _users.watchPrivate(user.uid).listen((d) {
+        _phone = (d['phone'] ?? '') as String;
+        notifyListeners();
+      }, onError: (Object e) => debugPrint('Private data stream error: $e'));
       _profileSub = _users.watch(user.uid).listen((p) {
         final firstLoad = !_profileResolved;
         _profile = p;
@@ -72,6 +83,7 @@ class SessionProvider extends ChangeNotifier {
   void dispose() {
     _authSub?.cancel();
     _profileSub?.cancel();
+    _privateSub?.cancel();
     super.dispose();
   }
 }

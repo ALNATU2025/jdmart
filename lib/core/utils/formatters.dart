@@ -36,7 +36,7 @@ class Fmt {
     return _local(v) == null ? 'Enter a valid Sierra Leone number' : null;
   }
 
-  /// E.164 format for Firebase Auth / SMS, e.g. +23276123456.
+  /// E.164 format for storage, e.g. +23276123456.
   static String e164(String v) => '+232${_local(v)!}';
 
   /// Display format, e.g. +232 76 123456.

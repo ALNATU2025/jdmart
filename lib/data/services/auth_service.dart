@@ -1,79 +1,53 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
-/// Phone-number sign-in with an SMS code (Firebase Auth). No passwords.
+/// Email sign-in with a 6-digit code. The code is emailed from JDMart's Gmail
+/// account by the `requestLoginCode` Cloud Function; `verifyLoginCode` checks
+/// it and returns a token that signs the user in. No passwords, no SMS.
 class AuthService {
-  AuthService(this._auth);
+  AuthService(this._auth, this._functions);
   final FirebaseAuth _auth;
-
-  ConfirmationResult? _webConfirmation;
+  final FirebaseFunctions _functions;
 
   Stream<User?> get changes => _auth.authStateChanges();
   User? get currentUser => _auth.currentUser;
 
-  /// Sends the SMS code. On Android the code can be read automatically, in
-  /// which case [onAutoVerified] fires and the user is signed in directly.
-  Future<void> sendCode({
-    required String phoneE164,
-    required void Function(String verificationId, int? resendToken) onCodeSent,
-    required void Function(String message) onError,
-    void Function()? onAutoVerified,
-    int? resendToken,
-  }) async {
-    if (kIsWeb) {
-      try {
-        _webConfirmation = await _auth.signInWithPhoneNumber(phoneE164);
-        onCodeSent('web', null);
-      } on FirebaseAuthException catch (e) {
-        onError(_message(e));
-      }
-      return;
+  /// Returns an error message, or null when the email was sent.
+  Future<String?> sendCode(String email) async {
+    try {
+      await _functions.httpsCallable('requestLoginCode').call<dynamic>({'email': email.trim()});
+      return null;
+    } on FirebaseFunctionsException catch (e) {
+      return _functionsMessage(e);
+    } catch (_) {
+      return 'No internet connection. Please check your data or Wi-Fi.';
     }
-    await _auth.verifyPhoneNumber(
-      phoneNumber: phoneE164,
-      forceResendingToken: resendToken,
-      timeout: const Duration(seconds: 60),
-      verificationCompleted: (credential) async {
-        try {
-          await _auth.signInWithCredential(credential);
-          onAutoVerified?.call();
-        } on FirebaseAuthException catch (e) {
-          onError(_message(e));
-        }
-      },
-      verificationFailed: (e) => onError(_message(e)),
-      codeSent: onCodeSent,
-      codeAutoRetrievalTimeout: (_) {},
-    );
   }
 
-  /// Returns an error message, or null on success.
-  Future<String?> verifyCode(String verificationId, String code) async {
+  /// Returns an error message, or null when signed in.
+  Future<String?> verifyCode(String email, String code) async {
     try {
-      if (kIsWeb) {
-        final c = _webConfirmation;
-        if (c == null) return 'Please request a new code.';
-        await c.confirm(code);
-      } else {
-        await _auth.signInWithCredential(
-          PhoneAuthProvider.credential(verificationId: verificationId, smsCode: code),
-        );
-      }
+      final r = await _functions
+          .httpsCallable('verifyLoginCode')
+          .call<dynamic>({'email': email.trim(), 'code': code.trim()});
+      final token = (r.data as Map)['token'] as String;
+      await _auth.signInWithCustomToken(token);
       return null;
+    } on FirebaseFunctionsException catch (e) {
+      return _functionsMessage(e);
     } on FirebaseAuthException catch (e) {
-      return _message(e);
+      return e.code == 'network-request-failed'
+          ? 'No internet connection. Please check your data or Wi-Fi.'
+          : (e.message ?? 'Sign-in failed (${e.code}).');
+    } catch (_) {
+      return 'Sign-in failed. Please try again.';
     }
   }
 
   Future<void> signOut() => _auth.signOut();
 
-  String _message(FirebaseAuthException e) => switch (e.code) {
-        'invalid-phone-number' => 'That phone number is not valid.',
-        'invalid-verification-code' => 'The code is incorrect. Please check the SMS and try again.',
-        'session-expired' || 'code-expired' => 'The code has expired. Please request a new one.',
-        'too-many-requests' => 'Too many attempts. Please wait a few minutes and try again.',
-        'quota-exceeded' => 'SMS limit reached for today. Please try again later.',
-        'network-request-failed' => 'No internet connection. Please check your data or Wi-Fi.',
-        _ => e.message ?? 'Sign-in failed (${e.code}).',
+  String _functionsMessage(FirebaseFunctionsException e) => switch (e.code) {
+        'unavailable' when e.message == null => 'No internet connection. Please check your data or Wi-Fi.',
+        _ => e.message ?? 'Something went wrong (${e.code}). Please try again.',
       };
 }

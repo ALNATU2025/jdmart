@@ -12,7 +12,7 @@ service cloud.firestore {
     function userDoc(uid) { return get(/databases/$(database)/documents/users/$(uid)).data; }
     function hasProfile() { return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)); }
     function str(v, min, max) { return v is string && v.size() >= min && v.size() <= max; }
-    function myPhoneOrNull(v) { return v == null || v == request.auth.token.phone_number; }
+    function validPhoneOrNull(v) { return v == null || (v is string && v.matches('^[+]232[0-9]{8}$')); }
 
     // ---- Users ---------------------------------------------------------------
     match /users/{uid} {
@@ -23,7 +23,7 @@ service cloud.firestore {
                                                  'ratingAvg', 'ratingCount', 'salesCount', 'createdAt'])
         && str(request.resource.data.name, 2, 60)
         && str(request.resource.data.city, 2, 40)
-        && myPhoneOrNull(request.resource.data.contactPhone)
+        && validPhoneOrNull(request.resource.data.contactPhone)
         && request.resource.data.verified == false
         && request.resource.data.ratingAvg == 0
         && request.resource.data.ratingCount == 0
@@ -34,7 +34,7 @@ service cloud.firestore {
         && changed().hasOnly(['name', 'city', 'bio', 'avatarUrl', 'contactPhone'])
         && str(request.resource.data.name, 2, 60)
         && str(request.resource.data.bio, 0, 200)
-        && myPhoneOrNull(request.resource.data.contactPhone);
+        && validPhoneOrNull(request.resource.data.contactPhone);
 
       allow delete: if false; // use the deleteAccount function
 
@@ -158,6 +158,9 @@ service cloud.firestore {
     }
 
     // ---- Admin-managed & safety ---------------------------------------------------
+    match /emailCodes/{id} {
+      allow read, write: if false; // sign-in codes, server only
+    }
     match /banners/{id} {
       allow read: if true;
       allow write: if false; // edit in the Firebase console
