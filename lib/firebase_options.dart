@@ -12,19 +12,27 @@ import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb, Tar
 
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
-    if (kIsWeb) {
-      throw UnsupportedError('JDMart web is not configured yet. Run `flutterfire configure --project=jdmart-sl`.');
-    }
+    if (kIsWeb) return web;
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       default:
         throw UnsupportedError(
-          'JDMart is only configured for Android so far. Register the iOS app in Firebase, '
+          'JDMart is configured for Android and web (run with `flutter run -d chrome`). Register the iOS app in Firebase, '
           'then run `flutterfire configure --project=jdmart-sl`.',
         );
     }
   }
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyCGggfDeeWEC0bfqqEOXF7lOSKHIrZObdw',
+    appId: '1:256195288050:web:6dc2c2e98ad96f35ac696b',
+    messagingSenderId: '256195288050',
+    projectId: 'jdmart-sl',
+    authDomain: 'jdmart-sl.firebaseapp.com',
+    storageBucket: 'jdmart-sl.firebasestorage.app',
+    measurementId: 'G-F5PYYF7PNY',
+  );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAxF1FRGeSmvr7cl8rWwICBm-FjwDRAaQw',
