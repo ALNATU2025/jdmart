@@ -22,6 +22,7 @@ import 'legal_links.dart';
 import 'wishlist_screen.dart';
 import '../../core/theme/palette.dart';
 import '../../shared/widgets/theme_toggle.dart';
+import '../delivery/rider_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -128,6 +129,9 @@ class AccountScreen extends StatelessWidget {
           _section('Buying', [
             _tile(context, Icons.receipt_long_outlined, 'My orders', 'Track your purchases', const OrdersScreen()),
             _tile(context, Icons.favorite_border_rounded, 'Saved items', '$saved saved', const WishlistScreen()),
+            _tile(context, Icons.delivery_dining_rounded, 'Deliveries & tracking', 'Live map, rider jobs, delivery codes',
+                const RiderScreen(),
+                color: AppColors.orange),
           ], index: 2),
           _section('Jobs', [
             _tile(context, Icons.work_rounded, 'Jobs board', 'Find jobs or find talent', const JobsHomeScreen(),
@@ -199,13 +203,13 @@ class AccountScreen extends StatelessWidget {
   List<Widget> _legalTiles() => [
         if (AppConfig.termsUrl.isNotEmpty)
           ListTile(
-            leading: Icon(Icons.description_outlined, color: context.brand),
+            leading: Builder(builder: (context) => Icon(Icons.description_outlined, color: context.brand)),
             title: const Text('Terms of use'),
             onTap: () => openLink(AppConfig.termsUrl),
           ),
         if (AppConfig.privacyPolicyUrl.isNotEmpty)
           ListTile(
-            leading: Icon(Icons.privacy_tip_outlined, color: context.brand),
+            leading: Builder(builder: (context) => Icon(Icons.privacy_tip_outlined, color: context.brand)),
             title: const Text('Privacy policy'),
             onTap: () => openLink(AppConfig.privacyPolicyUrl),
           ),
@@ -234,7 +238,7 @@ class AccountScreen extends StatelessWidget {
 
   Widget _section(String title, List<Widget> children, {int index = 0}) => FadeSlideIn(
         delay: Motion.stagger(index, stepMs: 60),
-        child: Padding(
+        child: Builder(builder: (context) => Padding(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,7 +255,7 @@ class AccountScreen extends StatelessWidget {
             ),
           ],
         ),
-        ),
+        )),
       );
 
   Widget _tile(BuildContext context, IconData icon, String title, String sub, Widget page,

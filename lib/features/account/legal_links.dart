@@ -31,7 +31,7 @@ class _LegalAgreementTextState extends State<LegalAgreementText> {
 
   @override
   Widget build(BuildContext context) {
-    link = TextStyle(color: context.brand, fontWeight: FontWeight.w600);
+    final link = TextStyle(color: context.brand, fontWeight: FontWeight.w600);
     return Text.rich(
       TextSpan(
         style: TextStyle(fontSize: 13, color: context.ink),

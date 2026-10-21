@@ -623,7 +623,7 @@ class _JobsPromo extends StatelessWidget {
   Widget _pill(IconData icon, String label, VoidCallback onTap) => Pressable(
         scale: 0.92,
         onTap: onTap,
-        child: Container(
+        child: Builder(builder: (context) => Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
           decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(30)),
           child: Row(
@@ -634,6 +634,6 @@ class _JobsPromo extends StatelessWidget {
               Text(label, style: TextStyle(color: context.brand, fontWeight: FontWeight.w700, fontSize: 13)),
             ],
           ),
-        ),
+        ),)
       );
 }

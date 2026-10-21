@@ -22,6 +22,12 @@ class AppConfig {
   /// Keep false until the MONIME_* secrets are set on Cloud Functions.
   static const onlinePaymentsEnabled = false;
 
+  /// Google Maps API key for live delivery tracking (Maps JavaScript API for
+  /// web; the Android key goes in AndroidManifest.xml). Not secret, but restrict
+  /// it to your app/website in the Google Cloud console. Leave empty to show
+  /// tracking as a list with "Open in Google Maps" links instead of a map.
+  static const googleMapsApiKey = '';
+
   /// Cloud Functions region. Must match `region` in functions/src/index.ts.
   static const functionsRegion = 'europe-west1';
 

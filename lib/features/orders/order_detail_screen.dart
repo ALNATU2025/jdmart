@@ -9,6 +9,7 @@ import '../../shared/widgets/common.dart';
 import '../../shared/widgets/product_image.dart';
 import '../catalog/product_detail_screen.dart';
 import '../../core/theme/palette.dart';
+import '../delivery/delivery_card.dart';
 
 class OrderDetailScreen extends StatelessWidget {
   final String orderId;
@@ -83,7 +84,7 @@ class OrderDetailScreen extends StatelessWidget {
                             width: 24,
                             height: 24,
                             decoration: BoxDecoration(
-                              color: done ? AppColors.blue : Colors.white,
+                              color: done ? AppColors.blue : context.surface,
                               shape: BoxShape.circle,
                               border: Border.all(color: done ? AppColors.blue : context.line, width: 2),
                             ),
@@ -99,7 +100,7 @@ class OrderDetailScreen extends StatelessWidget {
                           _steps[i].label,
                           style: TextStyle(
                             fontWeight: i == current ? FontWeight.w700 : FontWeight.w500,
-                            color: done ? AppColors.navy : context.muted,
+                            color: done ? context.ink : context.muted,
                           ),
                         ),
                       ),
@@ -109,6 +110,8 @@ class OrderDetailScreen extends StatelessWidget {
             ],
           )),
           const SizedBox(height: 14),
+          if (o.status == OrderStatus.confirmed || o.status == OrderStatus.shipped || o.status == OrderStatus.delivered)
+            DeliveryCard(orderId: o.id, sellerView: sellerView),
           _box(Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -230,13 +233,13 @@ class OrderDetailScreen extends StatelessWidget {
     if (context.mounted) showSnack(context, err ?? success, error: err != null);
   }
 
-  Widget _box(Widget child) => Container(
+  Widget _box(Widget child) => Builder(builder: (context) => Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(20)),
-        child: child,
+        child: child,)
       );
 
-  Widget _line(IconData icon, String text) => Padding(
+  Widget _line(IconData icon, String text) => Builder(builder: (context) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,14 +248,14 @@ class OrderDetailScreen extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(child: Text(text, style: const TextStyle(fontSize: 13.5))),
           ],
-        ),
+        ),)
       );
 
-  Widget _kv(String k, String v, {bool bold = false}) => Padding(
+  Widget _kv(String k, String v, {bool bold = false}) => Builder(builder: (context) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 3),
         child: Row(
           children: [
-            Text(k, style: TextStyle(color: bold ? AppColors.navy : context.muted, fontWeight: bold ? FontWeight.w700 : null)),
+            Text(k, style: TextStyle(color: bold ? context.ink : context.muted, fontWeight: bold ? FontWeight.w700 : null)),
             const Spacer(),
             Text(v,
                 style: TextStyle(
@@ -260,6 +263,6 @@ class OrderDetailScreen extends StatelessWidget {
                     color: bold ? AppColors.blue : AppColors.navy,
                     fontSize: bold ? 17 : 14)),
           ],
-        ),
+        ),)
       );
 }

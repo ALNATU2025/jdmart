@@ -67,7 +67,7 @@ class JobTag extends StatelessWidget {
 Color applicationColor(ApplicationStatus s) => switch (s) {
       ApplicationStatus.submitted => AppColors.blue,
       ApplicationStatus.shortlisted => AppColors.success,
-      ApplicationStatus.rejected => context.muted,
+      ApplicationStatus.rejected => AppColors.grey,
     };
 
 class JobCard extends StatelessWidget {

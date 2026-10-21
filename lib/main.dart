@@ -10,6 +10,7 @@ import 'core/config/app_config.dart';
 import 'core/theme/app_theme.dart';
 import 'data/repositories/admin_repository.dart';
 import 'data/repositories/chat_repository.dart';
+import 'data/repositories/delivery_repository.dart';
 import 'data/repositories/job_repository.dart';
 import 'data/repositories/misc_repositories.dart';
 import 'data/repositories/order_repository.dart';
@@ -47,6 +48,7 @@ Future<void> main() async {
   final media = MediaRepository(FirebaseStorage.instance);
   final jobs = JobRepository(db, FirebaseStorage.instance);
   final admin = AdminRepository(db, functions, FirebaseStorage.instance);
+  final deliveries = DeliveryRepository(db, functions);
 
   final session = SessionProvider(AuthService(FirebaseAuth.instance, functions), users, PushService(users));
   final cart = CartProvider(products);
@@ -73,6 +75,7 @@ Future<void> main() async {
         Provider.value(value: media),
         Provider.value(value: jobs),
         Provider.value(value: admin),
+        Provider.value(value: deliveries),
         ChangeNotifierProvider.value(value: session),
         ChangeNotifierProvider.value(value: cart),
         ChangeNotifierProvider.value(value: wishlist),
