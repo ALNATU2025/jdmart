@@ -1,0 +1,59 @@
+name: Flutter analyze
+
+on:
+  push:
+    branches-ignore: [ci-results]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Versions
+        run: flutter --version
+      - name: Get packages
+        run: flutter pub get 2>&1 | tee pub.txt
+      - name: Analyze
+        id: analyze
+        run: |
+          set +e
+          flutter analyze --no-fatal-infos --no-fatal-warnings > analyze.txt 2>&1
+          echo "exit=$?" >> "$GITHUB_OUTPUT"
+          cat analyze.txt
+      - name: Unit tests
+        run: |
+          set +e
+          flutter test > test.txt 2>&1
+          echo "exit=$?" >> test.txt
+          tail -40 test.txt
+      - name: Publish report to ci-results branch
+        if: always()
+        run: |
+          mkdir -p /tmp/report
+          { echo "commit: $GITHUB_SHA"; echo "analyze exit: ${{ steps.analyze.outputs.exit }}"; echo; \
+            cat pub.txt; echo; echo "===== ANALYZE ====="; cat analyze.txt; echo; echo "===== TESTS ====="; tail -80 test.txt; } > /tmp/report/report.txt
+          git config user.name "ci-bot"
+          git config user.email "ci-bot@users.noreply.github.com"
+          git fetch origin ci-results || true
+          if git rev-parse --verify origin/ci-results >/dev/null 2>&1; then
+            git checkout -B ci-results origin/ci-results
+          else
+            git checkout --orphan ci-results
+            git rm -rf . >/dev/null 2>&1 || true
+          fi
+          cp /tmp/report/report.txt "${GITHUB_SHA}.txt"
+          cp /tmp/report/report.txt latest.txt
+          git add "${GITHUB_SHA}.txt" latest.txt
+          git commit -m "Report for ${GITHUB_SHA}" || true
+          git push origin ci-results
+      - name: Fail if analyze found errors
+        if: steps.analyze.outputs.exit != '0'
+        run: exit 1
