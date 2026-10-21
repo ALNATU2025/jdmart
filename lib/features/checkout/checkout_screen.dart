@@ -11,6 +11,7 @@ import '../../state/cart_provider.dart';
 import '../../state/session_provider.dart';
 import 'order_success_screen.dart';
 import 'payment_screen.dart';
+import '../../core/theme/palette.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -171,8 +172,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(14),
-                            color: selected ? AppColors.blueLight : Colors.white,
-                            border: Border.all(color: selected ? AppColors.blue : AppColors.border, width: selected ? 1.6 : 1),
+                            color: selected ? context.blueTint : Colors.white,
+                            border: Border.all(color: selected ? AppColors.blue : context.line, width: selected ? 1.6 : 1),
                           ),
                           child: Row(
                             children: [
@@ -189,12 +190,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   children: [
                                     Text(m.label, style: const TextStyle(fontWeight: FontWeight.w600)),
                                     Text(enabled ? m.hint : 'Coming soon',
-                                        style: const TextStyle(color: AppColors.grey, fontSize: 12)),
+                                        style: TextStyle(color: context.muted, fontSize: 12)),
                                   ],
                                 ),
                               ),
                               Icon(selected ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
-                                  color: selected ? AppColors.blue : AppColors.grey),
+                                  color: selected ? AppColors.blue : context.muted),
                             ],
                           ),
                         ),
@@ -242,10 +243,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   const Divider(height: 20),
                   _row('Total', Fmt.price(total), bold: true),
                   if (groups.length > 1)
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.only(top: 8),
                       child: Text('Each seller delivers their own items, so you will get one order per seller.',
-                          style: TextStyle(color: AppColors.grey, fontSize: 12)),
+                          style: TextStyle(color: context.muted, fontSize: 12)),
                     ),
                 ],
               ),
@@ -256,7 +257,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ),
       bottomNavigationBar: Container(
         padding: EdgeInsets.fromLTRB(20, 14, 20, 14 + MediaQuery.of(context).padding.bottom),
-        color: Colors.white,
+        color: context.surface,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: AppColors.orange),
           onPressed: _placing || items.isEmpty ? null : () => _place(items),
@@ -279,13 +280,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   Widget _card({required IconData icon, required String title, required Widget child}) => Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+        decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(20)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(icon, color: AppColors.blue, size: 20),
+                Icon(icon, color: context.brand, size: 20),
                 const SizedBox(width: 8),
                 Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
               ],
@@ -303,7 +304,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Expanded(
               child: Text(label,
                   style: TextStyle(
-                      color: bold ? AppColors.navy : AppColors.grey,
+                      color: bold ? AppColors.navy : context.muted,
                       fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
                       fontSize: bold ? 16 : 14)),
             ),

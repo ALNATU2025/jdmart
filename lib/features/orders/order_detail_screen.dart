@@ -8,6 +8,7 @@ import '../../data/repositories/order_repository.dart';
 import '../../shared/widgets/common.dart';
 import '../../shared/widgets/product_image.dart';
 import '../catalog/product_detail_screen.dart';
+import '../../core/theme/palette.dart';
 
 class OrderDetailScreen extends StatelessWidget {
   final String orderId;
@@ -52,7 +53,7 @@ class OrderDetailScreen extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Expanded(child: Text(Fmt.dateTime(o.createdAt), style: const TextStyle(color: AppColors.grey, fontSize: 13))),
+                  Expanded(child: Text(Fmt.dateTime(o.createdAt), style: TextStyle(color: context.muted, fontSize: 13))),
                   StatusChip(o.status),
                 ],
               ),
@@ -84,11 +85,11 @@ class OrderDetailScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: done ? AppColors.blue : Colors.white,
                               shape: BoxShape.circle,
-                              border: Border.all(color: done ? AppColors.blue : AppColors.border, width: 2),
+                              border: Border.all(color: done ? AppColors.blue : context.line, width: 2),
                             ),
                             child: done ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
                           ),
-                          if (!last) Container(width: 2, height: 30, color: i < current ? AppColors.blue : AppColors.border),
+                          if (!last) Container(width: 2, height: 30, color: i < current ? AppColors.blue : context.line),
                         ],
                       ),
                       const SizedBox(width: 12),
@@ -98,7 +99,7 @@ class OrderDetailScreen extends StatelessWidget {
                           _steps[i].label,
                           style: TextStyle(
                             fontWeight: i == current ? FontWeight.w700 : FontWeight.w500,
-                            color: done ? AppColors.navy : AppColors.grey,
+                            color: done ? AppColors.navy : context.muted,
                           ),
                         ),
                       ),
@@ -139,7 +140,7 @@ class OrderDetailScreen extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13.5)),
                                 Text('${i.quantity} × ${Fmt.price(i.price)}',
-                                    style: const TextStyle(color: AppColors.grey, fontSize: 12)),
+                                    style: TextStyle(color: context.muted, fontSize: 12)),
                               ],
                             ),
                           ),
@@ -231,7 +232,7 @@ class OrderDetailScreen extends StatelessWidget {
 
   Widget _box(Widget child) => Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+        decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(20)),
         child: child,
       );
 
@@ -240,7 +241,7 @@ class OrderDetailScreen extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 18, color: AppColors.grey),
+            Icon(icon, size: 18, color: context.muted),
             const SizedBox(width: 10),
             Expanded(child: Text(text, style: const TextStyle(fontSize: 13.5))),
           ],
@@ -251,7 +252,7 @@ class OrderDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 3),
         child: Row(
           children: [
-            Text(k, style: TextStyle(color: bold ? AppColors.navy : AppColors.grey, fontWeight: bold ? FontWeight.w700 : null)),
+            Text(k, style: TextStyle(color: bold ? AppColors.navy : context.muted, fontWeight: bold ? FontWeight.w700 : null)),
             const Spacer(),
             Text(v,
                 style: TextStyle(

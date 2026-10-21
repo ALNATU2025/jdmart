@@ -9,6 +9,7 @@ import '../../shared/widgets/motion.dart';
 import '../../shared/widgets/product_image.dart';
 import '../../state/session_provider.dart';
 import 'order_detail_screen.dart';
+import '../../core/theme/palette.dart';
 
 /// My purchases (sellerView = false) or incoming sales (sellerView = true).
 class OrdersScreen extends StatelessWidget {
@@ -40,8 +41,8 @@ class OrdersScreen extends StatelessWidget {
           bottom: TabBar(
             isScrollable: true,
             tabAlignment: TabAlignment.start,
-            labelColor: AppColors.blue,
-            unselectedLabelColor: AppColors.grey,
+            labelColor: context.brand,
+            unselectedLabelColor: context.muted,
             indicatorColor: AppColors.orange,
             tabs: _tabs.map((t) => Tab(text: t)).toList(),
           ),
@@ -94,7 +95,7 @@ class OrderTile extends StatelessWidget {
           context, MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: order.id, sellerView: sellerView))),
       child: Container(
         padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18)),
+        decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(18)),
         child: Row(
           children: [
             ProductImage(
@@ -119,14 +120,14 @@ class OrderTile extends StatelessWidget {
                             : first.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: AppColors.grey, fontSize: 12.5),
+                    style: TextStyle(color: context.muted, fontSize: 12.5),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     sellerView ? '${order.buyerName} • ${order.city}' : '${order.sellerName} • ${Fmt.date(order.createdAt)}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: AppColors.grey, fontSize: 11.5),
+                    style: TextStyle(color: context.muted, fontSize: 11.5),
                   ),
                 ],
               ),
@@ -134,13 +135,13 @@ class OrderTile extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(Fmt.price(order.total), style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.blue)),
+                Text(Fmt.price(order.total), style: TextStyle(fontWeight: FontWeight.w800, color: context.brand)),
                 const SizedBox(height: 8),
                 unpaid && order.isOpen
                     ? Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration:
-                            BoxDecoration(color: AppColors.orangeLight, borderRadius: BorderRadius.circular(20)),
+                            BoxDecoration(color: context.orangeTint, borderRadius: BorderRadius.circular(20)),
                         child: const Text('Awaiting payment',
                             style: TextStyle(color: AppColors.orange, fontSize: 12, fontWeight: FontWeight.w600)),
                       )

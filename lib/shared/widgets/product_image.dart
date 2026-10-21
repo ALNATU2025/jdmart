@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import '../../core/constants/catalog.dart';
 import 'category_icon.dart';
+import '../../core/theme/palette.dart';
 
 /// A product photo from Firebase Storage, cached on the device to save mobile
 /// data. Listings without photos show the category artwork instead.
@@ -83,7 +84,7 @@ class NetImage extends StatelessWidget {
           child: child,
         ),
         loadingBuilder: (_, child, progress) =>
-            progress == null ? child : Container(color: const Color(0xFFF1F3F7)),
+            progress == null ? child : Container(color: context.skeleton),
         errorBuilder: (_, __, ___) => error(),
       );
     }
@@ -91,7 +92,7 @@ class NetImage extends StatelessWidget {
       imageUrl: url,
       fit: fit,
       fadeInDuration: const Duration(milliseconds: 200),
-      placeholder: (_, __) => Container(color: const Color(0xFFF1F3F7)),
+      placeholder: (_, __) => Container(color: context.skeleton),
       errorWidget: (_, __, ___) => error(),
     );
   }

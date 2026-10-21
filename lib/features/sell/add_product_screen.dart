@@ -14,6 +14,7 @@ import '../../shared/widgets/local_image.dart';
 import '../../shared/widgets/product_image.dart';
 import '../../state/session_provider.dart';
 import '../catalog/product_detail_screen.dart';
+import '../../core/theme/palette.dart';
 
 /// A photo on the form: either already uploaded (url) or just picked (file).
 class _Photo {
@@ -82,7 +83,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Future<void> _addPhotos() async {
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: context.surface,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) => SafeArea(
         child: Column(
@@ -90,12 +91,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
           children: [
             const SizedBox(height: 12),
             ListTile(
-              leading: const Icon(Icons.photo_camera_outlined, color: AppColors.blue),
+              leading: Icon(Icons.photo_camera_outlined, color: context.brand),
               title: const Text('Take a photo'),
               onTap: () => Navigator.pop(ctx, ImageSource.camera),
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library_outlined, color: AppColors.blue),
+              leading: Icon(Icons.photo_library_outlined, color: context.brand),
               title: const Text('Choose from gallery'),
               onTap: () => Navigator.pop(ctx, ImageSource.gallery),
             ),
@@ -279,16 +280,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   width: 96,
                   margin: const EdgeInsets.only(right: 10),
                   decoration: BoxDecoration(
-                    color: AppColors.blueLight,
+                    color: context.blueTint,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: AppColors.blue.withValues(alpha: 0.4), width: 1.4),
                   ),
-                  child: const Column(
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.add_a_photo_outlined, color: AppColors.blue),
+                      Icon(Icons.add_a_photo_outlined, color: context.brand),
                       SizedBox(height: 4),
-                      Text('Add photo', style: TextStyle(color: AppColors.blue, fontSize: 12, fontWeight: FontWeight.w600)),
+                      Text('Add photo', style: TextStyle(color: context.brand, fontSize: 12, fontWeight: FontWeight.w600)),
                     ],
                   ),
                 ),
@@ -478,14 +479,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   Widget _card(String title, String? sub, Widget child) => Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+        decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(20)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
             if (sub != null) ...[
               const SizedBox(height: 2),
-              Text(sub, style: const TextStyle(color: AppColors.grey, fontSize: 12.5)),
+              Text(sub, style: TextStyle(color: context.muted, fontSize: 12.5)),
             ],
             const SizedBox(height: 14),
             child,

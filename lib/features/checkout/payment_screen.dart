@@ -9,6 +9,7 @@ import '../../data/repositories/order_repository.dart';
 import '../../shared/widgets/common.dart';
 import '../orders/orders_screen.dart';
 import 'order_success_screen.dart';
+import '../../core/theme/palette.dart';
 
 /// Sends the buyer to Monime's secure payment page (Orange Money, Afrimoney or
 /// card) and waits for the server to confirm the payment.
@@ -92,7 +93,7 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
   Widget build(BuildContext context) {
     final failed = _status == 'expired' || _status == 'cancelled';
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.surface,
       appBar: AppBar(title: const Text('Payment')),
       body: SafeArea(
         child: Padding(
@@ -112,7 +113,7 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
                     : 'Pay ${Fmt.price(widget.total)} on the secure Monime page with Orange Money, Afrimoney or card. '
                         "Then come back here — we'll confirm automatically.",
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.grey, height: 1.5),
+                style: TextStyle(color: context.muted, height: 1.5),
               ),
               const Spacer(),
               if (!failed) ...[
@@ -137,8 +138,8 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
                 child: const Text('View my orders'),
               ),
               if (!failed)
-                const Text('Unpaid orders are cancelled automatically after 30 minutes.',
-                    textAlign: TextAlign.center, style: TextStyle(color: AppColors.grey, fontSize: 12)),
+                Text('Unpaid orders are cancelled automatically after 30 minutes.',
+                    textAlign: TextAlign.center, style: TextStyle(color: context.muted, fontSize: 12)),
             ],
           ),
         ),

@@ -9,6 +9,7 @@ import '../../shared/widgets/contact_actions.dart';
 import '../../shared/widgets/motion.dart';
 import '../../state/session_provider.dart';
 import 'job_widgets.dart';
+import '../../core/theme/palette.dart';
 
 /// The employer's view of everyone who applied to a job.
 class JobApplicationsScreen extends StatelessWidget {
@@ -64,7 +65,7 @@ class _ApplicantCard extends StatelessWidget {
     final color = applicationColor(app.status);
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), boxShadow: softShadow()),
+      decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(18), boxShadow: softShadow()),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -78,7 +79,7 @@ class _ApplicantCard extends StatelessWidget {
                   children: [
                     Text(app.applicantName, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
                     Text('Applied ${Fmt.ago(app.createdAt)}',
-                        style: const TextStyle(color: AppColors.grey, fontSize: 12)),
+                        style: TextStyle(color: context.muted, fontSize: 12)),
                   ],
                 ),
               ),
@@ -90,7 +91,7 @@ class _ApplicantCard extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: AppColors.greyLight, borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(color: context.soft, borderRadius: BorderRadius.circular(12)),
               child: Text(app.message, style: const TextStyle(height: 1.45)),
             ),
           ],
@@ -100,7 +101,7 @@ class _ApplicantCard extends StatelessWidget {
               onTap: () => openExternal(app.cvUrl!),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                decoration: BoxDecoration(color: AppColors.orangeLight, borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(color: context.orangeTint, borderRadius: BorderRadius.circular(12)),
                 child: Row(
                   children: [
                     const Icon(Icons.description_rounded, color: AppColors.orange),
@@ -126,7 +127,7 @@ class _ApplicantCard extends StatelessWidget {
           const Divider(height: 24),
           Row(
             children: [
-              const Text('Status:', style: TextStyle(color: AppColors.grey, fontSize: 13)),
+              Text('Status:', style: TextStyle(color: context.muted, fontSize: 13)),
               const Spacer(),
               if (app.status != ApplicationStatus.shortlisted)
                 TextButton.icon(
@@ -137,7 +138,7 @@ class _ApplicantCard extends StatelessWidget {
               if (app.status != ApplicationStatus.rejected)
                 TextButton(
                   onPressed: () => _set(context, ApplicationStatus.rejected),
-                  child: const Text('Not selected', style: TextStyle(color: AppColors.grey)),
+                  child: Text('Not selected', style: TextStyle(color: context.muted)),
                 ),
             ],
           ),

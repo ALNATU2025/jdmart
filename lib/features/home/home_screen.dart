@@ -16,6 +16,8 @@ import '../account/wishlist_screen.dart';
 import '../catalog/search_screen.dart';
 import '../jobs/jobs_home_screen.dart';
 import '../shell/main_shell.dart';
+import '../../core/theme/palette.dart';
+import '../../shared/widgets/theme_toggle.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -61,10 +63,11 @@ class _HomeScreenState extends State<HomeScreen> {
             SliverAppBar(
               floating: true,
               snap: true,
-              backgroundColor: Colors.white,
+              backgroundColor: context.surface,
               titleSpacing: 12,
               title: const JDWordmark(size: 22),
               actions: [
+                const ThemeToggleButton(),
                 IconButton(
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WishlistScreen())),
                   icon: const Icon(Icons.favorite_border_rounded),
@@ -165,7 +168,7 @@ class _Greeting extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('$greet${name == null ? '' : ', $name'} 👋', style: const TextStyle(color: AppColors.grey, fontSize: 14)),
+          Text('$greet${name == null ? '' : ', $name'} 👋', style: TextStyle(color: context.muted, fontSize: 14)),
           const SizedBox(height: 2),
           const Text('What are you buying today?', style: TextStyle(fontSize: 21, fontWeight: FontWeight.w800)),
         ],
@@ -188,16 +191,16 @@ class _SearchBar extends StatelessWidget {
           height: 54,
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.surface,
             borderRadius: BorderRadius.circular(16),
             boxShadow: softShadow(),
           ),
           child: Row(
             children: [
-              const Icon(Icons.search_rounded, color: AppColors.grey),
+              Icon(Icons.search_rounded, color: context.muted),
               const SizedBox(width: 10),
-              const Expanded(
-                child: Text('Search phones, Gara, rice, cars…', style: TextStyle(color: AppColors.grey, fontSize: 14)),
+              Expanded(
+                child: Text('Search phones, Gara, rice, cars…', style: TextStyle(color: context.muted, fontSize: 14)),
               ),
               Container(
                 padding: const EdgeInsets.all(7),
@@ -342,7 +345,7 @@ class _BannerCarouselState extends State<_BannerCarousel> {
                         height: 7,
                         decoration: BoxDecoration(
                           gradient: _i == i ? AppColors.orangeGradient : null,
-                          color: _i == i ? null : AppColors.border,
+                          color: _i == i ? null : context.line,
                           borderRadius: BorderRadius.circular(7),
                         ),
                       ),
@@ -390,7 +393,7 @@ class _BannerCarouselState extends State<_BannerCarousel> {
                       const SizedBox(height: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+                        decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(20)),
                         child: Text('Shop now',
                             style: TextStyle(color: g.colors.first, fontWeight: FontWeight.w700, fontSize: 12)),
                       ),
@@ -622,13 +625,13 @@ class _JobsPromo extends StatelessWidget {
         onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(30)),
+          decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(30)),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 17, color: AppColors.blue),
+              Icon(icon, size: 17, color: context.brand),
               const SizedBox(width: 6),
-              Text(label, style: const TextStyle(color: AppColors.blue, fontWeight: FontWeight.w700, fontSize: 13)),
+              Text(label, style: TextStyle(color: context.brand, fontWeight: FontWeight.w700, fontSize: 13)),
             ],
           ),
         ),

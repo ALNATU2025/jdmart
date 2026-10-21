@@ -20,6 +20,7 @@ import '../cart/cart_screen.dart';
 import '../chat/chat_screen.dart';
 import '../sell/add_product_screen.dart';
 import 'seller_profile_screen.dart';
+import '../../core/theme/palette.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String productId;
@@ -82,13 +83,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     if (_qty > p.stock && p.stock > 0) _qty = p.stock;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.surface,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: MediaQuery.of(context).size.width.clamp(280.0, 460.0).toDouble(),
             pinned: true,
-            backgroundColor: Colors.white,
+            backgroundColor: context.surface,
             leading: _circleBtn(Icons.arrow_back_rounded, () => Navigator.pop(context), 'Back'),
             actions: [
               _circleBtn(Icons.share_outlined, () {
@@ -161,7 +162,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       _tag(p.condition, AppColors.navy),
                       if (p.negotiable) _tag('Negotiable', AppColors.success),
                       if (p.isSold) _tag('Sold', AppColors.danger),
-                      if (p.status == ProductStatus.hidden) _tag('Hidden', AppColors.grey),
+                      if (p.status == ProductStatus.hidden) _tag('Hidden', context.muted),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -173,12 +174,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         RatingStars(rating: p.ratingAvg, size: 17),
                         const SizedBox(width: 6),
                         Text('${p.ratingAvg.toStringAsFixed(1)} (${p.ratingCount})',
-                            style: const TextStyle(color: AppColors.grey, fontSize: 13)),
+                            style: TextStyle(color: context.muted, fontSize: 13)),
                         const SizedBox(width: 12),
                       ],
-                      const Icon(Icons.schedule_rounded, size: 15, color: AppColors.grey),
+                      Icon(Icons.schedule_rounded, size: 15, color: context.muted),
                       const SizedBox(width: 4),
-                      Text('Listed ${Fmt.ago(p.createdAt)}', style: const TextStyle(color: AppColors.grey, fontSize: 13)),
+                      Text('Listed ${Fmt.ago(p.createdAt)}', style: TextStyle(color: context.muted, fontSize: 13)),
                     ],
                   ),
                   const SizedBox(height: 14),
@@ -187,13 +188,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     spacing: 10,
                     children: [
                       Text(Fmt.price(p.price),
-                          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.blue)),
+                          style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: context.brand)),
                       if (p.oldPrice != null && p.discountPercent > 0) ...[
                         Padding(
                           padding: const EdgeInsets.only(bottom: 4),
                           child: Text(Fmt.price(p.oldPrice!),
-                              style: const TextStyle(
-                                  color: AppColors.grey, decoration: TextDecoration.lineThrough, fontSize: 14)),
+                              style: TextStyle(
+                                  color: context.muted, decoration: TextDecoration.lineThrough, fontSize: 14)),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(bottom: 4),
@@ -226,7 +227,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   const Text('Description', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 8),
                   SelectableText(p.description,
-                      style: const TextStyle(color: AppColors.grey, height: 1.6, fontSize: 14)),
+                      style: TextStyle(color: context.muted, height: 1.6, fontSize: 14)),
                   const SizedBox(height: 22),
                   _sellerCard(p),
                   const SizedBox(height: 22),
@@ -258,7 +259,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget _circleBtn(IconData icon, VoidCallback onTap, String tooltip, {Color color = AppColors.navy}) => Padding(
         padding: const EdgeInsets.all(6),
         child: Material(
-          color: Colors.white,
+          color: context.surface,
           shape: const CircleBorder(),
           elevation: 1,
           child: InkWell(
@@ -282,7 +283,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final sameCity = city == p.city;
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: AppColors.greyLight, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(color: context.soft, borderRadius: BorderRadius.circular(16)),
       child: Column(
         children: [
           _infoRow(Icons.location_on_outlined, 'Item location', p.city),
@@ -298,9 +299,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   Widget _infoRow(IconData icon, String label, String value) => Row(
         children: [
-          Icon(icon, size: 20, color: AppColors.blue),
+          Icon(icon, size: 20, color: context.brand),
           const SizedBox(width: 10),
-          Text(label, style: const TextStyle(color: AppColors.grey, fontSize: 13)),
+          Text(label, style: TextStyle(color: context.muted, fontSize: 13)),
           const SizedBox(width: 8),
           Expanded(
             child: Text(value, textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
@@ -320,7 +321,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               context, MaterialPageRoute(builder: (_) => SellerProfileScreen(sellerId: p.sellerId))),
           child: Container(
             padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.border)),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), border: Border.all(color: context.line)),
             child: Row(
               children: [
                 UserAvatar(name: name, imageUrl: seller?.avatarUrl, radius: 24),
@@ -337,7 +338,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           ),
                           if (seller?.verified ?? p.sellerVerified) ...[
                             const SizedBox(width: 4),
-                            const Icon(Icons.verified_rounded, color: AppColors.blue, size: 17),
+                            Icon(Icons.verified_rounded, color: context.brand, size: 17),
                           ],
                         ],
                       ),
@@ -347,12 +348,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             '★ ${seller.ratingAvg.toStringAsFixed(1)} (${seller.ratingCount})',
                           if (seller != null) 'Joined ${Fmt.date(seller.joinedAt)}',
                         ].join(' • '),
-                        style: const TextStyle(color: AppColors.grey, fontSize: 12),
+                        style: TextStyle(color: context.muted, fontSize: 12),
                       ),
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded, color: AppColors.grey),
+                Icon(Icons.chevron_right_rounded, color: context.muted),
               ],
             ),
           ),
@@ -384,9 +385,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ],
             ),
             if (reviews.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(vertical: 8),
-                child: Text('No reviews yet. Buyers can review after delivery.', style: TextStyle(color: AppColors.grey)),
+                child: Text('No reviews yet. Buyers can review after delivery.', style: TextStyle(color: context.muted)),
               ),
             ...reviews.map((r) => Padding(
                   padding: const EdgeInsets.only(top: 12),
@@ -403,7 +404,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               children: [
                                 Text(r.userName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                                 const Spacer(),
-                                Text(Fmt.ago(r.at), style: const TextStyle(color: AppColors.grey, fontSize: 11)),
+                                Text(Fmt.ago(r.at), style: TextStyle(color: context.muted, fontSize: 11)),
                               ],
                             ),
                             RatingStars(rating: r.rating.toDouble(), size: 13),
@@ -437,7 +438,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final ok = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: context.surface,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setS) => Padding(
@@ -492,7 +493,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     const reasons = ['Scam or fraud', 'Counterfeit item', 'Prohibited item', 'Wrong category or details', 'Other'];
     final reason = await showModalBottomSheet<String>(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: context.surface,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) => SafeArea(
         child: Column(
@@ -517,7 +518,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return Container(
       padding: EdgeInsets.fromLTRB(16, 12, 16, 12 + MediaQuery.of(context).padding.bottom),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surface,
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, -4))],
       ),
       child: isMine

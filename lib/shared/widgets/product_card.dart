@@ -12,6 +12,7 @@ import '../../state/wishlist_provider.dart';
 import 'common.dart';
 import 'motion.dart';
 import 'product_image.dart';
+import '../../core/theme/palette.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -29,7 +30,7 @@ class ProductCard extends StatelessWidget {
       child: Container(
         width: width,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.surface,
           borderRadius: BorderRadius.circular(18),
           boxShadow: softShadow(),
         ),
@@ -72,7 +73,7 @@ class ProductCard extends StatelessWidget {
                       right: 6,
                       top: 6,
                       child: Material(
-                        color: Colors.white,
+                        color: context.surface,
                         shape: const CircleBorder(),
                         child: InkWell(
                           customBorder: const CircleBorder(),
@@ -88,7 +89,7 @@ class ProductCard extends StatelessWidget {
                               child: Icon(
                                 saved ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                                 size: 18,
-                                color: saved ? AppColors.danger : AppColors.grey,
+                                color: saved ? AppColors.danger : context.muted,
                               ),
                             ),
                           ),
@@ -114,7 +115,7 @@ class ProductCard extends StatelessWidget {
                         child: Text(Fmt.price(p.price),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.blue)),
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: context.brand)),
                       ),
                       const Spacer(),
                       if (p.available && !isMine)
@@ -137,17 +138,17 @@ class ProductCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.location_on_outlined, size: 13, color: AppColors.grey),
+                      Icon(Icons.location_on_outlined, size: 13, color: context.muted),
                       const SizedBox(width: 2),
                       Expanded(
                         child: Text(p.city,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 11, color: AppColors.grey)),
+                            style: TextStyle(fontSize: 11, color: context.muted)),
                       ),
                       if (p.ratingCount > 0) ...[
                         const Icon(Icons.star_rounded, size: 13, color: Color(0xFFFFB400)),
-                        Text(p.ratingAvg.toStringAsFixed(1), style: const TextStyle(fontSize: 11, color: AppColors.grey)),
+                        Text(p.ratingAvg.toStringAsFixed(1), style: TextStyle(fontSize: 11, color: context.muted)),
                       ],
                     ],
                   ),

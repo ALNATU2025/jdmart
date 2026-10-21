@@ -10,6 +10,7 @@ import '../../shared/widgets/common.dart';
 import '../../shared/widgets/contact_actions.dart';
 import '../../shared/widgets/motion.dart';
 import '../../state/session_provider.dart';
+import '../../core/theme/palette.dart';
 
 final _emailRe = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
@@ -319,19 +320,19 @@ class _TalentFormState extends State<_TalentForm> {
             gap(),
             item(Container(
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: softShadow()),
+              decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(16), boxShadow: softShadow()),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text('CV file', style: TextStyle(fontWeight: FontWeight.w700)),
                   const SizedBox(height: 4),
-                  const Text('PDF or Word, up to 5 MB.', style: TextStyle(color: AppColors.grey, fontSize: 12.5)),
+                  Text('PDF or Word, up to 5 MB.', style: TextStyle(color: context.muted, fontSize: 12.5)),
                   const SizedBox(height: 10),
                   if (cvLabel != null)
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       margin: const EdgeInsets.only(bottom: 10),
-                      decoration: BoxDecoration(color: AppColors.orangeLight, borderRadius: BorderRadius.circular(12)),
+                      decoration: BoxDecoration(color: context.orangeTint, borderRadius: BorderRadius.circular(12)),
                       child: Row(
                         children: [
                           const Icon(Icons.description_rounded, color: AppColors.orange),
@@ -359,7 +360,7 @@ class _TalentFormState extends State<_TalentForm> {
             )),
             gap(),
             item(Container(
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: softShadow()),
+              decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(16), boxShadow: softShadow()),
               child: Column(
                 children: [
                   SwitchListTile(

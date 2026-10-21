@@ -28,6 +28,9 @@ class LocalStore {
   static List<String> getStringList(String key) => _prefs.getStringList(key) ?? [];
   static Future<void> setStringList(String key, List<String> v) => _prefs.setStringList(key, v);
 
+  static String? getString(String key) => _prefs.getString(key);
+  static Future<void> setString(String key, String v) => _prefs.setString(key, v);
+
   static bool getBool(String key) => _prefs.getBool(key) ?? false;
   static Future<void> setBool(String key, bool v) => _prefs.setBool(key, v);
 }

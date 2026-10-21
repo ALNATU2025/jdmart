@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/config/app_config.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/palette.dart';
 
 Future<void> openLink(String url) async {
   if (url.isEmpty) return;
@@ -30,10 +31,10 @@ class _LegalAgreementTextState extends State<LegalAgreementText> {
 
   @override
   Widget build(BuildContext context) {
-    const link = TextStyle(color: AppColors.blue, fontWeight: FontWeight.w600);
+    link = TextStyle(color: context.brand, fontWeight: FontWeight.w600);
     return Text.rich(
       TextSpan(
-        style: const TextStyle(fontSize: 13, color: AppColors.navy),
+        style: TextStyle(fontSize: 13, color: context.ink),
         children: [
           const TextSpan(text: 'I agree to the JDMart '),
           TextSpan(text: 'Terms', style: link, recognizer: _terms),

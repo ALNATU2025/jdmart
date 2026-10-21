@@ -9,6 +9,7 @@ import '../../shared/widgets/common.dart';
 import '../../shared/widgets/contact_actions.dart';
 import '../../shared/widgets/motion.dart';
 import 'job_widgets.dart';
+import '../../core/theme/palette.dart';
 
 /// A job seeker's public CV profile.
 class TalentDetailScreen extends StatelessWidget {
@@ -52,7 +53,7 @@ class TalentDetailScreen extends StatelessWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.all(3),
-                        decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                        decoration: BoxDecoration(color: context.surface, shape: BoxShape.circle),
                         child: UserAvatar(name: t.name, imageUrl: t.photoUrl, radius: 42),
                       ),
                       const SizedBox(height: 12),

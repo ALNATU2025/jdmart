@@ -6,6 +6,7 @@ import '../../features/cart/cart_screen.dart';
 import '../../state/cart_provider.dart';
 import 'motion.dart';
 import 'product_image.dart';
+import '../../core/theme/palette.dart';
 
 class JDLogo extends StatelessWidget {
   final double height;
@@ -34,7 +35,7 @@ class JDWordmark extends StatelessWidget {
         const SizedBox(width: 4),
         Text.rich(
           TextSpan(children: [
-            TextSpan(text: 'JD', style: TextStyle(color: AppColors.blue, fontWeight: FontWeight.w800, fontSize: size)),
+            TextSpan(text: 'JD', style: TextStyle(color: context.brand, fontWeight: FontWeight.w800, fontSize: size)),
             TextSpan(text: 'Mart', style: TextStyle(color: AppColors.orange, fontWeight: FontWeight.w800, fontSize: size)),
           ]),
         ),
@@ -99,21 +100,21 @@ class EmptyState extends StatelessWidget {
                 padding: const EdgeInsets.all(26),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    colors: [AppColors.blueLight, Color(0xFFF4F7FF)],
+                  gradient: LinearGradient(
+                    colors: [context.blueTint, context.surface],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   boxShadow: softShadow(),
                 ),
-                child: Icon(icon, size: 52, color: AppColors.blue),
+                child: Icon(icon, size: 52, color: context.brand),
               ),
             ),
             const SizedBox(height: 20),
             Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
             if (message.isNotEmpty) ...[
               const SizedBox(height: 8),
-              Text(message, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.grey)),
+              Text(message, textAlign: TextAlign.center, style: TextStyle(color: context.muted)),
             ],
             if (actionLabel != null) ...[
               const SizedBox(height: 24),
@@ -215,11 +216,11 @@ class UserAvatar extends StatelessWidget {
     final url = imageUrl;
     return CircleAvatar(
       radius: radius,
-      backgroundColor: AppColors.blueLight,
+      backgroundColor: context.blueTint,
       backgroundImage: (url != null && url.isNotEmpty) ? netImageProvider(url) : null,
       child: (url == null || url.isEmpty)
           ? Text(initials.isEmpty ? '?' : initials,
-              style: TextStyle(color: AppColors.blue, fontWeight: FontWeight.w700, fontSize: radius * 0.7))
+              style: TextStyle(color: context.brand, fontWeight: FontWeight.w700, fontSize: radius * 0.7))
           : null,
     );
   }

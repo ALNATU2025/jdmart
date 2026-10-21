@@ -10,6 +10,7 @@ import '../../shared/widgets/product_image.dart';
 import '../../state/session_provider.dart';
 import '../auth/auth_guard.dart';
 import 'chat_screen.dart';
+import '../../core/theme/palette.dart';
 
 class ChatsScreen extends StatelessWidget {
   const ChatsScreen({super.key});
@@ -87,7 +88,7 @@ class ChatsScreen extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontWeight: unread ? FontWeight.w800 : FontWeight.w600)),
           ),
-          Text(Fmt.ago(c.lastAt), style: const TextStyle(color: AppColors.grey, fontSize: 11)),
+          Text(Fmt.ago(c.lastAt), style: TextStyle(color: context.muted, fontSize: 11)),
         ],
       ),
       subtitle: Column(
@@ -104,7 +105,7 @@ class ChatsScreen extends StatelessWidget {
                   '${c.lastSenderId == myId ? 'You: ' : ''}${c.lastMessage}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: unread ? AppColors.navy : AppColors.grey, fontSize: 13),
+                  style: TextStyle(color: unread ? AppColors.navy : context.muted, fontSize: 13),
                 ),
               ),
               if (unread)

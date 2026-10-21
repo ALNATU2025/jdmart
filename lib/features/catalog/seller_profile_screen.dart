@@ -8,6 +8,7 @@ import '../../data/repositories/product_repository.dart';
 import '../../data/repositories/user_repository.dart';
 import '../../shared/widgets/common.dart';
 import '../../shared/widgets/product_card.dart';
+import '../../core/theme/palette.dart';
 
 class SellerProfileScreen extends StatefulWidget {
   final String sellerId;
@@ -61,7 +62,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                   children: [
                     Container(
                       padding: const EdgeInsets.all(3),
-                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                      decoration: BoxDecoration(color: context.surface, shape: BoxShape.circle),
                       child: UserAvatar(name: seller.name, imageUrl: seller.avatarUrl, radius: 34),
                     ),
                     const SizedBox(height: 10),
@@ -105,7 +106,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                child: Text(seller.bio, style: const TextStyle(color: AppColors.grey, height: 1.5)),
+                child: Text(seller.bio, style: TextStyle(color: context.muted, height: 1.5)),
               ),
             ),
           if (phone != null && phone.isNotEmpty)

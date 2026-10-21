@@ -3,6 +3,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
 import '../orders/order_detail_screen.dart';
 import '../orders/orders_screen.dart';
+import '../../core/theme/palette.dart';
 
 class OrderSuccessScreen extends StatelessWidget {
   final String checkoutId;
@@ -21,7 +22,7 @@ class OrderSuccessScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final multiple = orderIds.length > 1;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.surface,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -49,7 +50,7 @@ class OrderSuccessScreen extends StatelessWidget {
                 '${multiple ? 'Your items come from ${orderIds.length} sellers, so you have ${orderIds.length} orders. ' : ''}'
                 'The seller will contact you to arrange delivery. We will notify you when the status changes.',
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.grey, height: 1.6),
+                style: TextStyle(color: context.muted, height: 1.6),
               ),
               const Spacer(),
               ElevatedButton(

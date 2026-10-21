@@ -11,6 +11,7 @@ import 'job_widgets.dart';
 import 'my_jobs_screen.dart';
 import 'post_job_screen.dart';
 import 'talent_edit_screen.dart';
+import '../../core/theme/palette.dart';
 
 /// Jobs board: find jobs, find talent (CV profiles), post a job.
 class JobsHomeScreen extends StatefulWidget {
@@ -53,8 +54,8 @@ class _JobsHomeScreenState extends State<JobsHomeScreen> with SingleTickerProvid
         ],
         bottom: TabBar(
           controller: _tabs,
-          labelColor: AppColors.blue,
-          unselectedLabelColor: AppColors.grey,
+          labelColor: context.brand,
+          unselectedLabelColor: context.muted,
           indicatorColor: AppColors.orange,
           indicatorWeight: 3,
           labelStyle: const TextStyle(fontWeight: FontWeight.w700),

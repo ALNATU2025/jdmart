@@ -11,6 +11,7 @@ import '../catalog/categories_screen.dart';
 import '../chat/chats_screen.dart';
 import '../home/home_screen.dart';
 import '../sell/add_product_screen.dart';
+import '../../core/theme/palette.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -98,7 +99,7 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Colors.white,
+        color: context.surface,
         elevation: 12,
         shadowColor: Colors.black26,
         shape: const CircularNotchedRectangle(),
@@ -133,7 +134,7 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
 
   Widget _item(int i, IconData active, IconData inactive, String label, {int badge = 0}) {
     final selected = _tab == i;
-    final color = selected ? AppColors.blue : AppColors.grey;
+    final color = selected ? AppColors.blue : context.muted;
     return Expanded(
       child: InkResponse(
         onTap: () => setTab(i),
@@ -146,7 +147,7 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
               curve: Motion.curve,
               padding: EdgeInsets.symmetric(horizontal: selected ? 16 : 8, vertical: 4),
               decoration: BoxDecoration(
-                color: selected ? AppColors.blueLight : Colors.transparent,
+                color: selected ? context.blueTint : Colors.transparent,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: AnimatedScale(

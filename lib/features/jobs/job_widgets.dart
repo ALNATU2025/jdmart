@@ -7,6 +7,7 @@ import '../../shared/widgets/common.dart';
 import '../../shared/widgets/motion.dart';
 import 'job_detail_screen.dart';
 import 'talent_detail_screen.dart';
+import '../../core/theme/palette.dart';
 
 /// Rounded square with the company's initial, tinted by job category.
 class JobLogo extends StatelessWidget {
@@ -66,7 +67,7 @@ class JobTag extends StatelessWidget {
 Color applicationColor(ApplicationStatus s) => switch (s) {
       ApplicationStatus.submitted => AppColors.blue,
       ApplicationStatus.shortlisted => AppColors.success,
-      ApplicationStatus.rejected => AppColors.grey,
+      ApplicationStatus.rejected => context.muted,
     };
 
 class JobCard extends StatelessWidget {
@@ -81,7 +82,7 @@ class JobCard extends StatelessWidget {
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => JobDetailScreen(jobId: job.id))),
       child: Container(
         padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), boxShadow: softShadow()),
+        decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(18), boxShadow: softShadow()),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -99,7 +100,7 @@ class JobCard extends StatelessWidget {
                   Text('${job.company} • ${job.city}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: AppColors.grey, fontSize: 12.5)),
+                      style: TextStyle(color: context.muted, fontSize: 12.5)),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 6,
@@ -107,7 +108,7 @@ class JobCard extends StatelessWidget {
                     children: [
                       JobTag(job.type, color: cat.color),
                       if (job.salary.isNotEmpty) JobTag(job.salary, color: AppColors.success, icon: Icons.payments_outlined),
-                      JobTag(Fmt.ago(job.createdAt), color: AppColors.grey, icon: Icons.schedule_rounded),
+                      JobTag(Fmt.ago(job.createdAt), color: context.muted, icon: Icons.schedule_rounded),
                     ],
                   ),
                 ],
@@ -133,7 +134,7 @@ class TalentCard extends StatelessWidget {
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => TalentDetailScreen(uid: t.id))),
       child: Container(
         padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), boxShadow: softShadow()),
+        decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(18), boxShadow: softShadow()),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -165,11 +166,11 @@ class TalentCard extends StatelessWidget {
                   Text(t.headline,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 13, color: AppColors.navy)),
+                      style: TextStyle(fontSize: 13, color: context.ink)),
                   const SizedBox(height: 2),
                   Text(
                     '${t.city}${t.experienceYears > 0 ? ' • ${t.experienceYears} yrs experience' : ''}',
-                    style: const TextStyle(color: AppColors.grey, fontSize: 12),
+                    style: TextStyle(color: context.muted, fontSize: 12),
                   ),
                   const SizedBox(height: 8),
                   Wrap(
@@ -177,7 +178,7 @@ class TalentCard extends StatelessWidget {
                     runSpacing: 6,
                     children: [
                       JobTag(cat.name, color: cat.color, icon: cat.icon),
-                      for (final s in t.skills.take(3)) JobTag(s, color: AppColors.navy),
+                      for (final s in t.skills.take(3)) JobTag(s, color: context.ink),
                       if (t.cvUrl != null) const JobTag('CV', color: AppColors.orange, icon: Icons.description_outlined),
                     ],
                   ),
@@ -213,7 +214,7 @@ class JobCategoryChips extends StatelessWidget {
             decoration: BoxDecoration(
               color: on ? color : Colors.white,
               borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: on ? color : AppColors.border),
+              border: Border.all(color: on ? color : context.line),
               boxShadow: on ? [BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 4))] : null,
             ),
             child: Text(label,
@@ -251,7 +252,7 @@ class InfoSection extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         margin: const EdgeInsets.only(top: 14),
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), boxShadow: softShadow()),
+        decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(18), boxShadow: softShadow()),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -279,7 +280,7 @@ class JobSearchField extends StatelessWidget {
             textInputAction: TextInputAction.search,
             decoration: InputDecoration(
               hintText: hint,
-              prefixIcon: const Icon(Icons.search_rounded, color: AppColors.grey),
+              prefixIcon: Icon(Icons.search_rounded, color: context.muted),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide.none,

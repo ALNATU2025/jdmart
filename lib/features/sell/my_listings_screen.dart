@@ -10,6 +10,7 @@ import '../../shared/widgets/product_image.dart';
 import '../../state/session_provider.dart';
 import '../catalog/product_detail_screen.dart';
 import 'add_product_screen.dart';
+import '../../core/theme/palette.dart';
 
 class MyListingsScreen extends StatelessWidget {
   const MyListingsScreen({super.key});
@@ -33,8 +34,8 @@ class MyListingsScreen extends StatelessWidget {
             appBar: AppBar(
               title: const Text('My listings'),
               bottom: TabBar(
-                labelColor: AppColors.blue,
-                unselectedLabelColor: AppColors.grey,
+                labelColor: context.brand,
+                unselectedLabelColor: context.muted,
                 indicatorColor: AppColors.orange,
                 tabs: [Tab(text: 'Active (${active.length})'), Tab(text: 'Sold / hidden (${other.length})')],
               ),
@@ -79,7 +80,7 @@ class MyListingsScreen extends StatelessWidget {
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(productId: p.id))),
           child: Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18)),
+            decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(18)),
             child: Row(
               children: [
                 ProductImage(
@@ -96,14 +97,14 @@ class MyListingsScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(p.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600)),
-                      Text(Fmt.price(p.price), style: const TextStyle(color: AppColors.blue, fontWeight: FontWeight.w700)),
+                      Text(Fmt.price(p.price), style: TextStyle(color: context.brand, fontWeight: FontWeight.w700)),
                       const SizedBox(height: 4),
                       Wrap(
                         spacing: 10,
                         children: [
-                          Text('👁 ${p.views}', style: const TextStyle(color: AppColors.grey, fontSize: 12)),
-                          Text(label, style: const TextStyle(color: AppColors.grey, fontSize: 12)),
-                          Text(Fmt.ago(p.createdAt), style: const TextStyle(color: AppColors.grey, fontSize: 12)),
+                          Text('👁 ${p.views}', style: TextStyle(color: context.muted, fontSize: 12)),
+                          Text(label, style: TextStyle(color: context.muted, fontSize: 12)),
+                          Text(Fmt.ago(p.createdAt), style: TextStyle(color: context.muted, fontSize: 12)),
                         ],
                       ),
                     ],

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/palette.dart';
 
 /// Shared timing so every animation in the app feels like one family.
 class Motion {
@@ -146,7 +147,7 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
             shaderCallback: (rect) => LinearGradient(
               begin: Alignment(t - 1, -0.3),
               end: Alignment(t, 0.3),
-              colors: const [Color(0xFFEDF0F6), Color(0xFFF9FAFD), Color(0xFFEDF0F6)],
+              colors: [context.skeleton, context.isDark ? const Color(0xFF2A3654) : const Color(0xFFF9FAFD), context.skeleton],
               stops: const [0.2, 0.5, 0.8],
             ).createShader(rect),
             child: child,
@@ -166,7 +167,7 @@ class SkeletonBox extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         width: width,
         height: height,
-        decoration: BoxDecoration(color: const Color(0xFFEDF0F6), borderRadius: BorderRadius.circular(radius)),
+        decoration: BoxDecoration(color: context.skeleton, borderRadius: BorderRadius.circular(radius)),
       );
 }
 
@@ -178,7 +179,7 @@ class ProductCardSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         width: width,
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18)),
+        decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(18)),
         child: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -10,6 +10,7 @@ import '../../state/session_provider.dart';
 import '../orders/orders_screen.dart';
 import 'add_product_screen.dart';
 import 'my_listings_screen.dart';
+import '../../core/theme/palette.dart';
 
 class SellerHubScreen extends StatefulWidget {
   const SellerHubScreen({super.key});
@@ -114,7 +115,7 @@ class _SellerHubScreenState extends State<SellerHubScreen> {
           const SizedBox(height: 18),
           Container(
             padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(color: AppColors.orangeLight, borderRadius: BorderRadius.circular(16)),
+            decoration: BoxDecoration(color: context.orangeTint, borderRadius: BorderRadius.circular(16)),
             child: Row(
               children: [
                 const Icon(Icons.warning_amber_rounded, color: AppColors.orange),
@@ -149,10 +150,10 @@ class _SellerHubScreenState extends State<SellerHubScreen> {
         if (sales.isEmpty)
           Container(
             padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-            child: const Text(
+            decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(16)),
+            child: Text(
               'No orders yet. Tip: clear photos, an honest description and a fair price help your items sell.',
-              style: TextStyle(color: AppColors.grey),
+              style: TextStyle(color: context.muted),
             ),
           )
         else
@@ -167,7 +168,7 @@ class _SellerHubScreenState extends State<SellerHubScreen> {
 
   Widget _stat(IconData icon, String value, String label, Color color) => Container(
         padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18)),
+        decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(18)),
         child: Row(
           children: [
             Container(
@@ -182,7 +183,7 @@ class _SellerHubScreenState extends State<SellerHubScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(value, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
-                  Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.grey, fontSize: 11.5)),
+                  Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: context.muted, fontSize: 11.5)),
                 ],
               ),
             ),

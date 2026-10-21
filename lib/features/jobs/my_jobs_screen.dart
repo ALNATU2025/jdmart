@@ -10,6 +10,7 @@ import '../../state/session_provider.dart';
 import 'job_detail_screen.dart';
 import 'job_widgets.dart';
 import 'post_job_screen.dart';
+import '../../core/theme/palette.dart';
 
 /// My job posts (as an employer) and my applications (as a job seeker).
 class MyJobsScreen extends StatelessWidget {
@@ -26,9 +27,9 @@ class MyJobsScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('My jobs'),
-          bottom: const TabBar(
-            labelColor: AppColors.blue,
-            unselectedLabelColor: AppColors.grey,
+          bottom: TabBar(
+            labelColor: context.brand,
+            unselectedLabelColor: context.muted,
             indicatorColor: AppColors.orange,
             indicatorWeight: 3,
             labelStyle: TextStyle(fontWeight: FontWeight.w700),
@@ -70,12 +71,12 @@ class MyJobsScreen extends StatelessWidget {
                                 JobStatus.closed => 'Closed',
                                 JobStatus.hidden => 'Hidden',
                               },
-                              color: j.isOpen ? AppColors.success : AppColors.grey,
+                              color: j.isOpen ? AppColors.success : context.muted,
                             ),
                             const SizedBox(height: 8),
                             Text('${j.applicationsCount}',
-                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.blue)),
-                            const Text('applied', style: TextStyle(fontSize: 11, color: AppColors.grey)),
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: context.brand)),
+                            Text('applied', style: TextStyle(fontSize: 11, color: context.muted)),
                           ],
                         ),
                       ),
@@ -111,7 +112,7 @@ class MyJobsScreen extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                              color: Colors.white, borderRadius: BorderRadius.circular(18), boxShadow: softShadow()),
+                              color: context.surface, borderRadius: BorderRadius.circular(18), boxShadow: softShadow()),
                           child: Row(
                             children: [
                               JobLogo(company: a.company, categoryId: 'other', size: 44),
@@ -122,7 +123,7 @@ class MyJobsScreen extends StatelessWidget {
                                   children: [
                                     Text(a.jobTitle, style: const TextStyle(fontWeight: FontWeight.w700)),
                                     Text('${a.company} • applied ${Fmt.ago(a.createdAt)}',
-                                        style: const TextStyle(color: AppColors.grey, fontSize: 12)),
+                                        style: TextStyle(color: context.muted, fontSize: 12)),
                                   ],
                                 ),
                               ),

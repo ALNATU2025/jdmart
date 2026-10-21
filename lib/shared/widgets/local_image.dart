@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../core/theme/palette.dart';
 
 /// Preview of a photo picked on this device but not uploaded yet.
 /// Reads bytes so it works on Android, iOS and web.
@@ -28,6 +29,6 @@ class _LocalImageState extends State<LocalImage> {
         future: _bytes,
         builder: (_, s) => s.hasData
             ? Image.memory(s.data!, width: widget.width, height: widget.height, fit: BoxFit.cover)
-            : Container(width: widget.width, height: widget.height, color: const Color(0xFFF1F3F7)),
+            : Container(width: widget.width, height: widget.height, color: context.skeleton),
       );
 }

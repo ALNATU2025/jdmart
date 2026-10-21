@@ -23,6 +23,7 @@ import 'firebase_options.dart';
 import 'state/cart_provider.dart';
 import 'state/search_history.dart';
 import 'state/session_provider.dart';
+import 'state/theme_controller.dart';
 import 'state/wishlist_provider.dart';
 
 Future<void> main() async {
@@ -76,6 +77,7 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: cart),
         ChangeNotifierProvider.value(value: wishlist),
         ChangeNotifierProvider(create: (_) => SearchHistory()),
+        ChangeNotifierProvider(create: (_) => ThemeController()),
       ],
       child: const JDMartApp(),
     ),
@@ -91,6 +93,10 @@ class JDMartApp extends StatelessWidget {
       title: AppConfig.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: context.watch<ThemeController>().mode,
+      themeAnimationDuration: const Duration(milliseconds: 350),
+      themeAnimationCurve: Curves.easeOutCubic,
       home: const SplashScreen(),
     );
   }

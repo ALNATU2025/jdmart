@@ -11,6 +11,7 @@ import '../../shared/widgets/category_icon.dart';
 import '../../shared/widgets/common.dart';
 import '../../shared/widgets/product_card.dart';
 import '../../state/search_history.dart';
+import '../../core/theme/palette.dart';
 
 /// Search across all listings. Also used as the page for a single category.
 class SearchScreen extends StatefulWidget {
@@ -128,7 +129,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 },
                               ),
                       ),
-                      fillColor: AppColors.greyLight,
+                      fillColor: context.soft,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
                         borderSide: BorderSide.none,
@@ -176,9 +177,9 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           ...history.items.map((r) => ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.history_rounded, color: AppColors.grey),
+                leading: Icon(Icons.history_rounded, color: context.muted),
                 title: Text(r),
-                trailing: const Icon(Icons.north_west_rounded, size: 18, color: AppColors.grey),
+                trailing: Icon(Icons.north_west_rounded, size: 18, color: context.muted),
                 onTap: () {
                   _q.text = r;
                   _submit(r);
@@ -222,7 +223,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   children: [
                     Expanded(
                       child: Text('${results.length} ${results.length == 1 ? 'result' : 'results'}',
-                          style: const TextStyle(color: AppColors.grey, fontWeight: FontWeight.w500)),
+                          style: TextStyle(color: context.muted, fontWeight: FontWeight.w500)),
                     ),
                     PopupMenuButton<SortBy>(
                       initialValue: _sort,
@@ -236,13 +237,13 @@ class _SearchScreenState extends State<SearchScreen> {
                         PopupMenuItem(value: SortBy.priceHigh, child: Text('Price: high to low')),
                         PopupMenuItem(value: SortBy.popular, child: Text('Most viewed')),
                       ],
-                      child: const Padding(
+                      child: Padding(
                         padding: EdgeInsets.all(8),
                         child: Row(
                           children: [
-                            Icon(Icons.sort_rounded, size: 18, color: AppColors.blue),
+                            Icon(Icons.sort_rounded, size: 18, color: context.brand),
                             SizedBox(width: 4),
-                            Text('Sort', style: TextStyle(color: AppColors.blue, fontWeight: FontWeight.w600)),
+                            Text('Sort', style: TextStyle(color: context.brand, fontWeight: FontWeight.w600)),
                           ],
                         ),
                       ),
@@ -294,7 +295,7 @@ class _SearchScreenState extends State<SearchScreen> {
             clear();
             _run();
           },
-          deleteIconColor: AppColors.grey,
+          deleteIconColor: context.muted,
         ),
       );
 
@@ -308,7 +309,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final apply = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: context.surface,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setS) => SafeArea(
@@ -323,7 +324,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     child: Container(
                         width: 40,
                         height: 4,
-                        decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(4))),
+                        decoration: BoxDecoration(color: context.line, borderRadius: BorderRadius.circular(4))),
                   ),
                   const SizedBox(height: 16),
                   Row(

@@ -11,6 +11,7 @@ import '../../state/cart_provider.dart';
 import '../auth/auth_guard.dart';
 import '../catalog/product_detail_screen.dart';
 import '../checkout/checkout_screen.dart';
+import '../../core/theme/palette.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -76,7 +77,7 @@ class _CartScreenState extends State<CartScreen> {
                   Container(
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(color: AppColors.orangeLight, borderRadius: BorderRadius.circular(14)),
+                    decoration: BoxDecoration(color: context.orangeTint, borderRadius: BorderRadius.circular(14)),
                     child: Row(
                       children: [
                         const Icon(Icons.info_outline_rounded, color: AppColors.orange),
@@ -109,7 +110,7 @@ class _CartScreenState extends State<CartScreen> {
           : Container(
               padding: EdgeInsets.fromLTRB(20, 16, 20, 16 + MediaQuery.of(context).padding.bottom),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.surface,
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
                 boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 16)],
               ),
@@ -118,7 +119,7 @@ class _CartScreenState extends State<CartScreen> {
                 children: [
                   Row(
                     children: [
-                      const Text('Subtotal', style: TextStyle(color: AppColors.grey)),
+                      Text('Subtotal', style: TextStyle(color: context.muted)),
                       const Spacer(),
                       AnimatedSwitcher(
                         duration: Motion.medium,
@@ -142,9 +143,9 @@ class _CartScreenState extends State<CartScreen> {
                           style: const TextStyle(color: AppColors.success, fontSize: 12.5, fontWeight: FontWeight.w600)),
                     ),
                   const SizedBox(height: 4),
-                  const Align(
+                  Align(
                     alignment: Alignment.centerLeft,
-                    child: Text('Delivery is added at checkout', style: TextStyle(color: AppColors.grey, fontSize: 12)),
+                    child: Text('Delivery is added at checkout', style: TextStyle(color: context.muted, fontSize: 12)),
                   ),
                   const SizedBox(height: 14),
                   ElevatedButton(
@@ -193,7 +194,7 @@ class _CartTile extends StatelessWidget {
           opacity: ok ? 1 : 0.5,
           child: Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18)),
+            decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(18)),
             child: Row(
               children: [
                 ProductImage(
@@ -217,13 +218,13 @@ class _CartTile extends StatelessWidget {
                       Text(ok ? item.sellerName : 'No longer available',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(color: ok ? AppColors.grey : AppColors.danger, fontSize: 12)),
+                          style: TextStyle(color: ok ? context.muted : AppColors.danger, fontSize: 12)),
                       const SizedBox(height: 6),
                       Row(
                         children: [
                           Expanded(
                             child: Text(Fmt.price(item.total),
-                                style: const TextStyle(color: AppColors.blue, fontWeight: FontWeight.w700, fontSize: 15)),
+                                style: TextStyle(color: context.brand, fontWeight: FontWeight.w700, fontSize: 15)),
                           ),
                           if (ok)
                             QtyStepper(

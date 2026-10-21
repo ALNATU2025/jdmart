@@ -20,6 +20,8 @@ import '../sell/seller_hub_screen.dart';
 import 'edit_profile_screen.dart';
 import 'legal_links.dart';
 import 'wishlist_screen.dart';
+import '../../core/theme/palette.dart';
+import '../../shared/widgets/theme_toggle.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -42,11 +44,13 @@ class AccountScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   const Text(AppConfig.tagline, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
                   const SizedBox(height: 8),
-                  const Text('Sign in with your email to buy, sell, chat with sellers and track orders.',
-                      textAlign: TextAlign.center, style: TextStyle(color: AppColors.grey)),
+                  Text('Sign in with your email to buy, sell, chat with sellers and track orders.',
+                      textAlign: TextAlign.center, style: TextStyle(color: context.muted)),
                   const SizedBox(height: 28),
                   ElevatedButton(onPressed: () => ensureLoggedIn(context), child: const Text('Sign in / Sign up')),
                   const SizedBox(height: 24),
+                  const ThemeModeSelector(),
+                  const SizedBox(height: 8),
                   ..._legalTiles(),
                 ],
               ),
@@ -70,7 +74,7 @@ class AccountScreen extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.all(3),
-                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                  decoration: BoxDecoration(color: context.surface, shape: BoxShape.circle),
                   child: UserAvatar(name: me.name, imageUrl: me.avatarUrl, radius: 32),
                 ),
                 const SizedBox(width: 14),
@@ -112,7 +116,7 @@ class AccountScreen extends StatelessWidget {
               _tile(context, Icons.admin_panel_settings_rounded, 'Admin console',
                   session.isSuperAdmin ? 'Super admin • manage everything' : 'Moderate and manage JDMart',
                   const AdminConsoleScreen(),
-                  color: AppColors.navy),
+                  color: context.ink),
             ], index: 0),
           _section('Selling', [
             _tile(context, Icons.storefront_rounded, 'Seller Hub', 'Sales, earnings & alerts', const SellerHubScreen(),
@@ -136,7 +140,7 @@ class AccountScreen extends StatelessWidget {
           _section('Help & legal', [
             if (AppConfig.supportWhatsApp.isNotEmpty || AppConfig.supportPhone.isNotEmpty)
               ListTile(
-                leading: const Icon(Icons.support_agent_rounded, color: AppColors.blue),
+                leading: Icon(Icons.support_agent_rounded, color: context.brand),
                 title: const Text('Contact support'),
                 subtitle: Text(AppConfig.supportWhatsApp.isNotEmpty ? AppConfig.supportWhatsApp : AppConfig.supportPhone),
                 onTap: () {
@@ -151,21 +155,22 @@ class AccountScreen extends StatelessWidget {
               ),
             if (AppConfig.supportEmail.isNotEmpty)
               ListTile(
-                leading: const Icon(Icons.email_outlined, color: AppColors.blue),
+                leading: Icon(Icons.email_outlined, color: context.brand),
                 title: const Text('Email us'),
                 subtitle: const Text(AppConfig.supportEmail),
                 onTap: () => launchUrl(Uri.parse('mailto:${AppConfig.supportEmail}')),
               ),
             ListTile(
-              leading: const Icon(Icons.shield_outlined, color: AppColors.blue),
+              leading: Icon(Icons.shield_outlined, color: context.brand),
               title: const Text('Safety tips'),
               onTap: () => _safety(context),
             ),
             ..._legalTiles(),
           ], index: 4),
+          _section('Appearance', [const ThemeModeSelector()], index: 5),
           _section('Account', [
             ListTile(
-              leading: const Icon(Icons.logout_rounded, color: AppColors.navy),
+              leading: Icon(Icons.logout_rounded, color: context.ink),
               title: const Text('Sign out'),
               onTap: () async {
                 if (await confirmDialog(context, title: 'Sign out?', message: 'You can sign back in any time.')) {
@@ -180,10 +185,10 @@ class AccountScreen extends StatelessWidget {
               onTap: () => _deleteAccount(context),
             ),
           ], index: 5),
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(24),
             child: Text('JDMart • Made in Sierra Leone 🇸🇱',
-                textAlign: TextAlign.center, style: TextStyle(color: AppColors.grey, fontSize: 12)),
+                textAlign: TextAlign.center, style: TextStyle(color: context.muted, fontSize: 12)),
           ),
           const SizedBox(height: 60),
         ],
@@ -194,13 +199,13 @@ class AccountScreen extends StatelessWidget {
   List<Widget> _legalTiles() => [
         if (AppConfig.termsUrl.isNotEmpty)
           ListTile(
-            leading: const Icon(Icons.description_outlined, color: AppColors.blue),
+            leading: Icon(Icons.description_outlined, color: context.brand),
             title: const Text('Terms of use'),
             onTap: () => openLink(AppConfig.termsUrl),
           ),
         if (AppConfig.privacyPolicyUrl.isNotEmpty)
           ListTile(
-            leading: const Icon(Icons.privacy_tip_outlined, color: AppColors.blue),
+            leading: Icon(Icons.privacy_tip_outlined, color: context.brand),
             title: const Text('Privacy policy'),
             onTap: () => openLink(AppConfig.privacyPolicyUrl),
           ),
@@ -237,11 +242,11 @@ class AccountScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 4, bottom: 8),
               child: Text(title.toUpperCase(),
-                  style: const TextStyle(color: AppColors.grey, fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.8)),
+                  style: TextStyle(color: context.muted, fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.8)),
             ),
             Container(
               clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), boxShadow: softShadow()),
+              decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(18), boxShadow: softShadow()),
               child: Column(children: children),
             ),
           ],
@@ -266,7 +271,7 @@ class AccountScreen extends StatelessWidget {
   void _safety(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: context.surface,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (_) => const SafeArea(
         child: Padding(

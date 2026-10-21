@@ -8,6 +8,7 @@ import '../../shared/widgets/common.dart';
 import '../../shared/widgets/product_image.dart';
 import '../../state/session_provider.dart';
 import '../catalog/product_detail_screen.dart';
+import '../../core/theme/palette.dart';
 
 class ChatScreen extends StatefulWidget {
   final String conversationId;
@@ -78,7 +79,7 @@ class _ChatScreenState extends State<ChatScreen> {
           body: Column(
             children: [
               Material(
-                color: Colors.white,
+                color: context.surface,
                 child: InkWell(
                   onTap: () => Navigator.push(
                       context, MaterialPageRoute(builder: (_) => ProductDetailScreen(productId: c.productId))),
@@ -101,7 +102,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                         ),
-                        const Icon(Icons.chevron_right_rounded, color: AppColors.grey),
+                        Icon(Icons.chevron_right_rounded, color: context.muted),
                       ],
                     ),
                   ),
@@ -160,8 +161,8 @@ class _ChatScreenState extends State<ChatScreen> {
               const SizedBox(height: 10),
               Text('Say kushe to ${c.otherName(myId)}!', style: const TextStyle(fontWeight: FontWeight.w600)),
               const SizedBox(height: 4),
-              const Text('For your safety, pay through JDMart checkout or on delivery — never send money in advance.',
-                  textAlign: TextAlign.center, style: TextStyle(color: AppColors.grey, fontSize: 12)),
+              Text('For your safety, pay through JDMart checkout or on delivery — never send money in advance.',
+                  textAlign: TextAlign.center, style: TextStyle(color: context.muted, fontSize: 12)),
             ],
           ),
         ),
@@ -187,7 +188,7 @@ class _ChatScreenState extends State<ChatScreen> {
             children: [
               SelectableText(m.text, style: TextStyle(color: mine ? Colors.white : AppColors.navy, height: 1.35)),
               const SizedBox(height: 2),
-              Text(Fmt.time(m.at), style: TextStyle(fontSize: 10, color: mine ? Colors.white70 : AppColors.grey)),
+              Text(Fmt.time(m.at), style: TextStyle(fontSize: 10, color: mine ? Colors.white70 : context.muted)),
             ],
           ),
         ),
@@ -196,7 +197,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _composer(Conversation c, String myId) => SafeArea(
         top: false,
         child: Container(
-          color: Colors.white,
+          color: context.surface,
           padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
           child: Row(
             children: [
@@ -211,7 +212,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     hintText: 'Type a message',
                     isDense: true,
                     counterText: '',
-                    fillColor: AppColors.greyLight,
+                    fillColor: context.soft,
                     enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
                     focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
                   ),

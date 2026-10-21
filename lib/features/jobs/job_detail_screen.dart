@@ -13,6 +13,7 @@ import '../auth/auth_guard.dart';
 import 'job_applications_screen.dart';
 import 'job_widgets.dart';
 import 'post_job_screen.dart';
+import '../../core/theme/palette.dart';
 
 class JobDetailScreen extends StatelessWidget {
   final String jobId;
@@ -102,7 +103,7 @@ class _Header extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(3),
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18)),
+                decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(18)),
                 child: JobLogo(company: job.company, categoryId: job.categoryId, size: 52),
               ),
               const SizedBox(width: 14),
@@ -134,7 +135,7 @@ class _Header extends StatelessWidget {
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(12)),
               child: Text(
                 job.status == JobStatus.hidden
                     ? 'Hidden by JDMart moderators'
@@ -230,7 +231,7 @@ class _ApplyBar extends StatelessWidget {
     Widget bar(Widget child) => Container(
           padding: EdgeInsets.fromLTRB(16, 12, 16, 12 + MediaQuery.of(context).padding.bottom),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.surface,
             boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 16)],
           ),
           child: child,
@@ -399,7 +400,7 @@ class _ApplySheetState extends State<_ApplySheet> {
             children: [
               Text('Apply for ${widget.job.title}',
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-              Text(widget.job.company, style: const TextStyle(color: AppColors.grey)),
+              Text(widget.job.company, style: TextStyle(color: context.muted)),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _name,
@@ -476,7 +477,7 @@ class _CvRow extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(color: AppColors.orangeLight, borderRadius: BorderRadius.circular(12)),
+        decoration: BoxDecoration(color: context.orangeTint, borderRadius: BorderRadius.circular(12)),
         child: Row(
           children: [
             const Icon(Icons.description_rounded, color: AppColors.orange),

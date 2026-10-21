@@ -15,6 +15,7 @@ import '../catalog/seller_profile_screen.dart';
 import '../jobs/job_detail_screen.dart';
 import '../jobs/job_widgets.dart';
 import '../jobs/talent_detail_screen.dart';
+import '../../core/theme/palette.dart';
 
 // ---------------------------------------------------------------------------
 // Shared bits
@@ -52,7 +53,7 @@ class _ListHeader extends StatelessWidget {
             onChanged: onSearch,
             decoration: InputDecoration(
               hintText: hint,
-              prefixIcon: const Icon(Icons.search_rounded, color: AppColors.grey),
+              prefixIcon: Icon(Icons.search_rounded, color: context.muted),
               isDense: true,
             ),
           ),
@@ -109,7 +110,7 @@ class _AdminTile extends StatelessWidget {
         scale: 0.98,
         child: Container(
           padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: softShadow()),
+          decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(16), boxShadow: softShadow()),
           child: Row(
             children: [
               leading,
@@ -124,7 +125,7 @@ class _AdminTile extends StatelessWidget {
                     Text(subtitle,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: AppColors.grey, fontSize: 12)),
+                        style: TextStyle(color: context.muted, fontSize: 12)),
                     if (badge != null) ...[const SizedBox(height: 6), badge!],
                   ],
                 ),
@@ -207,7 +208,7 @@ class _AdminListingsScreenState extends State<AdminListingsScreen> {
               },
             ),
             ListTile(
-              leading: Icon(hidden ? Icons.visibility_rounded : Icons.visibility_off_rounded, color: AppColors.blue),
+              leading: Icon(hidden ? Icons.visibility_rounded : Icons.visibility_off_rounded, color: context.brand),
               title: Text(hidden ? 'Unhide (make active)' : 'Hide from buyers'),
               onTap: () {
                 Navigator.pop(sheet);
@@ -289,7 +290,7 @@ class _AdminListingsScreenState extends State<AdminListingsScreen> {
                       ),
                       if (p.featured) const JobTag('Featured', color: Color(0xFFD97706), icon: Icons.star_rounded),
                     ]),
-                    trailing: const Icon(Icons.more_vert_rounded, color: AppColors.grey),
+                    trailing: Icon(Icons.more_vert_rounded, color: context.muted),
                   ),
                 );
               },
@@ -349,7 +350,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.visibility_off_rounded, color: AppColors.blue),
+                leading: Icon(Icons.visibility_off_rounded, color: context.brand),
                 title: const Text('Hide listing and close report'),
                 onTap: () {
                   Navigator.pop(sheet);
@@ -427,8 +428,8 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                     ),
                     title: r.reason,
                     subtitle: 'Listing ${r.productId.substring(0, r.productId.length < 8 ? r.productId.length : 8)} • ${Fmt.ago(r.createdAt)}',
-                    badge: JobTag(r.isOpen ? 'Open' : 'Closed', color: r.isOpen ? AppColors.danger : AppColors.grey),
-                    trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.grey),
+                    badge: JobTag(r.isOpen ? 'Open' : 'Closed', color: r.isOpen ? AppColors.danger : context.muted),
+                    trailing: Icon(Icons.chevron_right_rounded, color: context.muted),
                   ),
                 );
               },
@@ -497,7 +498,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 ],
                 const Divider(height: 1),
                 ListTile(
-                  leading: Icon(u.verified ? Icons.verified_outlined : Icons.verified_rounded, color: AppColors.blue),
+                  leading: Icon(u.verified ? Icons.verified_outlined : Icons.verified_rounded, color: context.brand),
                   title: Text(u.verified ? 'Remove verified badge' : 'Mark as verified seller'),
                   onTap: () {
                     Navigator.pop(sheet);
@@ -581,7 +582,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                     title: u.name,
                     subtitle: '${u.city} • joined ${Fmt.date(u.joinedAt)} • ${u.salesCount} sales',
                     badge: u.verified ? const JobTag('Verified', color: AppColors.blue, icon: Icons.verified_rounded) : null,
-                    trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.grey),
+                    trailing: Icon(Icons.chevron_right_rounded, color: context.muted),
                   ),
                 );
               },
@@ -643,7 +644,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                       padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
                       child: Row(
                         children: [
-                          Text('${list.length} orders', style: const TextStyle(color: AppColors.grey)),
+                          Text('${list.length} orders', style: TextStyle(color: context.muted)),
                           const Spacer(),
                           Text('Total ${Fmt.price(total)}', style: const TextStyle(fontWeight: FontWeight.w700)),
                         ],
@@ -657,10 +658,10 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                           leading: Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: AppColors.blueLight,
+                              color: context.blueTint,
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Icon(Icons.receipt_long_rounded, color: AppColors.blue),
+                            child: Icon(Icons.receipt_long_rounded, color: context.brand),
                           ),
                           title: '#${o.id.substring(0, o.id.length < 8 ? o.id.length : 8).toUpperCase()} • ${Fmt.price(o.total)}',
                           subtitle: '${o.buyerName} → ${o.sellerName} • ${o.city} • ${Fmt.dateTime(o.createdAt)}',
@@ -668,7 +669,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                             StatusChip(o.status),
                             const SizedBox(width: 6),
                             JobTag(o.paymentMethod == 'cod' ? 'Cash on delivery' : 'Online',
-                                color: AppColors.grey),
+                                color: context.muted),
                           ]),
                         ),
                       ),
@@ -699,9 +700,9 @@ class AdminJobsScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Jobs & CVs'),
-          bottom: const TabBar(
-            labelColor: AppColors.blue,
-            unselectedLabelColor: AppColors.grey,
+          bottom: TabBar(
+            labelColor: context.brand,
+            unselectedLabelColor: context.muted,
             indicatorColor: AppColors.orange,
             indicatorWeight: 3,
             tabs: [Tab(text: 'Job posts'), Tab(text: 'CV profiles')],
@@ -732,11 +733,11 @@ class AdminJobsScreen extends StatelessWidget {
                       },
                       color: switch (j.status) {
                         JobStatus.open => AppColors.success,
-                        JobStatus.closed => AppColors.grey,
+                        JobStatus.closed => context.muted,
                         JobStatus.hidden => AppColors.danger,
                       },
                     ),
-                    trailing: const Icon(Icons.more_vert_rounded, color: AppColors.grey),
+                    trailing: Icon(Icons.more_vert_rounded, color: context.muted),
                   ),
                 );
               },
@@ -758,7 +759,7 @@ class AdminJobsScreen extends StatelessWidget {
                     title: t.name,
                     subtitle: '${t.headline} • ${t.city}',
                     badge: JobTag(t.visible ? 'Visible' : 'Hidden by owner',
-                        color: t.visible ? AppColors.success : AppColors.grey),
+                        color: t.visible ? AppColors.success : context.muted),
                     trailing: IconButton(
                       tooltip: 'Delete profile',
                       icon: const Icon(Icons.delete_outline_rounded, color: AppColors.danger),
@@ -802,7 +803,7 @@ class AdminJobsScreen extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(j.status == JobStatus.hidden ? Icons.visibility_rounded : Icons.visibility_off_rounded,
-                  color: AppColors.blue),
+                  color: context.brand),
               title: Text(j.status == JobStatus.hidden ? 'Unhide (reopen)' : 'Hide job'),
               onTap: () {
                 Navigator.pop(sheet);
@@ -865,7 +866,7 @@ class AdminBannersScreen extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(color: AppColors.blueLight, borderRadius: BorderRadius.circular(14)),
+                decoration: BoxDecoration(color: context.blueTint, borderRadius: BorderRadius.circular(14)),
                 child: const Text(
                   'The three built-in banners always show first. Banners you add here appear after them, '
                   'in the order you choose. Switch one off to hide it without deleting.',
@@ -874,9 +875,9 @@ class AdminBannersScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               if (banners.isEmpty)
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(top: 30),
-                  child: Text('No extra banners yet.', textAlign: TextAlign.center, style: TextStyle(color: AppColors.grey)),
+                  child: Text('No extra banners yet.', textAlign: TextAlign.center, style: TextStyle(color: context.muted)),
                 ),
               for (var i = 0; i < banners.length; i++)
                 FadeSlideIn(
@@ -905,7 +906,7 @@ class _BannerTile extends StatelessWidget {
     final repo = context.read<AdminRepository>();
     return Container(
       clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: softShadow()),
+      decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(16), boxShadow: softShadow()),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -1119,10 +1120,10 @@ class _AdminTeamScreenState extends State<AdminTeamScreen> {
           const SizedBox(height: 16),
           const Text('Add an admin', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             'Admins can moderate listings, jobs, users, orders and banners. '
             'They get access the next time they sign in with this email.',
-            style: TextStyle(color: AppColors.grey, fontSize: 12.5),
+            style: TextStyle(color: context.muted, fontSize: 12.5),
           ),
           const SizedBox(height: 10),
           Row(
@@ -1154,9 +1155,9 @@ class _AdminTeamScreenState extends State<AdminTeamScreen> {
             loading: const LoadingView(padding: 20),
             builder: (context, emails) {
               if (emails.isEmpty) {
-                return const Padding(
+                return Padding(
                   padding: EdgeInsets.all(12),
-                  child: Text('No other admins yet.', style: TextStyle(color: AppColors.grey)),
+                  child: Text('No other admins yet.', style: TextStyle(color: context.muted)),
                 );
               }
               return Column(

@@ -7,6 +7,7 @@ import '../../shared/widgets/common.dart';
 import '../../shared/widgets/motion.dart';
 import '../../state/session_provider.dart';
 import 'admin_screens.dart';
+import '../../core/theme/palette.dart';
 
 /// Admin console: numbers at a glance and tools to manage JDMart.
 /// Only visible to accounts with the admin claim (see functions/src/admin.ts).
@@ -113,7 +114,7 @@ class _AdminConsoleScreenState extends State<AdminConsoleScreen> {
                     if (snap.hasError) {
                       return Container(
                         padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(color: AppColors.orangeLight, borderRadius: BorderRadius.circular(14)),
+                        decoration: BoxDecoration(color: context.orangeTint, borderRadius: BorderRadius.circular(14)),
                         child: const Text(
                           "Couldn't load the numbers. If you were just made an admin, sign out and back in, "
                           'and make sure the latest rules are deployed.',
@@ -183,7 +184,7 @@ class _AdminConsoleScreenState extends State<AdminConsoleScreen> {
                   'Super admin: ${AppConfig.superAdminEmail}\n'
                   'Role changes take effect the next time the person signs in.',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppColors.grey, fontSize: 12),
+                  style: TextStyle(color: context.muted, fontSize: 12),
                 ),
               ),
             ),
@@ -214,7 +215,7 @@ class _StatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: softShadow()),
+      decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(16), boxShadow: softShadow()),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -237,7 +238,7 @@ class _StatTile extends StatelessWidget {
           Text(label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: AppColors.grey, fontSize: 11.5)),
+              style: TextStyle(color: context.muted, fontSize: 11.5)),
         ],
       ),
     );
@@ -279,7 +280,7 @@ class _ToolCard extends StatelessWidget {
             Text(tool.subtitle,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: AppColors.grey, fontSize: 12)),
+                style: TextStyle(color: context.muted, fontSize: 12)),
           ],
         ),
       ),

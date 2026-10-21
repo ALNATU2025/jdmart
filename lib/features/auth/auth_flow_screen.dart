@@ -10,6 +10,7 @@ import '../../data/repositories/user_repository.dart';
 import '../../shared/widgets/common.dart';
 import '../../state/session_provider.dart';
 import '../account/legal_links.dart';
+import '../../core/theme/palette.dart';
 
 enum _Step { email, code, profile }
 
@@ -158,7 +159,7 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
   Widget build(BuildContext context) {
     _react(context.watch<SessionProvider>());
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.surface,
       appBar: AppBar(
         leading: IconButton(
           tooltip: _step == _Step.code ? 'Back' : 'Close',
@@ -213,8 +214,8 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
           const SizedBox(height: 24),
           const Text('Sign in or sign up', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800)),
           const SizedBox(height: 4),
-          const Text("Enter your email. We'll send you a 6-digit code — no password needed.",
-              style: TextStyle(color: AppColors.grey)),
+          Text("Enter your email. We'll send you a 6-digit code — no password needed.",
+              style: TextStyle(color: context.muted)),
           const SizedBox(height: 24),
           TextFormField(
             controller: _email,
@@ -257,7 +258,7 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
         const Text('Check your email', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800)),
         const SizedBox(height: 4),
         Text('We sent a 6-digit code to $_emailValue. It can take a minute — check your Spam or Promotions folder too.',
-            style: const TextStyle(color: AppColors.grey)),
+            style: TextStyle(color: context.muted)),
         const SizedBox(height: 24),
         TextField(
           controller: _code,
@@ -298,7 +299,7 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
           const SizedBox(height: 8),
           const Text('Welcome to JDMart', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800)),
           const SizedBox(height: 4),
-          const Text('Tell buyers and sellers who you are.', style: TextStyle(color: AppColors.grey)),
+          Text('Tell buyers and sellers who you are.', style: TextStyle(color: context.muted)),
           const SizedBox(height: 24),
           TextFormField(
             controller: _name,
@@ -339,7 +340,7 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
           if (AppConfig.supportEmail.isNotEmpty) ...[
             const SizedBox(height: 12),
             Text('Need help? ${AppConfig.supportEmail}',
-                textAlign: TextAlign.center, style: const TextStyle(color: AppColors.grey, fontSize: 12)),
+                textAlign: TextAlign.center, style: TextStyle(color: context.muted, fontSize: 12)),
           ],
         ],
       ),

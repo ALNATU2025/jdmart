@@ -10,6 +10,7 @@ import '../../shared/widgets/common.dart';
 import '../../shared/widgets/motion.dart';
 import '../../state/session_provider.dart';
 import 'job_detail_screen.dart';
+import '../../core/theme/palette.dart';
 
 final _emailRe = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
@@ -110,10 +111,10 @@ class _PostJobScreenState extends State<PostJobScreen> {
           children: [
             item(Container(
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: AppColors.blueLight, borderRadius: BorderRadius.circular(14)),
-              child: const Row(
+              decoration: BoxDecoration(color: context.blueTint, borderRadius: BorderRadius.circular(14)),
+              child: Row(
                 children: [
-                  Icon(Icons.lightbulb_outline_rounded, color: AppColors.blue),
+                  Icon(Icons.lightbulb_outline_rounded, color: context.brand),
                   SizedBox(width: 10),
                   Expanded(
                     child: Text('Clear titles and a salary range get more applicants. Posting is free.',
@@ -210,8 +211,8 @@ class _PostJobScreenState extends State<PostJobScreen> {
             gap(),
             item(const Text('How applicants can reach you', style: TextStyle(fontWeight: FontWeight.w600))),
             const SizedBox(height: 4),
-            item(const Text('Applicants can also apply inside the app. These details are shown on the job post.',
-                style: TextStyle(color: AppColors.grey, fontSize: 12.5))),
+            item(Text('Applicants can also apply inside the app. These details are shown on the job post.',
+                style: TextStyle(color: context.muted, fontSize: 12.5))),
             gap(),
             item(TextFormField(
               controller: _phone,
