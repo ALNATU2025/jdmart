@@ -22,7 +22,7 @@ export interface LineItem {
 
 export function monimeConfigured(): boolean {
   try {
-    return MONIME_ACCESS_TOKEN.value().length > 0 && MONIME_SPACE_ID.value().startsWith("spc-");
+    return MONIME_ACCESS_TOKEN.value().trim().length > 0 && MONIME_SPACE_ID.value().trim().startsWith("spc-");
   } catch {
     return false;
   }
@@ -30,8 +30,8 @@ export function monimeConfigured(): boolean {
 
 function headers(idempotencyKey?: string): Record<string, string> {
   const h: Record<string, string> = {
-    "Authorization": `Bearer ${MONIME_ACCESS_TOKEN.value()}`,
-    "Monime-Space-Id": MONIME_SPACE_ID.value(),
+    "Authorization": `Bearer ${MONIME_ACCESS_TOKEN.value().trim()}`,
+    "Monime-Space-Id": MONIME_SPACE_ID.value().trim(),
     "Monime-Version": VERSION,
     "Content-Type": "application/json",
   };

@@ -89,12 +89,12 @@ export const requestLoginCode = onCall(
     });
 
     try {
-      const transport = nodemailer.createTransport({
-        service: "gmail",
-        auth: { user: GMAIL_USER.value(), pass: GMAIL_APP_PASSWORD.value() },
-      });
+      // Tolerate stray spaces / line breaks pasted into the secrets.
+      const user = GMAIL_USER.value().trim();
+      const pass = GMAIL_APP_PASSWORD.value().replace(/\s+/g, "");
+      const transport = nodemailer.createTransport({ service: "gmail", auth: { user, pass } });
       await transport.sendMail({
-        from: `"JDMart" <${GMAIL_USER.value()}>`,
+        from: `"JDMart" <${user}>`,
         to: email,
         subject: `${code} is your JDMart sign-in code`,
         text: `Your JDMart sign-in code is ${code}. It expires in ${CODE_TTL_MINUTES} minutes. Never share this code with anyone.`,
