@@ -1,0 +1,26 @@
+/// App-wide settings. Fill these in before publishing.
+/// Nothing here is secret: API keys for payments live only in Cloud Functions.
+class AppConfig {
+  static const appName = 'JDMart';
+  static const tagline = 'Buy Smart. Sell Faster.';
+
+  // TODO(go-live): replace with your real support channels.
+  static const supportPhone = '';
+  static const supportWhatsApp = '';
+  static const supportEmail = '';
+
+  // TODO(go-live): host these pages (Firebase Hosting serves /legal/*.html from
+  // the hosting/ folder) and put the final URLs here. Google Play requires them.
+  static const privacyPolicyUrl = '';
+  static const termsUrl = '';
+
+  /// Online payments (Orange Money, Afrimoney, cards) go through Monime.
+  /// Keep false until the MONIME_* secrets are set on Cloud Functions.
+  static const onlinePaymentsEnabled = false;
+
+  /// Cloud Functions region. Must match `region` in functions/src/index.ts.
+  static const functionsRegion = 'europe-west1';
+
+  static const maxListingPhotos = 6;
+  static const pageSize = 20;
+}

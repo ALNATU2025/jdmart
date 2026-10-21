@@ -1,0 +1,176 @@
+rules_version = '2';
+
+// JDMart security rules. The app can only do what is allowed here; orders,
+// payments, stock and ratings are written by Cloud Functions (which bypass
+// these rules), so prices and totals can't be tampered with from a phone.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isUser(uid) { return signedIn() && request.auth.uid == uid; }
+    function changed() { return request.resource.data.diff(resource.data).affectedKeys(); }
+    function userDoc(uid) { return get(/databases/$(database)/documents/users/$(uid)).data; }
+    function hasProfile() { return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)); }
+    function str(v, min, max) { return v is string && v.size() >= min && v.size() <= max; }
+    function validPhoneOrNull(v) { return v == null || (v is string && v.matches('^[+]232[0-9]{8}$')); }
+
+    // ---- Users ---------------------------------------------------------------
+    match /users/{uid} {
+      allow read: if true; // public profile only — private data lives in /private
+
+      allow create: if isUser(uid)
+        && request.resource.data.keys().hasOnly(['name', 'city', 'bio', 'avatarUrl', 'contactPhone', 'verified',
+                                                 'ratingAvg', 'ratingCount', 'salesCount', 'createdAt'])
+        && str(request.resource.data.name, 2, 60)
+        && str(request.resource.data.city, 2, 40)
+        && validPhoneOrNull(request.resource.data.contactPhone)
+        && request.resource.data.verified == false
+        && request.resource.data.ratingAvg == 0
+        && request.resource.data.ratingCount == 0
+        && request.resource.data.salesCount == 0
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if isUser(uid)
+        && changed().hasOnly(['name', 'city', 'bio', 'avatarUrl', 'contactPhone'])
+        && str(request.resource.data.name, 2, 60)
+        && str(request.resource.data.bio, 0, 200)
+        && validPhoneOrNull(request.resource.data.contactPhone);
+
+      allow delete: if false; // use the deleteAccount function
+
+      match /private/{doc} {
+        allow read, write: if isUser(uid);
+      }
+      match /wishlist/{productId} {
+        allow read, delete: if isUser(uid);
+        allow create, update: if isUser(uid) && request.resource.data.keys().hasOnly(['createdAt']);
+      }
+      match /purchases/{productId} {
+        allow read: if isUser(uid);
+        allow write: if false; // written when an order is delivered
+      }
+    }
+
+    // ---- Products --------------------------------------------------------------
+    function validProduct(d) {
+      return str(d.title, 4, 80)
+        && str(d.description, 10, 2000)
+        && d.price is number && d.price > 0 && d.price <= 10000000
+        && (d.oldPrice == null || (d.oldPrice is number && d.oldPrice > d.price))
+        && d.discountPercent is int && d.discountPercent >= 0 && d.discountPercent < 100
+        && d.stock is int && d.stock >= 0 && d.stock <= 10000
+        && d.images is list && d.images.size() >= 1 && d.images.size() <= 6
+        && d.keywords is list && d.keywords.size() <= 200
+        && d.negotiable is bool
+        && d.categoryId in ['phones', 'electronics', 'fashion', 'home', 'groceries', 'beauty',
+                            'vehicles', 'property', 'agric', 'kids', 'sports', 'other']
+        && d.condition in ['New', 'Used', 'Refurbished']
+        && str(d.city, 2, 40);
+    }
+
+    match /products/{productId} {
+      allow read: if resource.data.status != 'hidden'
+        || (signedIn() && resource.data.sellerId == request.auth.uid);
+
+      allow create: if hasProfile()
+        && request.resource.data.keys().hasOnly([
+             'title', 'description', 'price', 'oldPrice', 'discountPercent', 'categoryId', 'condition', 'city',
+             'stock', 'negotiable', 'images', 'keywords', 'sellerId', 'sellerName', 'sellerVerified', 'status',
+             'featured', 'views', 'ratingAvg', 'ratingCount', 'createdAt', 'updatedAt'])
+        && request.resource.data.sellerId == request.auth.uid
+        && request.resource.data.sellerName == userDoc(request.auth.uid).name
+        && request.resource.data.sellerVerified == userDoc(request.auth.uid).verified
+        && validProduct(request.resource.data)
+        && request.resource.data.status == 'active'
+        && request.resource.data.featured == false
+        && request.resource.data.views == 0
+        && request.resource.data.ratingAvg == 0
+        && request.resource.data.ratingCount == 0
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if (
+          signedIn() && resource.data.sellerId == request.auth.uid
+          && changed().hasOnly(['title', 'description', 'price', 'oldPrice', 'discountPercent', 'categoryId',
+                                'condition', 'city', 'stock', 'negotiable', 'images', 'keywords', 'status', 'updatedAt'])
+          && validProduct(request.resource.data)
+          && request.resource.data.status in ['active', 'sold', 'hidden']
+        ) || (
+          // anyone signed in may add one view
+          signedIn() && changed().hasOnly(['views']) && request.resource.data.views == resource.data.views + 1
+        );
+
+      allow delete: if signedIn() && resource.data.sellerId == request.auth.uid;
+
+      match /reviews/{uid} {
+        allow read: if true;
+        allow create, update: if isUser(uid)
+          && exists(/databases/$(database)/documents/users/$(uid)/purchases/$(productId))
+          && request.resource.data.keys().hasOnly(['userName', 'rating', 'comment', 'createdAt'])
+          && request.resource.data.rating is int && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
+          && str(request.resource.data.comment, 0, 500)
+          && str(request.resource.data.userName, 1, 60)
+          && request.resource.data.createdAt == request.time;
+        allow delete: if isUser(uid);
+      }
+    }
+
+    // ---- Orders & payments (server-written) -------------------------------------
+    match /orders/{orderId} {
+      allow read: if signedIn()
+        && (resource.data.buyerId == request.auth.uid || resource.data.sellerId == request.auth.uid);
+      allow write: if false;
+    }
+    match /checkouts/{checkoutId} {
+      allow read: if signedIn() && resource.data.buyerId == request.auth.uid;
+      allow write: if false;
+    }
+    match /sellerStats/{uid} {
+      allow read: if isUser(uid);
+      allow write: if false;
+    }
+
+    // ---- Chat ------------------------------------------------------------------------
+    match /chats/{chatId} {
+      // resource == null lets the app check whether a chat exists yet.
+      allow read: if signedIn() && (resource == null || request.auth.uid in resource.data.participants);
+
+      allow create: if hasProfile()
+        && request.resource.data.buyerId == request.auth.uid
+        && chatId == request.resource.data.productId + '_' + request.auth.uid
+        && request.resource.data.sellerId != request.auth.uid
+        && request.resource.data.sellerId == get(/databases/$(database)/documents/products/$(request.resource.data.productId)).data.sellerId
+        && request.resource.data.participants == [request.auth.uid, request.resource.data.sellerId];
+
+      allow update: if signedIn() && request.auth.uid in resource.data.participants
+        && changed().hasOnly(['lastMessage', 'lastSenderId', 'lastAt', 'unread']);
+
+      match /messages/{messageId} {
+        allow read: if signedIn()
+          && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+        allow create: if signedIn()
+          && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants
+          && request.resource.data.keys().hasOnly(['senderId', 'text', 'createdAt'])
+          && request.resource.data.senderId == request.auth.uid
+          && str(request.resource.data.text, 1, 2000)
+          && request.resource.data.createdAt == request.time;
+        allow update, delete: if false;
+      }
+    }
+
+    // ---- Admin-managed & safety ---------------------------------------------------
+    match /emailCodes/{id} {
+      allow read, write: if false; // sign-in codes, server only
+    }
+    match /banners/{id} {
+      allow read: if true;
+      allow write: if false; // edit in the Firebase console
+    }
+    match /reports/{id} {
+      allow create: if signedIn()
+        && request.resource.data.reporterId == request.auth.uid
+        && request.resource.data.keys().hasOnly(['productId', 'reporterId', 'reason', 'status', 'createdAt'])
+        && str(request.resource.data.reason, 2, 200);
+      allow read, update, delete: if false;
+    }
+  }
+}
