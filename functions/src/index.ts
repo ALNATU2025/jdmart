@@ -20,3 +20,4 @@ export { deleteAccount } from "./account";
 export { requestLoginCode, verifyLoginCode } from "./emailAuth";
 export { adminSetRole, adminSetUserDisabled } from "./admin";
 export { onApplicationWritten, onJobDeleted } from "./jobs";
+export { openDelivery, joinDelivery, deliveryAction } from "./delivery";

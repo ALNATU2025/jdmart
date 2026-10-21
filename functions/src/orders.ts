@@ -20,7 +20,7 @@ import { REGION } from "./region";
 
 const db = () => getFirestore();
 
-type OrderStatus = "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
+export type OrderStatus = "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
 
 interface OrderItem {
   productId: string;
@@ -371,6 +371,41 @@ export const cancelOrder = onCall({ region: REGION }, async (req) => {
   return { ok: true };
 });
 
+/**
+ * Moves an order to `next` (confirmed / shipped / delivered) inside a
+ * transaction, with the side effects of delivery: seller stats, sales count,
+ * cash-on-delivery marked paid, and the buyer allowed to review.
+ * Used by the seller (updateOrderStatus) and by riders (delivery.ts).
+ */
+export function advanceOrderInTx(tx: Transaction, ref: DocumentReference, o: DocumentData, next: OrderStatus) {
+  if (next === "delivered") {
+    const sellerId = o.sellerId as string;
+    tx.set(
+      db().collection("sellerStats").doc(sellerId),
+      {
+        deliveredRevenue: FieldValue.increment(Number(o.total)),
+        deliveredOrders: FieldValue.increment(1),
+        updatedAt: FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
+    tx.update(db().collection("users").doc(sellerId), { salesCount: FieldValue.increment(1) });
+    // Lets the buyer review these products (checked by security rules).
+    for (const item of o.items as OrderItem[]) {
+      tx.set(db().collection("users").doc(o.buyerId).collection("purchases").doc(item.productId), {
+        orderId: ref.id,
+        deliveredAt: FieldValue.serverTimestamp(),
+      });
+    }
+  }
+  tx.update(ref, {
+    status: next,
+    ...(next === "delivered" && o.paymentStatus === "cod" ? { paymentStatus: "paid" } : {}),
+    [`${next}At`]: FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+}
+
 export const updateOrderStatus = onCall({ region: REGION }, async (req) => {
   const uid = requireUid(req);
   const data = (req.data ?? {}) as Record<string, unknown>;
@@ -396,33 +431,7 @@ export const updateOrderStatus = onCall({ region: REGION }, async (req) => {
       return;
     }
 
-    if (next === "delivered") {
-      const statsRef = db().collection("sellerStats").doc(uid);
-      const sellerRef = db().collection("users").doc(uid);
-      tx.set(
-        statsRef,
-        {
-          deliveredRevenue: FieldValue.increment(Number(o.total)),
-          deliveredOrders: FieldValue.increment(1),
-          updatedAt: FieldValue.serverTimestamp(),
-        },
-        { merge: true },
-      );
-      tx.update(sellerRef, { salesCount: FieldValue.increment(1) });
-      // Lets the buyer review these products (checked by security rules).
-      for (const item of o.items as OrderItem[]) {
-        tx.set(db().collection("users").doc(o.buyerId).collection("purchases").doc(item.productId), {
-          orderId,
-          deliveredAt: FieldValue.serverTimestamp(),
-        });
-      }
-    }
-    tx.update(ref, {
-      status: next,
-      ...(next === "delivered" && o.paymentStatus === "cod" ? { paymentStatus: "paid" } : {}),
-      [`${next}At`]: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
-    });
+    advanceOrderInTx(tx, ref, o, next);
   });
   return { ok: true };
 });

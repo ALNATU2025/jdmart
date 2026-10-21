@@ -42,9 +42,10 @@ jobs:
             cat pub.txt; echo; echo "===== ANALYZE ====="; cat analyze.txt; echo; echo "===== TESTS ====="; tail -80 test.txt; } > /tmp/report/report.txt
           git config user.name "ci-bot"
           git config user.email "ci-bot@users.noreply.github.com"
-          git fetch origin ci-results || true
+          git fetch origin +refs/heads/ci-results:refs/remotes/origin/ci-results || true
           if git rev-parse --verify origin/ci-results >/dev/null 2>&1; then
-            git checkout -B ci-results origin/ci-results
+            git stash -u >/dev/null 2>&1 || true
+          git checkout -B ci-results origin/ci-results
           else
             git checkout --orphan ci-results
             git rm -rf . >/dev/null 2>&1 || true
