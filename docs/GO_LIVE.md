@@ -172,6 +172,33 @@ can browse under **Find talent** (signed-in members only) and contact by call, W
 Employers see applicants under the job and can shortlist them (the applicant gets a notification).
 CV files are PDF or Word, max 5 MB, stored in Storage under `cvs/{uid}/`.
 
+## Live delivery tracking (Google Maps)
+
+When the seller confirms an order, the order page shows a **delivery code** (e.g. `JD-7K3P-9QXA`).
+The seller sends it to a dispatch rider, who enters it in **Account → Deliveries & tracking** and becomes the
+rider. Buyer, seller and rider then see each other on a live map (each chooses **Share my live location**).
+The rider taps **Picked up** (order → On the way) and finally **Mark as delivered**, which needs the buyer's
+4-digit **handover PIN** (shown only in the buyer's app), so nobody can fake a delivery.
+
+Location is shared while the tracking screen is open (no background tracking).
+
+**Set up the map (one time):**
+1. Google Cloud console (project `jdmart-sl`) → **APIs & Services → Library** → enable **Maps JavaScript API**
+   (web) and **Maps SDK for Android**.
+2. **APIs & Services → Credentials → Create credentials → API key.** Restrict it: *Websites*
+   (`localhost`, `jdmart-sl.web.app`) and *Android apps* (package `sl.jdmart.jdmart`).
+3. Put the key in `lib/core/config/app_config.dart` → `googleMapsApiKey` (web loads it automatically).
+4. Android: in `android/app/src/main/AndroidManifest.xml`, inside `<application>`, add
+   `<meta-data android:name="com.google.android.geo.API_KEY" android:value="YOUR_KEY"/>`, and before
+   `<application>` add the `ACCESS_FINE_LOCATION` and `ACCESS_COARSE_LOCATION` permissions
+   (`setup.sh` does both; replace `YOUR_MAPS_KEY`).
+
+Without a key, tracking still works as a list with **Directions in Google Maps** buttons.
+
+## Appearance
+
+Light, dark or automatic (follows the phone) — Account → Appearance, or the sun/moon button on the home page.
+
 ## After launch: what to add next
 
 - **Better search**: when you have thousands of listings, add the Algolia or Typesense Firebase extension.

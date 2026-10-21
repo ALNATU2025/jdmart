@@ -28,6 +28,14 @@ if ! grep -q "<queries>" "$MANIFEST"; then
   perl -0pi -e 's#</manifest>#    <queries>\n        <intent><action android:name="android.intent.action.VIEW"/><data android:scheme="https"/></intent>\n        <intent><action android:name="android.intent.action.DIAL"/><data android:scheme="tel"/></intent>\n    </queries>\n</manifest>#' "$MANIFEST"
 fi
 perl -pi -e 's#android:label="jdmart"#android:label="JDMart"#' "$MANIFEST"
+if ! grep -q "ACCESS_FINE_LOCATION" "$MANIFEST"; then
+  echo "▶ Android: location permission for live delivery tracking…"
+  perl -0pi -e 's#(<manifest[^>]*>)#$1\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>#' "$MANIFEST"
+fi
+if ! grep -q "com.google.android.geo.API_KEY" "$MANIFEST"; then
+  echo "▶ Android: Google Maps key placeholder (replace YOUR_MAPS_KEY)…"
+  perl -0pi -e 's#(<application[^>]*>)#$1\n        <meta-data android:name="com.google.android.geo.API_KEY" android:value="YOUR_MAPS_KEY"/>#' "$MANIFEST"
+fi
 
 PLIST=ios/Runner/Info.plist
 if [ -f "$PLIST" ] && ! grep -q NSCameraUsageDescription "$PLIST"; then
