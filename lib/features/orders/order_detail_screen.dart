@@ -185,8 +185,8 @@ class OrderDetailScreen extends StatelessWidget {
           const SizedBox(height: 20),
           if (sellerCanAdvance)
             ElevatedButton(
-              onPressed: () => _act(context, () => repo.updateStatus(o.id, next!), 'Order marked as ${next!.label}'),
-              child: Text('Mark as ${next!.label}'),
+              onPressed: () => _act(context, () => repo.updateStatus(o.id, next), 'Order marked as ${next.label}'),
+              child: Text('Mark as ${next.label}'),
             ),
           if (sellerView && (o.status == OrderStatus.pending || o.status == OrderStatus.confirmed)) ...[
             const SizedBox(height: 10),

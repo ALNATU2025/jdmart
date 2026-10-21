@@ -409,8 +409,8 @@ class _WavePainter extends CustomPainter {
 class _Badge extends StatelessWidget {
   final IconData icon;
   final Color color;
-  final double size;
-  const _Badge(this.icon, this.color, {this.size = 64});
+  static const double size = 64;
+  const _Badge(this.icon, this.color);
 
   @override
   Widget build(BuildContext context) => Container(

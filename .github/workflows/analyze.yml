@@ -34,12 +34,19 @@ jobs:
           flutter test > test.txt 2>&1
           echo "exit=$?" >> test.txt
           tail -40 test.txt
+      - name: Web build
+        run: |
+          set +e
+          flutter create --platforms=web --project-name jdmart . > /dev/null 2>&1
+          flutter build web --release > build.txt 2>&1
+          echo "exit=$?" >> build.txt
+          tail -30 build.txt
       - name: Publish report to ci-results branch
         if: always()
         run: |
           mkdir -p /tmp/report
           { echo "commit: $GITHUB_SHA"; echo "analyze exit: ${{ steps.analyze.outputs.exit }}"; echo; \
-            cat pub.txt; echo; echo "===== ANALYZE ====="; cat analyze.txt; echo; echo "===== TESTS ====="; tail -80 test.txt; } > /tmp/report/report.txt
+            cat pub.txt; echo; echo "===== ANALYZE ====="; cat analyze.txt; echo; echo "===== TESTS ====="; tail -80 test.txt; echo; echo "===== WEB BUILD ====="; tail -60 build.txt; } > /tmp/report/report.txt
           git config user.name "ci-bot"
           git config user.email "ci-bot@users.noreply.github.com"
           git fetch origin +refs/heads/ci-results:refs/remotes/origin/ci-results || true
