@@ -444,6 +444,12 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
 // Users
 // ---------------------------------------------------------------------------
 
+/// Private contact details and suspension state of a user, for the admin sheet.
+Future<(Map<String, dynamic>, bool)> _loadUserDetails(AdminRepository repo, String uid) async {
+  final results = await Future.wait<Object>([repo.privateOf(uid), repo.isSuspended(uid)]);
+  return (results[0] as Map<String, dynamic>, results[1] as bool);
+}
+
 class AdminUsersScreen extends StatefulWidget {
   const AdminUsersScreen({super.key});
 
@@ -462,7 +468,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       isScrollControlled: true,
       builder: (sheet) => SafeArea(
         child: FutureBuilder<(Map<String, dynamic>, bool)>(
-          future: () async => (await repo.privateOf(u.id), await repo.isSuspended(u.id))(),
+          future: _loadUserDetails(repo, u.id),
           builder: (_, snap) {
             final priv = snap.data?.$1 ?? const <String, dynamic>{};
             final suspended = snap.data?.$2 ?? false;
