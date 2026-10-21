@@ -1,5 +1,5 @@
-commit: b50518258e2ab1516e1fadb60ce22148b662a2da
-analyze exit: 1
+commit: fc0be57aacccf0d3befcdddfaf27a8d5fc3344c6
+analyze exit: 0
 
 Resolving dependencies...
 Downloading packages...
@@ -58,7 +58,22 @@ Downloading packages...
 + flutter_plugin_android_lifecycle 2.0.35
 + flutter_test 0.0.0 from sdk flutter
 + flutter_web_plugins 0.0.0 from sdk flutter
++ geoclue 0.1.1
++ geolocator 14.0.2 (14.1.2 available)
++ geolocator_android 5.2.1
++ geolocator_apple 2.4.2
++ geolocator_linux 0.2.4 (0.2.6 available)
++ geolocator_platform_interface 4.4.1
++ geolocator_web 4.1.4
++ geolocator_windows 0.2.5
 + google_fonts 6.3.3 (9.0.0 available)
++ google_maps 8.3.0
++ google_maps_flutter 2.19.0
++ google_maps_flutter_android 2.21.0
++ google_maps_flutter_ios 2.18.7
++ google_maps_flutter_platform_interface 2.17.0
++ google_maps_flutter_web 0.6.5
++ gsettings 0.2.8 (0.2.9 available)
 + hooks 2.2.0
 + html 0.15.7
 + http 1.6.0
@@ -90,6 +105,8 @@ Downloading packages...
 + objective_c 9.6.2
 + octo_image 2.1.2
 + package_config 3.0.0
++ package_info_plus 9.0.1 (10.2.2 available)
++ package_info_plus_platform_interface 3.2.1 (4.1.0 available)
 + path 1.9.1
 + path_provider 2.1.6
 + path_provider_android 2.3.1
@@ -105,6 +122,7 @@ Downloading packages...
 + pub_semver 2.2.1
 + record_use 1.1.1
 + rxdart 0.28.0
++ sanitize_html 2.2.0
 + shared_preferences 2.5.6
 + shared_preferences_android 2.5.1
 + shared_preferences_foundation 2.6.0
@@ -121,6 +139,7 @@ Downloading packages...
 + sqflite_platform_interface 2.4.3
 + stack_trace 1.12.2
 + stream_channel 2.1.4
++ stream_transform 2.1.2
 + string_scanner 1.4.1
 + synchronized 3.5.0
 + term_glyph 1.2.2
@@ -143,8 +162,8 @@ Downloading packages...
 + xdg_directories 1.1.0
 + xml 7.1.0
 + yaml 3.1.4
-Changed 140 dependencies!
-14 packages have newer versions incompatible with dependency constraints.
+Changed 159 dependencies!
+19 packages have newer versions incompatible with dependency constraints.
 Try `flutter pub outdated` for more information.
 Upgrading analysis_options.yaml to exclude build and platform directories.
 
@@ -154,14 +173,8 @@ Analyzing jdmart...
    info • 'getToken' is deprecated and shouldn't be used. Use register() and onRegistered instead. Try replacing the use of the deprecated member with the replacement • lib/data/services/push_service.dart:19:29 • deprecated_member_use
    info • 'onTokenRefresh' is deprecated and shouldn't be used. Use onRegistered instead. Try replacing the use of the deprecated member with the replacement • lib/data/services/push_service.dart:22:20 • deprecated_member_use
    info • 'getToken' is deprecated and shouldn't be used. Use register() and onRegistered instead. Try replacing the use of the deprecated member with the replacement • lib/data/services/push_service.dart:33:54 • deprecated_member_use
-   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/account/account_screen.dart:189:22 • prefer_const_constructors
-  error • Undefined name 'context'. Try correcting the name to one that is defined, or defining the name • lib/features/account/account_screen.dart:202:62 • undefined_identifier
-  error • Undefined name 'context'. Try correcting the name to one that is defined, or defining the name • lib/features/account/account_screen.dart:208:62 • undefined_identifier
-  error • Undefined name 'context'. Try correcting the name to one that is defined, or defining the name • lib/features/account/account_screen.dart:245:43 • undefined_identifier
-  error • Undefined name 'context'. Try correcting the name to one that is defined, or defining the name • lib/features/account/account_screen.dart:249:48 • undefined_identifier
-  error • Undefined name 'link'. Try correcting the name to one that is defined, or defining the name • lib/features/account/legal_links.dart:34:5 • undefined_identifier
-  error • Undefined name 'link'. Try correcting the name to one that is defined, or defining the name • lib/features/account/legal_links.dart:40:42 • undefined_identifier
-  error • Undefined name 'link'. Try correcting the name to one that is defined, or defining the name • lib/features/account/legal_links.dart:42:51 • undefined_identifier
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/account/account_screen.dart:193:22 • prefer_const_constructors
+warning • Unused import: '../../core/theme/app_theme.dart'. Try removing the import directive • lib/features/account/legal_links.dart:5:8 • unused_import
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/admin/admin_console_screen.dart:41:7 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/admin/admin_console_screen.dart:42:7 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/admin/admin_console_screen.dart:43:7 • prefer_const_constructors
@@ -178,10 +191,6 @@ Analyzing jdmart...
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/catalog/search_screen.dart:241:34 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/catalog/search_screen.dart:245:29 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/checkout/checkout_screen.dart:247:32 • prefer_const_constructors
-  error • Undefined name 'context'. Try correcting the name to one that is defined, or defining the name • lib/features/home/home_screen.dart:628:44 • undefined_identifier
-  error • Undefined name 'context'. Try correcting the name to one that is defined, or defining the name • lib/features/home/home_screen.dart:632:43 • undefined_identifier
-  error • Undefined name 'context'. Try correcting the name to one that is defined, or defining the name • lib/features/home/home_screen.dart:634:51 • undefined_identifier
-  error • Undefined name 'context'. Try correcting the name to one that is defined, or defining the name • lib/features/jobs/job_widgets.dart:70:37 • undefined_identifier
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/jobs/my_jobs_screen.dart:35:25 • prefer_const_constructors
    info • Use 'const' literals as arguments to constructors of '@immutable' classes. Try adding 'const' before the literal • lib/features/jobs/my_jobs_screen.dart:36:19 • prefer_const_literals_to_create_immutables
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/jobs/my_jobs_screen.dart:36:20 • prefer_const_constructors
@@ -191,16 +200,13 @@ Analyzing jdmart...
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/jobs/post_job_screen.dart:120:28 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/jobs/post_job_screen.dart:121:32 • prefer_const_constructors
 warning • A value for optional parameter 'size' isn't ever given. Try removing the unused parameter • lib/features/onboarding/onboarding_screen.dart:413:45 • unused_element_parameter
-warning • The '!' will have no effect because the receiver can't be null. Try removing the '!' operator • lib/features/orders/order_detail_screen.dart:185:80 • unnecessary_non_null_assertion
-warning • The '!' will have no effect because the receiver can't be null. Try removing the '!' operator • lib/features/orders/order_detail_screen.dart:185:107 • unnecessary_non_null_assertion
-warning • The '!' will have no effect because the receiver can't be null. Try removing the '!' operator • lib/features/orders/order_detail_screen.dart:186:42 • unnecessary_non_null_assertion
-  error • Undefined name 'context'. Try correcting the name to one that is defined, or defining the name • lib/features/orders/order_detail_screen.dart:235:42 • undefined_identifier
-  error • Undefined name 'context'. Try correcting the name to one that is defined, or defining the name • lib/features/orders/order_detail_screen.dart:244:41 • undefined_identifier
-  error • Undefined name 'context'. Try correcting the name to one that is defined, or defining the name • lib/features/orders/order_detail_screen.dart:255:69 • undefined_identifier
+warning • The '!' will have no effect because the receiver can't be null. Try removing the '!' operator • lib/features/orders/order_detail_screen.dart:188:80 • unnecessary_non_null_assertion
+warning • The '!' will have no effect because the receiver can't be null. Try removing the '!' operator • lib/features/orders/order_detail_screen.dart:188:107 • unnecessary_non_null_assertion
+warning • The '!' will have no effect because the receiver can't be null. Try removing the '!' operator • lib/features/orders/order_detail_screen.dart:189:42 • unnecessary_non_null_assertion
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/sell/add_product_screen.dart:291:23 • prefer_const_constructors
 warning • Unused import: '../../core/theme/app_theme.dart'. Try removing the import directive • lib/shared/widgets/qty_stepper.dart:2:8 • unused_import
 
-48 issues found. (ran in 7.5s)
+35 issues found. (ran in 13.4s)
 
 ===== TESTS =====
 
