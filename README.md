@@ -1,87 +1,60 @@
 # JDMart — Buy Smart. Sell Faster.
 
-A Sierra Leone marketplace app built with **Flutter (Dart)**. Anyone can buy, and anyone can sell, from one account.
+Sierra Leone's marketplace app, built with **Flutter** on a **Firebase** backend, with **Monime** payments
+(Orange Money, Afrimoney and cards). Anyone can buy, and anyone can sell, from one account.
 
-## What's inside
+➡️ **To launch, follow [docs/GO_LIVE.md](docs/GO_LIVE.md).**
 
-**Buyers**
-- Home feed with an auto-sliding promo banner, category strip, Flash Deals with a countdown, featured items, and "Just listed"
-- Search with recent and trending searches, plus filters for category, city, condition and price range (in Leones), and sorting
-- Product page with a photo gallery, discount badge, stock count, delivery fee to your city, seller card, reviews and similar items
-- Cart with quantity limits based on stock, swipe to remove, and a running total of your savings
-- Checkout with delivery address and landmark, delivery fees for 15 cities and towns, and payment by **Orange Money**, **Afrimoney (Africell)**, card, or **cash on delivery**
-- Order tracking (Pending → Confirmed → On the way → Delivered), and you can cancel an order while it is still pending
-- Saved items (wishlist), plus chat with sellers that has quick-reply chips
+## Features
 
-**Sellers**
-- Post an item with up to 6 photos (camera or gallery), a category, condition, price and old price, quantity, location, and whether the price is negotiable
-- Edit, mark as sold, relist or delete a listing
-- Seller Hub showing earnings, orders to fulfil, active listings, views and low-stock alerts
-- Sales orders, where you move each order through its delivery stages or decline it
-- A public seller profile with a verified badge, average rating and all your listings
+**Buyers:** phone-number sign-in (SMS code) · live listings feed with deals and featured items · search with filters
+(category, town, condition, price) · product pages with photo gallery, seller profile and reviews · saved items synced
+across phones · cart with one delivery fee per seller · checkout with Cash on Delivery or Mobile Money/Card · order
+tracking with push notifications · chat with sellers · report a listing
 
-**Sierra Leone details**: prices in new Leones (`Le 3,850`), +232 phone numbers (you can sign in with `076 123456`), cities from Freetown to Kailahun, the "Kushe!" greeting, and safety tips about mobile money.
+**Sellers:** post listings with up to 6 photos (compressed to save data) · edit, mark sold, hide, relist or delete ·
+Seller Hub with earnings from delivered orders, orders to fulfil, views and low-stock alerts · confirm → ship →
+deliver orders, or decline them · public profile with ratings and a verified badge
 
-## Run it
+**Trust & safety:** orders, stock and payments are handled on the server (Cloud Functions), never trusted from the phone ·
+strict Firestore and Storage security rules · reviews only from buyers whose order was delivered · unpaid online
+orders cancelled after 30 minutes · in-app account deletion
 
-You need the Flutter SDK (3.22 or newer): https://docs.flutter.dev/get-started/install
+**Sierra Leone details:** prices in new Leones (`Le 3,850`) · +232 numbers · delivery fees for 15 towns from Freetown to Kailahun
 
-### macOS / Linux
+## Quick start (developers)
+
 ```bash
-cd jdmart
-bash setup.sh      # creates the android/ios/web folders, icons, splash screen and permissions, then runs the tests
+bash setup.sh                 # generates android/ and ios/, icons, splash, permissions; runs tests
+flutterfire configure         # connects your Firebase project (writes lib/firebase_options.dart)
+cd functions && npm install && cd ..
+firebase deploy --only firestore,storage,functions,hosting
 flutter run
 ```
 
-### Windows (PowerShell)
-```powershell
-cd jdmart
-flutter create --project-name jdmart --org sl.jdmart --platforms=android,ios,web .
-flutter pub get
-dart run flutter_launcher_icons
-dart run flutter_native_splash:create
-flutter run
-```
-On Windows, also add `<uses-permission android:name="android.permission.INTERNET"/>` inside `<manifest>` in
-`android/app/src/main/AndroidManifest.xml`. Release builds need it to load fonts and online images.
-
-To try it quickly in a browser, run `flutter run -d chrome`.
-
-**Demo seller login:** `076 123456` / `seller123` (Kamara Electronics). You can also create your own account. Any account can buy and sell.
-
-## Build for release
-```bash
-flutter build apk --release        # Android APK to share or sideload
-flutter build appbundle --release  # For the Google Play Store
-flutter build ipa                  # iOS (requires a Mac and Xcode)
-```
+Details, costs and the Google Play checklist are in [docs/GO_LIVE.md](docs/GO_LIVE.md).
 
 ## Project structure
+
 ```
 lib/
-  main.dart                  App entry and providers
-  theme/app_theme.dart       Brand colours from the logo (#0029A8 blue, #FB6401 orange)
-  models/models.dart         AppUser, Product, Review, CartItem, Order, Conversation
-  data/seed_data.dart        Categories, cities and delivery fees, payment methods, demo sellers and products
-  services/storage_service.dart  Persistence (shared_preferences)
-  providers/                 Auth, Product, Cart, Order and Chat state (Provider)
-  widgets/                   Product card and grid, product image, shared UI
-  screens/                   Splash, onboarding, auth, home, search, product, cart, checkout,
-                             orders, chats, account, sell/ (add product, my listings, seller hub)
-assets/images/               logo.png, logo_mark.png (app icon), logo_mark_transparent.png,
-                             and the 12 category icons: phone.png, electronics.png, fashion.png,
-                             home_furniture.png, groceries.png, health_beauty.png, property.png,
-                             vehicle.png, agriculture.png, baby_kids.png, sport.png, others.png
+  main.dart                 Firebase init + dependency wiring
+  firebase_options.dart     placeholder — generated by `flutterfire configure`
+  core/                     config, catalog (categories, towns, fees), theme, formatters, search keywords
+  data/models/              Firestore document models
+  data/repositories/        all Firebase reads and writes
+  data/services/            phone auth, push notifications, on-device storage
+  state/                    session, cart, saved items, search history (Provider)
+  features/                 auth · onboarding · shell · home · catalog · cart · checkout · orders · chat · account · sell
+  shared/widgets/           reusable UI
+functions/                  Cloud Functions (TypeScript): orders, Monime payments, notifications, account deletion
+firestore.rules · storage.rules · firestore.indexes.json · firebase.json
+hosting/                    payment return pages, Terms & Privacy templates
+assets/images/              logo + category icons (phone.png, electronics.png, … others.png)
 ```
 
-## Going live (next steps)
-This version saves all data on the device, so it works fully offline and is ready to demo. To make it a shared,
-nationwide marketplace, connect a backend:
+## Category icons
 
-1. **Backend**: Firebase (Auth, Firestore, Storage) or Supabase. Every read and write already goes through
-   `StorageService` and the providers, so you only change those files. Each model already has `toJson`/`fromJson`.
-2. **Phone sign-in**: Firebase Phone Auth (SMS OTP) to replace the demo password login.
-3. **Payments**: connect to Orange Money and Afrimoney merchant APIs, or use an aggregator that supports Sierra Leone
-   mobile money. The payment step in `OrderProvider.placeOrder` is marked as simulated.
-4. **Push notifications**: Firebase Cloud Messaging for new orders and chat messages.
-5. **Photos**: upload listing images to cloud storage and save the URLs. `ProductImage` already shows URLs.
+Put these PNGs in `assets/images/` (lower-case names): `phone.png`, `electronics.png`, `fashion.png`,
+`home_furniture.png`, `groceries.png`, `health_beauty.png`, `property.png`, `vehicle.png`, `agriculture.png`,
+`baby_kids.png`, `sport.png`, `others.png`. Any missing icon falls back to a built-in one.
