@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/catalog.dart';
@@ -11,6 +10,7 @@ import '../../shared/widgets/category_icon.dart';
 import '../../shared/widgets/common.dart';
 import '../../shared/widgets/motion.dart';
 import '../../shared/widgets/product_card.dart';
+import '../../shared/widgets/product_image.dart';
 import '../../state/session_provider.dart';
 import '../account/wishlist_screen.dart';
 import '../catalog/search_screen.dart';
@@ -371,7 +371,7 @@ class _BannerCarouselState extends State<_BannerCarousel> {
           fit: StackFit.expand,
           children: [
             if (b.imageUrl != null)
-              CachedNetworkImage(imageUrl: b.imageUrl!, fit: BoxFit.cover)
+              NetImage(url: b.imageUrl!, error: () => const SizedBox.shrink())
             else if (cat != null)
               Positioned(right: -10, bottom: -14, child: CategoryIcon(category: cat, size: height, opacity: 0.22)),
             if (b.imageUrl == null)

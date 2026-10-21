@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
@@ -6,6 +5,7 @@ import '../../data/models/order.dart';
 import '../../features/cart/cart_screen.dart';
 import '../../state/cart_provider.dart';
 import 'motion.dart';
+import 'product_image.dart';
 
 class JDLogo extends StatelessWidget {
   final double height;
@@ -216,7 +216,7 @@ class UserAvatar extends StatelessWidget {
     return CircleAvatar(
       radius: radius,
       backgroundColor: AppColors.blueLight,
-      backgroundImage: (url != null && url.isNotEmpty) ? CachedNetworkImageProvider(url) : null,
+      backgroundImage: (url != null && url.isNotEmpty) ? netImageProvider(url) : null,
       child: (url == null || url.isEmpty)
           ? Text(initials.isEmpty ? '?' : initials,
               style: TextStyle(color: AppColors.blue, fontWeight: FontWeight.w700, fontSize: radius * 0.7))
