@@ -48,9 +48,10 @@ on day one.
 6. In the project folder:
    ```bash
    bash setup.sh            # creates the android/ and ios/ folders (Windows: run the commands inside it by hand)
-   flutterfire configure    # pick your project; tick Android and iOS. This writes lib/firebase_options.dart
-   cp .firebaserc.example .firebaserc   # then put your project id in it
    ```
+   **Already done for JDMart:** project `jdmart-sl` is connected. `lib/firebase_options.dart` (Android),
+   `.firebaserc` and `config/google-services.json` are in the repo. To add iPhone later, register an iOS app
+   with bundle ID `sl.jdmart.jdmart`, then run `flutterfire configure --project=jdmart-sl`.
 
 ## 3. Set up the Gmail sender and deploy the backend
 

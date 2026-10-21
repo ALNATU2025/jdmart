@@ -6,6 +6,11 @@ set -e
 echo "▶ Generating Android and iOS project folders…"
 flutter create --project-name jdmart --org sl.jdmart --platforms=android,ios .
 
+if [ -f config/google-services.json ] && [ -d android/app ]; then
+  echo "▶ Android: copying Firebase config (google-services.json)…"
+  cp config/google-services.json android/app/google-services.json
+fi
+
 echo "▶ Installing packages…"
 flutter pub get
 
@@ -37,10 +42,7 @@ cat <<'MSG'
 
 ✅ App setup done.
 
-Next: connect your Firebase project (docs/GO_LIVE.md, step 2):
-    dart pub global activate flutterfire_cli
-    flutterfire configure
-
-Then run the app on a phone:
+Firebase project jdmart-sl is already connected (lib/firebase_options.dart).
+Next: deploy the backend (docs/GO_LIVE.md, step 3), then run the app on a phone:
     flutter run
 MSG

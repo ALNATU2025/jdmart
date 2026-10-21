@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "256195288050",
+    "project_id": "jdmart-sl",
+    "storage_bucket": "jdmart-sl.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:256195288050:android:e2079da16674787fac696b",
+        "android_client_info": {
+          "package_name": "sl.jdmart.jdmart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxF1FRGeSmvr7cl8rWwICBm-FjwDRAaQw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
