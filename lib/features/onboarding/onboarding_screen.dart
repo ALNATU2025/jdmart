@@ -300,6 +300,7 @@ class _GetStartedButton extends StatelessWidget {
       scale: 0.96,
       child: Container(
         height: 60,
+        width: double.infinity,
         decoration: BoxDecoration(
           gradient: const LinearGradient(colors: [Color(0xFFFF7A1A), AppColors.orange]),
           borderRadius: BorderRadius.circular(30),
