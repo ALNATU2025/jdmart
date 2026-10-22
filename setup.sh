@@ -13,7 +13,13 @@ fi
 
 echo "▶ Android: keep rules for release builds (plugins called from Dart via JNI)…"
 cat > android/app/proguard-rules.pro <<'RULES'
-# Flutter plugins that are called by name from Dart (JNI) must not be renamed or removed by R8.
+# Several Flutter plugins are called by name from Dart (JNI) and use Kotlin
+# classes R8 can't see being used. Don't remove or rename anything.
+-dontshrink
+-dontobfuscate
+-dontoptimize
+-keep class kotlin.** { *; }
+-keep class kotlinx.** { *; }
 -keep class io.flutter.plugins.** { *; }
 -keep class dev.flutter.** { *; }
 -keep class kotlin.coroutines.** { *; }
