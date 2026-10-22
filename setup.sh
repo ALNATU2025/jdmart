@@ -23,7 +23,20 @@ cat > android/app/proguard-rules.pro <<'RULES'
 -keep class kotlinx.coroutines.** { *; }
 -keep class kotlin.jvm.functions.** { *; }
 -dontwarn kotlinx.coroutines.**
+# Local notifications (heads-up banners)
+-keep class com.dexterous.** { *; }
+-keep class com.google.gson.** { *; }
+-keepattributes Signature
+-keepattributes *Annotation*
 RULES
+
+echo "▶ Android: notification icon, colour and Java 8+ library support…"
+cp -r config/android/res/. android/app/src/main/res/
+GRADLE=android/app/build.gradle.kts
+if [ -f "$GRADLE" ] && ! grep -q "isCoreLibraryDesugaringEnabled" "$GRADLE"; then
+  perl -0pi -e 's/compileOptions \{/compileOptions {\n        isCoreLibraryDesugaringEnabled = true/' "$GRADLE"
+  printf '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")\n}\n' >> "$GRADLE"
+fi
 
 echo "▶ Installing packages…"
 flutter pub get
@@ -45,6 +58,13 @@ perl -pi -e 's#android:label="jdmart"#android:label="JDMart"#' "$MANIFEST"
 if ! grep -q "ACCESS_FINE_LOCATION" "$MANIFEST"; then
   echo "▶ Android: location permission for live delivery tracking…"
   perl -0pi -e 's#(<manifest[^>]*>)#$1\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>#' "$MANIFEST"
+fi
+if ! grep -q "POST_NOTIFICATIONS" "$MANIFEST"; then
+  echo "▶ Android: notification permission and pop-up channel…"
+  perl -0pi -e 's#(<manifest[^>]*>)#$1\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>\n    <uses-permission android:name="android.permission.VIBRATE"/>#' "$MANIFEST"
+fi
+if ! grep -q "default_notification_channel_id" "$MANIFEST"; then
+  perl -0pi -e 's#(<application[^>]*>)#$1\n        <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="jdmart_alerts"/>\n        <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="\@drawable/ic_stat_jdmart"/>\n        <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="\@color/jdmart_blue"/>#' "$MANIFEST"
 fi
 if ! grep -q "com.google.android.geo.API_KEY" "$MANIFEST"; then
   echo "▶ Android: Google Maps key placeholder (replace YOUR_MAPS_KEY)…"

@@ -16,7 +16,20 @@ async function push(uid: string, title: string, body: string, data: Record<strin
     tokens,
     notification: { title, body: body.slice(0, 180) },
     data,
-    android: { priority: "high", notification: { color: "#0029A8" } },
+    // "jdmart_alerts" is a high-importance channel created by the app, so Android
+    // shows a pop-up banner (also on the lock screen) with sound and vibration.
+    android: {
+      priority: "high",
+      notification: {
+        channelId: "jdmart_alerts",
+        color: "#0029A8",
+        icon: "ic_stat_jdmart",
+        sound: "default",
+        defaultVibrateTimings: true,
+        notificationPriority: "PRIORITY_MAX",
+        visibility: "public",
+      },
+    },
     apns: { payload: { aps: { sound: "default" } } },
   });
 

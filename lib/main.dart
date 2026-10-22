@@ -22,7 +22,10 @@ import 'data/repositories/rider_repository.dart';
 import 'data/repositories/user_repository.dart';
 import 'data/services/auth_service.dart';
 import 'data/services/local_store.dart';
+import 'data/models/app_notification.dart';
+import 'data/services/local_alerts.dart';
 import 'data/services/push_service.dart';
+import 'features/notifications/notifications_screen.dart';
 import 'features/onboarding/splash_screen.dart';
 import 'firebase_options.dart';
 import 'state/cart_provider.dart';
@@ -69,7 +72,34 @@ Future<void> main() async {
   await _start();
 }
 
+/// Lets push notifications open screens from anywhere.
+final navigatorKey = GlobalKey<NavigatorState>();
+
+void _openFromPush(Map<String, String> data) {
+  final ctx = navigatorKey.currentContext;
+  if (ctx == null) return;
+  openNotificationTarget(
+    ctx,
+    AppNotification(
+      id: '',
+      title: '',
+      body: '',
+      type: data['type'] ?? 'info',
+      data: data,
+      read: true,
+      createdAt: DateTime.now(),
+    ),
+  );
+}
+
 Future<void> _start() async {
+  try {
+    await LocalAlerts.init();
+  } catch (e) {
+    debugPrint('Local notifications not available: $e');
+  }
+  LocalAlerts.onTap = _openFromPush;
+  PushService.onOpen = _openFromPush;
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.dark,
@@ -143,6 +173,7 @@ class JDMartApp extends StatelessWidget {
       themeMode: context.watch<ThemeController>().mode,
       themeAnimationDuration: const Duration(milliseconds: 350),
       themeAnimationCurve: Curves.easeOutCubic,
+      navigatorKey: navigatorKey,
       home: const SplashScreen(),
       // Shows unexpected errors at the bottom of the screen (tap to hide), so testers can report them.
       builder: (context, child) => Stack(
