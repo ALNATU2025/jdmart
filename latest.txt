@@ -1,4 +1,4 @@
-commit: 146efd19351c2d3266a22c478e03e18c6a782970
+commit: df3b3c9aa5ce46841c83fda56f971a9144e06eda
 analyze exit: 0
 
 Resolving dependencies...
@@ -201,7 +201,7 @@ Analyzing jdmart...
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/jobs/post_job_screen.dart:121:32 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/sell/add_product_screen.dart:291:23 • prefer_const_constructors
 
-30 issues found. (ran in 12.7s)
+30 issues found. (ran in 7.7s)
 
 ===== TESTS =====
 
@@ -226,6 +226,6 @@ Wasm dry run succeeded. Consider building and testing your application with the 
 Use --no-wasm-dry-run to disable these warnings.
 Font asset "CupertinoIcons.ttf" was tree-shaken, reducing it from 257628 to 1472 bytes (99.4% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
 Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 33548 bytes (98.0% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
-Compiling lib/main.dart for the Web...                             58.5s
+Compiling lib/main.dart for the Web...                             36.2s
 ✓ Built build/web
 exit=0
