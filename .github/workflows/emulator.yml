@@ -22,6 +22,8 @@ jobs:
         with:
           channel: stable
           cache: true
+      - name: Use the fixed test signing key
+        run: mkdir -p ~/.android && cp config/test-debug.keystore ~/.android/debug.keystore
       - name: Create Android project
         run: |
           sed -i 's/^flutter test$/echo skip/' setup.sh
