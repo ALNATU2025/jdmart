@@ -9,6 +9,10 @@ import '../../shared/widgets/common.dart';
 import '../../shared/widgets/motion.dart';
 import '../../state/session_provider.dart';
 import 'live_tracking_screen.dart';
+import '../../data/models/rider.dart';
+import '../../data/repositories/rider_repository.dart';
+import 'rider_apply_screen.dart';
+import 'rider_widgets.dart';
 
 /// Riders accept jobs with a code; anyone on a delivery can track it.
 class RiderScreen extends StatefulWidget {
@@ -55,6 +59,8 @@ class _RiderScreenState extends State<RiderScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
         children: [
+          _RiderStatusCard(uid: uid),
+          const SizedBox(height: 14),
           FadeSlideIn(
             child: Container(
               padding: const EdgeInsets.all(20),
@@ -187,6 +193,106 @@ class _RiderScreenState extends State<RiderScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Shows whether I'm a verified rider, and lets me apply or go online/offline.
+class _RiderStatusCard extends StatelessWidget {
+  final String uid;
+  const _RiderStatusCard({required this.uid});
+
+  @override
+  Widget build(BuildContext context) {
+    final repo = context.read<RiderRepository>();
+    return StreamView<Rider?>(
+      id: uid,
+      create: () => repo.watch(uid),
+      loading: const SizedBox(height: 80),
+      builder: (context, r) {
+        void openForm() =>
+            Navigator.push(context, MaterialPageRoute(builder: (_) => RiderApplyScreen(existing: r)));
+        if (r == null) {
+          return FadeSlideIn(
+            child: Pressable(
+              onTap: openForm,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: AppColors.orangeGradient,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(color: AppColors.orange.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 6)),
+                  ],
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.verified_user_rounded, color: Colors.white, size: 34),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Become a verified rider',
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
+                          Text('Deliver JDMart orders and earn. Apply with your photo, ID and plate number.',
+                              style: TextStyle(color: Colors.white, fontSize: 12.5, height: 1.35)),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.chevron_right_rounded, color: Colors.white),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+        final (color, label, note) = switch (r.status) {
+          RiderStatus.approved => (AppColors.success, 'Verified rider', '${r.deliveries} deliveries completed'),
+          RiderStatus.pending => (AppColors.orange, 'Application under review', 'We\'ll notify you when an admin has checked it.'),
+          RiderStatus.rejected => (AppColors.danger, 'Not approved', r.reviewNote.isEmpty ? 'Update your details and apply again.' : r.reviewNote),
+          RiderStatus.suspended => (AppColors.danger, 'Rider account suspended', r.reviewNote.isEmpty ? 'Contact JDMart support.' : r.reviewNote),
+        };
+        return FadeSlideIn(
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(20), boxShadow: softShadow()),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    RiderAvatar(name: r.name, photoUrl: r.photoUrl, radius: 26, verified: r.isApproved),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w800)),
+                          Text(r.vehicleLabel, style: TextStyle(color: context.muted, fontSize: 12.5)),
+                          Text(note, style: TextStyle(color: context.muted, fontSize: 12)),
+                        ],
+                      ),
+                    ),
+                    if (r.status != RiderStatus.suspended)
+                      IconButton(tooltip: 'Edit details', onPressed: openForm, icon: const Icon(Icons.edit_outlined)),
+                  ],
+                ),
+                if (r.isApproved)
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    value: r.available,
+                    activeThumbColor: AppColors.success,
+                    onChanged: (v) => repo.setAvailable(uid, v),
+                    title: Text(r.available ? 'Available for jobs' : 'Not taking jobs',
+                        style: const TextStyle(fontWeight: FontWeight.w600)),
+                    subtitle: const Text('Sellers can choose available riders for their orders'),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

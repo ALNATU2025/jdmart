@@ -8,6 +8,7 @@ import '../../shared/widgets/common.dart';
 import '../../shared/widgets/contact_actions.dart';
 import '../../shared/widgets/motion.dart';
 import 'live_tracking_screen.dart';
+import 'rider_widgets.dart';
 
 /// "Delivery tracking" card on the order page (buyer and seller).
 /// Gets the tracking code the first time and shows the rider's progress.
@@ -152,6 +153,49 @@ class _DeliveryCardState extends State<DeliveryCard> {
           ),
           const SizedBox(height: 10),
           Text(hint, style: const TextStyle(color: Colors.white70, fontSize: 12.5, height: 1.4)),
+          if (d.riderId != null) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(14)),
+              child: Row(
+                children: [
+                  RiderAvatar(name: d.riderName ?? '', photoUrl: d.riderPhotoUrl, radius: 22),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(d.riderName ?? 'Rider',
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                        Text(d.riderVehicleLabel.isEmpty ? 'Verified rider' : 'Verified rider • ${d.riderVehicleLabel}',
+                            style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          if (widget.sellerView && d.riderId == null) ...[
+            const SizedBox(height: 12),
+            Pressable(
+              haptic: true,
+              onTap: () => showRiderPicker(context, orderId: d.orderId, city: d.dropoff.split(', ').last),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 13),
+                decoration: BoxDecoration(gradient: AppColors.orangeGradient, borderRadius: BorderRadius.circular(14)),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.verified_user_rounded, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text('Choose a verified rider', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                  ],
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 14),
           Pressable(
             haptic: true,

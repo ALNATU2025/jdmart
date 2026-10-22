@@ -31,3 +31,4 @@ export {
   onJobUpdated,
   onTalentCreated,
 } from "./activity";
+export { onRiderWritten, assignRider } from "./riders";

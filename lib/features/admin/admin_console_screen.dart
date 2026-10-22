@@ -9,6 +9,7 @@ import '../../state/session_provider.dart';
 import 'admin_screens.dart';
 import '../../core/theme/palette.dart';
 import 'admin_activity_screen.dart';
+import 'admin_riders_screen.dart';
 
 /// Admin console: numbers at a glance and tools to manage JDMart.
 /// Only visible to accounts with the admin claim (see functions/src/admin.ts).
@@ -45,6 +46,8 @@ class _AdminConsoleScreenState extends State<AdminConsoleScreen> {
       _Tool(Icons.flag_rounded, 'Reports', 'Reported listings', AppColors.danger, const AdminReportsScreen()),
       _Tool(Icons.people_alt_rounded, 'Users', 'Verify or suspend', const Color(0xFF7C3AED), const AdminUsersScreen()),
       _Tool(Icons.receipt_long_rounded, 'Orders', 'All orders', AppColors.success, const AdminOrdersScreen()),
+      _Tool(Icons.delivery_dining_rounded, 'Riders', 'Approve verified riders', AppColors.orange,
+          const AdminRidersScreen()),
       _Tool(Icons.work_rounded, 'Jobs & CVs', 'Moderate job posts', AppColors.orange, const AdminJobsScreen()),
       _Tool(Icons.view_carousel_rounded, 'Banners', 'Home page promos', const Color(0xFF0EA5E9), const AdminBannersScreen()),
       if (session.isSuperAdmin)

@@ -18,6 +18,7 @@ import 'data/repositories/misc_repositories.dart';
 import 'data/repositories/notification_repository.dart';
 import 'data/repositories/order_repository.dart';
 import 'data/repositories/product_repository.dart';
+import 'data/repositories/rider_repository.dart';
 import 'data/repositories/user_repository.dart';
 import 'data/services/auth_service.dart';
 import 'data/services/local_store.dart';
@@ -88,6 +89,7 @@ Future<void> _start() async {
   final admin = AdminRepository(db, functions, FirebaseStorage.instance);
   final deliveries = DeliveryRepository(db, functions);
   final notifications = NotificationRepository(db);
+  final riders = RiderRepository(db, functions, FirebaseStorage.instance);
 
   final session = SessionProvider(AuthService(FirebaseAuth.instance, functions), users, PushService(users));
   final cart = CartProvider(products);
@@ -116,6 +118,7 @@ Future<void> _start() async {
         Provider.value(value: admin),
         Provider.value(value: deliveries),
         Provider.value(value: notifications),
+        Provider.value(value: riders),
         ChangeNotifierProvider.value(value: session),
         ChangeNotifierProvider.value(value: cart),
         ChangeNotifierProvider.value(value: wishlist),

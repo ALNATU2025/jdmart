@@ -314,6 +314,55 @@ service cloud.firestore {
       }
     }
 
+    // ---- Verified riders ---------------------------------------------------------------------
+    function validRider(d) {
+      return str(d.name, 2, 60)
+        && (d.photoUrl is string && d.photoUrl.size() > 0)
+        && d.vehicleType in ['Motorbike', 'Keke', 'Car', 'Bicycle', 'On foot']
+        && str(d.plate, 0, 20)
+        && str(d.city, 2, 40)
+        && d.available is bool;
+    }
+
+    match /riders/{uid} {
+      // Approved riders are visible to members (sellers choose from them).
+      allow read: if signedIn() && (resource.data.status == 'approved' || isUser(uid) || isAdmin());
+
+      allow create: if isUser(uid) && hasProfile()
+        && request.resource.data.keys().hasOnly([
+             'name', 'photoUrl', 'vehicleType', 'plate', 'city', 'available', 'status', 'deliveries',
+             'reviewNote', 'createdAt', 'updatedAt'])
+        && validRider(request.resource.data)
+        && request.resource.data.status == 'pending'
+        && request.resource.data.deliveries == 0
+        && request.resource.data.createdAt == request.time;
+
+      // The rider may edit their details (which sends them back for review) or toggle availability.
+      allow update: if (isUser(uid)
+          && validRider(request.resource.data)
+          && (
+            changed().hasOnly(['available', 'updatedAt'])
+            || (changed().hasOnly(['name', 'photoUrl', 'vehicleType', 'plate', 'city', 'available', 'status', 'updatedAt'])
+                && request.resource.data.status == 'pending'
+                && resource.data.status != 'suspended')
+          )
+        ) || (
+          isAdmin() && changed().hasOnly(['status', 'reviewNote', 'reviewedAt'])
+          && request.resource.data.status in ['pending', 'approved', 'rejected', 'suspended']
+        );
+
+      allow delete: if isUser(uid) || isAdmin();
+
+      // ID details: only the rider and admins.
+      match /private/{doc} {
+        allow read: if isUser(uid) || isAdmin();
+        allow write: if isUser(uid)
+          && request.resource.data.keys().hasOnly(['idType', 'idNumber', 'idPhotoUrl', 'phone', 'updatedAt'])
+          && str(request.resource.data.idType, 2, 30)
+          && str(request.resource.data.idNumber, 3, 40);
+      }
+    }
+
     // ---- Talent profiles (CVs) ---------------------------------------------------------------
     function validTalent(d) {
       return str(d.name, 2, 60)

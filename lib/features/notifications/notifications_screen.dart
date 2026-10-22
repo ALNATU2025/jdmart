@@ -28,6 +28,7 @@ import '../orders/order_detail_screen.dart';
       'report' => (Icons.flag_rounded, AppColors.danger),
       'user' => (Icons.person_add_alt_1_rounded, const Color(0xFF7C3AED)),
       'welcome' => (Icons.celebration_rounded, AppColors.orange),
+      'rider' => (Icons.delivery_dining_rounded, AppColors.orange),
       'admin' => (Icons.admin_panel_settings_rounded, AppColors.navy),
       _ => (Icons.notifications_rounded, AppColors.blue),
     };

@@ -24,6 +24,7 @@ class _AdminActivityScreenState extends State<AdminActivityScreen> {
     ('CVs', 'talent'),
     ('Reports', 'report'),
     ('Deliveries', 'delivery'),
+    ('Riders', 'rider'),
   ];
   String? _type;
 

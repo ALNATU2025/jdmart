@@ -15,6 +15,7 @@ import { HttpsError, onCall, type CallableRequest } from "firebase-functions/v2/
 import { notifyAdmins, notifyUser } from "./notify";
 import { advanceOrderInTx, type OrderStatus } from "./orders";
 import { REGION } from "./region";
+import { approvedRider } from "./riders";
 
 const db = () => getFirestore();
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O, 1/I
@@ -100,6 +101,9 @@ export const joinDelivery = onCall({ region: REGION }, async (req) => {
   const found = await db().collection("deliveries").where("codeKey", "==", key).limit(1).get();
   if (found.empty) throw new HttpsError("not-found", "No delivery with that code. Check it and try again.");
   const ref = found.docs[0].ref;
+  const pre = found.docs[0].data();
+  const isParty = ((pre.participants as string[]) ?? []).includes(uid);
+  const rider = isParty ? null : await approvedRider(uid);
 
   const result = await db().runTransaction(async (tx) => {
     const snap = await tx.get(ref);
@@ -119,7 +123,8 @@ export const joinDelivery = onCall({ region: REGION }, async (req) => {
     if (!profile.exists) throw new HttpsError("failed-precondition", "Please complete your profile first.");
     tx.update(ref, {
       riderId: uid,
-      riderName: profile.data()!.name ?? "Rider",
+      ...(rider ?? {}),
+      riderName: rider?.riderName ?? profile.data()!.name ?? "Rider",
       riderPhone: (priv.data()?.phone as string | undefined) ?? "",
       status: d.status === "waiting" ? "assigned" : d.status,
       participants: FieldValue.arrayUnion(uid),
@@ -171,6 +176,9 @@ export const deliveryAction = onCall({ region: REGION }, async (req) => {
         riderId: null,
         riderName: null,
         riderPhone: null,
+        riderPhotoUrl: null,
+        riderVehicle: null,
+        riderPlate: null,
         status: "waiting",
         participants: FieldValue.arrayRemove(uid),
         [`locations.${uid}`]: FieldValue.delete(),
@@ -194,6 +202,7 @@ export const deliveryAction = onCall({ region: REGION }, async (req) => {
     }
     if (o.status === "confirmed" || o.status === "shipped") advanceOrderInTx(tx, orderRef, o, "delivered" as OrderStatus);
     tx.update(ref, { status: "delivered", deliveredAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
+    tx.set(db().collection("riders").doc(uid), { deliveries: FieldValue.increment(1) }, { merge: true });
     return d;
   });
 

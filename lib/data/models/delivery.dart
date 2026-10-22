@@ -78,6 +78,9 @@ class Delivery {
   final String? riderId;
   final String? riderName;
   final String? riderPhone;
+  final String? riderPhotoUrl;
+  final String riderVehicle;
+  final String riderPlate;
   final DeliveryStatus status;
   final Map<String, LivePoint> locations;
   final DateTime updatedAt;
@@ -95,10 +98,17 @@ class Delivery {
     this.riderId,
     this.riderName,
     this.riderPhone,
+    this.riderPhotoUrl,
+    this.riderVehicle = '',
+    this.riderPlate = '',
     required this.status,
     required this.locations,
     required this.updatedAt,
   });
+
+  /// e.g. "Motorbike • AKN 123" (empty for older deliveries).
+  String get riderVehicleLabel =>
+      riderPlate.isEmpty ? riderVehicle : (riderVehicle.isEmpty ? riderPlate : '$riderVehicle • $riderPlate');
 
   String get shortOrderId => orderId.length > 8 ? orderId.substring(0, 8).toUpperCase() : orderId.toUpperCase();
 
@@ -146,6 +156,9 @@ class Delivery {
       riderId: j['riderId'] as String?,
       riderName: j['riderName'] as String?,
       riderPhone: j['riderPhone'] as String?,
+      riderPhotoUrl: j['riderPhotoUrl'] as String?,
+      riderVehicle: (j['riderVehicle'] ?? '') as String,
+      riderPlate: (j['riderPlate'] ?? '') as String,
       status: _status(j['status']),
       locations: locs,
       updatedAt: tsToDate(j['updatedAt']),

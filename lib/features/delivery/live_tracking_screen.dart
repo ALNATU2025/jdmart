@@ -17,6 +17,7 @@ import '../../shared/widgets/common.dart';
 import '../../shared/widgets/contact_actions.dart';
 import '../../shared/widgets/motion.dart';
 import '../../state/session_provider.dart';
+import 'rider_widgets.dart';
 
 /// Freetown, when nobody is sharing a location yet.
 const _freetown = LatLng(8.4844, -13.2344);
@@ -427,11 +428,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                 Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    CircleAvatar(
-                      radius: 22,
-                      backgroundColor: color.withValues(alpha: 0.15),
-                      child: Icon(_roleIcon(r), color: color),
-                    ),
+                    if (r == 'rider' && d.riderId != null)
+                      RiderAvatar(name: name ?? '', photoUrl: d.riderPhotoUrl, radius: 22)
+                    else
+                      CircleAvatar(
+                        radius: 22,
+                        backgroundColor: color.withValues(alpha: 0.15),
+                        child: Icon(_roleIcon(r), color: color),
+                      ),
                     if (loc != null && !loc.isStale) const Positioned(right: -1, bottom: -1, child: _LiveDot()),
                   ],
                 ),
@@ -444,6 +448,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                           style: TextStyle(color: color, fontSize: 11.5, fontWeight: FontWeight.w700)),
                       Text(name ?? (r == 'rider' ? 'No rider yet' : '—'),
                           style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                      if (r == 'rider' && d.riderVehicleLabel.isNotEmpty)
+                        Text('Verified rider • ${d.riderVehicleLabel}',
+                            style: TextStyle(color: context.brand, fontSize: 12, fontWeight: FontWeight.w600)),
                       Text(where,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
