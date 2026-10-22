@@ -32,6 +32,9 @@ jobs:
         run: |
           sed -i 's/^flutter test$/echo "(tests run in the analyze workflow)"/' setup.sh
           bash setup.sh
+          if [ -f config/maps_android_key.txt ]; then
+            sed -i "s/YOUR_MAPS_KEY/$(tr -d '[:space:]' < config/maps_android_key.txt)/" android/app/src/main/AndroidManifest.xml
+          fi
           if [ -n "${{ secrets.MAPS_ANDROID_KEY }}" ]; then
             sed -i "s/YOUR_MAPS_KEY/${{ secrets.MAPS_ANDROID_KEY }}/" android/app/src/main/AndroidManifest.xml
           fi
