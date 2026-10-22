@@ -26,7 +26,7 @@ async function push(uid: string, title: string, body: string, data: Record<strin
         icon: "ic_stat_jdmart",
         sound: "default",
         defaultVibrateTimings: true,
-        notificationPriority: "PRIORITY_MAX",
+        priority: "max",
         visibility: "public",
       },
     },
