@@ -23,12 +23,26 @@
   ],
   "hosting": {
     "site": "jdmart-sl",
-    "public": "hosting",
+    "public": "build/web",
+    "predeploy": [
+      "node scripts/prepare_web.js"
+    ],
     "ignore": [
       "firebase.json",
       "**/.*"
     ],
-    "cleanUrls": false
+    "cleanUrls": false,
+    "headers": [
+      {
+        "source": "**/*.@(js|wasm|json)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      }
+    ]
   },
   "emulators": {
     "auth": {
