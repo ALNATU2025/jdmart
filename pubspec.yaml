@@ -30,6 +30,13 @@ dependencies:
   google_fonts: ^6.2.1
   cupertino_icons: ^1.0.8
 
+# The newest Android versions of these plugins call Kotlin through JNI and crash
+# on start in release builds ("Didn't find class kotlin/Result"). Use the
+# previous, stable implementations until that is fixed upstream.
+dependency_overrides:
+  shared_preferences_android: '>=2.4.0 <2.5.0'
+  path_provider_android: '>=2.2.0 <2.3.0'
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

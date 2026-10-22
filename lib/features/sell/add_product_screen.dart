@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart' show FirebaseException;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -196,10 +197,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
         showSnack(context, 'Your item is live on JDMart!');
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(productId: id)));
       }
-    } catch (e) {
+    } catch (e, st) {
+      debugPrint('JDMART save listing failed: $e\n$st');
       if (!mounted) return;
       setState(() => _saving = false);
-      showSnack(context, "Couldn't save your listing. Check your connection and try again.", error: true);
+      final detail = e is FirebaseException ? '${e.plugin}/${e.code}: ${e.message ?? ''}' : '$e';
+      showSnack(context, "Couldn't save your listing ($detail)", error: true);
     }
   }
 

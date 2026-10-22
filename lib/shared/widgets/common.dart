@@ -291,7 +291,11 @@ class StatusChip extends StatelessWidget {
 void showSnack(BuildContext context, String msg, {bool error = false}) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
-    ..showSnackBar(SnackBar(content: Text(msg), backgroundColor: error ? AppColors.danger : AppColors.navy));
+    ..showSnackBar(SnackBar(
+      content: Text(msg),
+      backgroundColor: error ? AppColors.danger : AppColors.navy,
+      duration: Duration(seconds: error ? 8 : 4),
+    ));
 }
 
 Future<bool> confirmDialog(BuildContext context,
