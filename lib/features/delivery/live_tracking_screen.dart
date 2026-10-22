@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -72,9 +73,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   @override
   void initState() {
     super.initState();
-    if (AppConfig.googleMapsApiKey.isEmpty) {
+    if (AppConfig.googleMapsApiKey.isEmpty || (!kIsWeb && !AppConfig.androidMapsEnabled)) {
       _mapsReady = false;
-      _mapsError = 'Add a Google Maps API key to see the live map.';
+      _mapsError = 'The live map isn\'t set up on this device yet.';
     } else {
       ensureGoogleMapsLoaded(AppConfig.googleMapsApiKey).then((_) {
         if (mounted) setState(() => _mapsReady = true);
