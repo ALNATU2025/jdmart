@@ -1,4 +1,4 @@
-commit: 9244981484da9163b9135e2c4bec8a6946c19220
+commit: 6959f20c82791b5459b080433525587372a54382
 analyze exit: 0
 
 Resolving dependencies...
@@ -173,14 +173,15 @@ Analyzing jdmart...
    info • 'getToken' is deprecated and shouldn't be used. Use register() and onRegistered instead. Try replacing the use of the deprecated member with the replacement • lib/data/services/push_service.dart:19:29 • deprecated_member_use
    info • 'onTokenRefresh' is deprecated and shouldn't be used. Use onRegistered instead. Try replacing the use of the deprecated member with the replacement • lib/data/services/push_service.dart:22:20 • deprecated_member_use
    info • 'getToken' is deprecated and shouldn't be used. Use register() and onRegistered instead. Try replacing the use of the deprecated member with the replacement • lib/data/services/push_service.dart:33:54 • deprecated_member_use
-   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/account/account_screen.dart:193:22 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/admin/admin_console_screen.dart:41:7 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/account/account_screen.dart:197:22 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/admin/admin_console_screen.dart:42:7 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/admin/admin_console_screen.dart:43:7 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/admin/admin_console_screen.dart:44:7 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/admin/admin_console_screen.dart:45:7 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/admin/admin_console_screen.dart:46:7 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/admin/admin_console_screen.dart:48:9 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/admin/admin_console_screen.dart:47:7 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/admin/admin_console_screen.dart:48:7 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/admin/admin_console_screen.dart:49:7 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/admin/admin_console_screen.dart:51:9 • prefer_const_constructors
    info • Use 'const' literals as arguments to constructors of '@immutable' classes. Try adding 'const' before the literal • lib/features/admin/admin_screens.dart:708:19 • prefer_const_literals_to_create_immutables
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/admin/admin_screens.dart:708:20 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/admin/admin_screens.dart:708:44 • prefer_const_constructors
@@ -200,7 +201,7 @@ Analyzing jdmart...
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/jobs/post_job_screen.dart:121:32 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/sell/add_product_screen.dart:291:23 • prefer_const_constructors
 
-29 issues found. (ran in 13.2s)
+30 issues found. (ran in 10.5s)
 
 ===== TESTS =====
 
@@ -224,7 +225,7 @@ Compiling lib/main.dart for the Web...
 Wasm dry run succeeded. Consider building and testing your application with the `--wasm` flag. See docs for more info: https://docs.flutter.dev/platform-integration/web/wasm
 Use --no-wasm-dry-run to disable these warnings.
 Font asset "CupertinoIcons.ttf" was tree-shaken, reducing it from 257628 to 1472 bytes (99.4% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
-Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 32276 bytes (98.0% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
-Compiling lib/main.dart for the Web...                             57.4s
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 33548 bytes (98.0% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Compiling lib/main.dart for the Web...                             46.1s
 ✓ Built build/web
 exit=0
