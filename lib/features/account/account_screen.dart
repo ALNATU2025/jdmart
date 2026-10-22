@@ -23,6 +23,7 @@ import 'wishlist_screen.dart';
 import '../../core/theme/palette.dart';
 import '../../shared/widgets/theme_toggle.dart';
 import '../delivery/rider_screen.dart';
+import '../notifications/notifications_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -127,6 +128,9 @@ class AccountScreen extends StatelessWidget {
                 const OrdersScreen(sellerView: true)),
           ], index: 1),
           _section('Buying', [
+            _tile(context, Icons.notifications_rounded, 'Notifications', 'Orders, messages, jobs and deliveries',
+                const NotificationsScreen(),
+                color: AppColors.orange),
             _tile(context, Icons.receipt_long_outlined, 'My orders', 'Track your purchases', const OrdersScreen()),
             _tile(context, Icons.favorite_border_rounded, 'Saved items', '$saved saved', const WishlistScreen()),
             _tile(context, Icons.delivery_dining_rounded, 'Deliveries & tracking', 'Live map, rider jobs, delivery codes',

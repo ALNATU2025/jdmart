@@ -18,6 +18,7 @@ import '../jobs/jobs_home_screen.dart';
 import '../shell/main_shell.dart';
 import '../../core/theme/palette.dart';
 import '../../shared/widgets/theme_toggle.dart';
+import '../notifications/notification_bell.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -68,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
               title: const JDWordmark(size: 22),
               actions: [
                 const ThemeToggleButton(),
+                const NotificationBell(),
                 IconButton(
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WishlistScreen())),
                   icon: const Icon(Icons.favorite_border_rounded),

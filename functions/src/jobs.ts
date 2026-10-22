@@ -2,7 +2,7 @@
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import { onDocumentDeleted, onDocumentWritten } from "firebase-functions/v2/firestore";
-import { notifyUser } from "./notify";
+import { notifyAdmins, notifyUser } from "./notify";
 import { REGION } from "./region";
 
 const db = () => getFirestore();
@@ -18,7 +18,11 @@ export const onApplicationWritten = onDocumentWritten(
     try {
       if (!before && after) {
         await jobRef.update({ applicationsCount: FieldValue.increment(1) });
-        await notifyUser(after.ownerId, "New applicant 👤", `${after.applicantName} applied for ${after.jobTitle}.`, data);
+        await Promise.all([
+          notifyUser(after.ownerId, "New applicant 👤", `${after.applicantName} applied for ${after.jobTitle}.`, data),
+          notifyUser(after.applicantId, "Application sent 📨", `Your application for ${after.jobTitle} at ${after.company} was sent.`, data),
+          notifyAdmins("New job application", `${after.applicantName} applied for ${after.jobTitle} (${after.company}).`, data),
+        ]);
       } else if (before && !after) {
         const job = await jobRef.get();
         if (job.exists) await jobRef.update({ applicationsCount: FieldValue.increment(-1) });

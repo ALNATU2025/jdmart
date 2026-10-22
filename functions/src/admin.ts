@@ -9,6 +9,7 @@ import { getAuth } from "firebase-admin/auth";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import { HttpsError, onCall, type CallableRequest } from "firebase-functions/v2/https";
+import { notifyAdmins } from "./notify";
 import { REGION } from "./region";
 
 /** Owner of JDMart. Keep in sync with AppConfig.superAdminEmail in the app. */
@@ -68,6 +69,9 @@ export const adminSetRole = onCall({ region: REGION }, async (req) => {
   } catch (e) {
     if ((e as { code?: string }).code !== "auth/user-not-found") throw e;
   }
+  await notifyAdmins(makeAdmin ? "Admin added" : "Admin removed", `${email} ${makeAdmin ? "is now an admin" : "is no longer an admin"}.`, {
+    type: "admin",
+  });
   logger.info(`${caller} set admin=${makeAdmin} for ${email}`);
   return { ok: true };
 });
@@ -94,6 +98,10 @@ export const adminSetUserDisabled = onCall({ region: REGION }, async (req) => {
   await getAuth().updateUser(uid, { disabled });
   if (disabled) await getAuth().revokeRefreshTokens(uid);
   await getFirestore().collection("users").doc(uid).set({ suspended: disabled }, { merge: true });
+  await notifyAdmins(disabled ? "Account suspended" : "Account restored", `${target.email ?? uid} was ${disabled ? "suspended" : "restored"}.`, {
+    type: "user",
+    userId: uid,
+  });
   logger.info(`${caller} set disabled=${disabled} for ${uid}`);
   return { ok: true };
 });

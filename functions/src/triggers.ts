@@ -11,7 +11,7 @@ import { onRequest } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { PAYMENT_WINDOW_MINUTES } from "./catalog";
 import { MONIME_ACCESS_TOKEN, MONIME_SPACE_ID } from "./monime";
-import { notifyUser } from "./notify";
+import { notifyAdmins, notifyUser } from "./notify";
 import { expireCheckout, reconcile } from "./orders";
 import { REGION } from "./region";
 
@@ -24,11 +24,26 @@ const money = (n: number) => `Le ${Number(n).toLocaleString("en-US", { maximumFr
 // ---------------------------------------------------------------------------
 export const onOrderCreated = onDocumentCreated({ document: "orders/{orderId}", region: REGION }, async (event) => {
   const o = event.data?.data();
-  if (!o || o.paymentMethod !== "cod") return; // online orders notify the seller once paid
-  await notifyUser(o.sellerId, "New order 🛒", `${o.buyerName} ordered ${o.items.length} item(s) • ${money(o.total)} (cash on delivery)`, {
-    type: "order",
-    orderId: event.params.orderId,
-  });
+  if (!o) return;
+  const id = event.params.orderId;
+  const cod = o.paymentMethod === "cod";
+  await Promise.all([
+    notifyUser(o.buyerId, "Order placed 🧾", `Order #${short(id)} • ${money(o.total)} sent to ${o.sellerName}.${cod ? " Pay on delivery." : ""}`, {
+      type: "order",
+      orderId: id,
+    }),
+    notifyAdmins("New order 🛒", `${o.buyerName} → ${o.sellerName} • ${money(o.total)} (${cod ? "cash on delivery" : "online"})`, {
+      type: "order",
+      orderId: id,
+    }),
+    // Online orders notify the seller once paid (onOrderUpdated).
+    cod
+      ? notifyUser(o.sellerId, "New order 🛒", `${o.buyerName} ordered ${o.items.length} item(s) • ${money(o.total)} (cash on delivery)`, {
+          type: "order",
+          orderId: id,
+        })
+      : Promise.resolve(),
+  ]);
 });
 
 export const onOrderUpdated = onDocumentUpdated({ document: "orders/{orderId}", region: REGION }, async (event) => {
@@ -42,6 +57,13 @@ export const onOrderUpdated = onDocumentUpdated({ document: "orders/{orderId}", 
     await notifyUser(after.sellerId, "New paid order 🛒", `${after.buyerName} paid ${money(after.total)}. Please prepare the items.`, data);
   }
   if (before.status === after.status) return;
+  if (["confirmed", "shipped", "delivered", "cancelled"].includes(after.status)) {
+    await notifyAdmins(
+      `Order ${after.status}`,
+      `#${short(id)} • ${after.buyerName} → ${after.sellerName} • ${money(after.total)}`,
+      data,
+    );
+  }
 
   switch (after.status) {
     case "confirmed":
@@ -54,6 +76,7 @@ export const onOrderUpdated = onDocumentUpdated({ document: "orders/{orderId}", 
       break;
     case "delivered":
       await notifyUser(after.buyerId, "Delivered ✅", `Order #${short(id)} was delivered. Tap to leave a review.`, data);
+      await notifyUser(after.sellerId, "Order completed 💰", `Order #${short(id)} was delivered • ${money(after.total)}.`, data);
       break;
     case "cancelled":
       if (after.cancelledBy === "buyer") {
@@ -131,6 +154,11 @@ export const onUserUpdated = onDocumentUpdated({ document: "users/{uid}", region
   const before = event.data?.before.data();
   const after = event.data?.after.data();
   if (!before || !after) return;
+  if (before.verified !== true && after.verified === true) {
+    await notifyUser(event.params.uid, "You're verified ✓", "JDMart verified your account. Your listings now show a verified badge.", {
+      type: "info",
+    });
+  }
   if (before.name === after.name && before.verified === after.verified) return;
   const products = await db().collection("products").where("sellerId", "==", event.params.uid).get();
   const writer = db().bulkWriter();

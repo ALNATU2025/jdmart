@@ -12,6 +12,7 @@ import '../chat/chats_screen.dart';
 import '../home/home_screen.dart';
 import '../sell/add_product_screen.dart';
 import '../../core/theme/palette.dart';
+import '../onboarding/welcome_tour.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -68,11 +69,13 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
     final unreadStream = _unreadFor(uid);
 
     return Scaffold(
-      body: FadeTransition(
-        opacity: CurvedAnimation(parent: _fade, curve: Curves.easeOut),
-        child: IndexedStack(
-          index: _tab,
-          children: const [HomeScreen(), CategoriesScreen(), ChatsScreen(), AccountScreen()],
+      body: WelcomeTour(
+        child: FadeTransition(
+          opacity: CurvedAnimation(parent: _fade, curve: Curves.easeOut),
+          child: IndexedStack(
+            index: _tab,
+            children: const [HomeScreen(), CategoriesScreen(), ChatsScreen(), AccountScreen()],
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

@@ -11,6 +11,7 @@ import '../../shared/widgets/common.dart';
 import '../../state/session_provider.dart';
 import '../account/legal_links.dart';
 import '../../core/theme/palette.dart';
+import '../onboarding/welcome_tour.dart';
 
 enum _Step { email, code, profile }
 
@@ -128,6 +129,7 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
             email: session.email,
             showPhone: _showPhone,
           );
+      await markNewUser(uid);
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy = false);

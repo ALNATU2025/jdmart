@@ -13,6 +13,7 @@ import 'data/repositories/chat_repository.dart';
 import 'data/repositories/delivery_repository.dart';
 import 'data/repositories/job_repository.dart';
 import 'data/repositories/misc_repositories.dart';
+import 'data/repositories/notification_repository.dart';
 import 'data/repositories/order_repository.dart';
 import 'data/repositories/product_repository.dart';
 import 'data/repositories/user_repository.dart';
@@ -49,6 +50,7 @@ Future<void> main() async {
   final jobs = JobRepository(db, FirebaseStorage.instance);
   final admin = AdminRepository(db, functions, FirebaseStorage.instance);
   final deliveries = DeliveryRepository(db, functions);
+  final notifications = NotificationRepository(db);
 
   final session = SessionProvider(AuthService(FirebaseAuth.instance, functions), users, PushService(users));
   final cart = CartProvider(products);
@@ -76,6 +78,7 @@ Future<void> main() async {
         Provider.value(value: jobs),
         Provider.value(value: admin),
         Provider.value(value: deliveries),
+        Provider.value(value: notifications),
         ChangeNotifierProvider.value(value: session),
         ChangeNotifierProvider.value(value: cart),
         ChangeNotifierProvider.value(value: wishlist),

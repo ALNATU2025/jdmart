@@ -12,7 +12,7 @@
 import { randomInt } from "crypto";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
 import { HttpsError, onCall, type CallableRequest } from "firebase-functions/v2/https";
-import { notifyUser } from "./notify";
+import { notifyAdmins, notifyUser } from "./notify";
 import { advanceOrderInTx, type OrderStatus } from "./orders";
 import { REGION } from "./region";
 
@@ -135,6 +135,7 @@ export const joinDelivery = onCall({ region: REGION }, async (req) => {
     await Promise.all([
       notifyUser(result.d.buyerId, "Rider assigned 🛵", msg, data),
       notifyUser(result.d.sellerId, "Rider assigned 🛵", msg, data),
+      notifyAdmins("Rider assigned 🛵", msg, data),
     ]);
   }
   return { orderId: result.orderId, role: result.role };
@@ -204,6 +205,8 @@ export const deliveryAction = onCall({ region: REGION }, async (req) => {
     await Promise.all([
       notifyUser(d.buyerId, "Delivered ✅", `Order #${short} was delivered. Tap to leave a review.`, info),
       notifyUser(d.sellerId, "Delivered ✅", `${d.riderName ?? "The rider"} delivered order #${short}.`, info),
+      notifyUser(uid, "Delivery complete 🎉", `You delivered order #${short}. Great job!`, info),
+      notifyAdmins("Delivery completed", `${d.riderName ?? "Rider"} delivered order #${short}.`, info),
     ]);
   } else {
     await notifyUser(d.sellerId, "Rider released the job", `Order #${short} needs a new rider. Share the code again.`, info);
