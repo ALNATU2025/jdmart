@@ -1,4 +1,4 @@
-commit: 84a3a0a2f76d5a07278a40d0ce76103eb65c6a8b
+commit: 3062f9c68f77f789461d709ac9a4e55e8de15624
 analyze exit: 0
 
 Resolving dependencies...
@@ -195,9 +195,9 @@ Analyzing jdmart...
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/jobs/post_job_screen.dart:119:19 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/jobs/post_job_screen.dart:120:28 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/jobs/post_job_screen.dart:121:32 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/sell/add_product_screen.dart:291:23 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/sell/add_product_screen.dart:294:23 • prefer_const_constructors
 
-30 issues found. (ran in 12.9s)
+30 issues found. (ran in 10.9s)
 
 ===== TESTS =====
 
@@ -222,6 +222,6 @@ Wasm dry run succeeded. Consider building and testing your application with the 
 Use --no-wasm-dry-run to disable these warnings.
 Font asset "CupertinoIcons.ttf" was tree-shaken, reducing it from 257628 to 1472 bytes (99.4% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
 Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 33548 bytes (98.0% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
-Compiling lib/main.dart for the Web...                             55.8s
+Compiling lib/main.dart for the Web...                             47.6s
 ✓ Built build/web
 exit=0
