@@ -19,6 +19,15 @@ jobs:
           cache: true
       - name: Versions
         run: flutter --version
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Cloud Functions type check
+        run: |
+          set +e
+          (cd functions && npm install --no-audit --no-fund > /dev/null 2>&1 && npx tsc --noEmit) > functions.txt 2>&1
+          echo "exit=$?" >> functions.txt
+          cat functions.txt
       - name: Get packages
         run: flutter pub get 2>&1 | tee pub.txt
       - name: Analyze
@@ -46,7 +55,7 @@ jobs:
         run: |
           mkdir -p /tmp/report
           { echo "commit: $GITHUB_SHA"; echo "analyze exit: ${{ steps.analyze.outputs.exit }}"; echo; \
-            cat pub.txt; echo; echo "===== ANALYZE ====="; cat analyze.txt; echo; echo "===== TESTS ====="; tail -80 test.txt; echo; echo "===== WEB BUILD ====="; tail -60 build.txt; } > /tmp/report/report.txt
+            cat pub.txt; echo; echo "===== ANALYZE ====="; cat analyze.txt; echo; echo "===== TESTS ====="; tail -80 test.txt; echo; echo "===== WEB BUILD ====="; tail -60 build.txt; echo; echo "===== FUNCTIONS ====="; cat functions.txt; } > /tmp/report/report.txt
           git config user.name "ci-bot"
           git config user.email "ci-bot@users.noreply.github.com"
           git fetch origin +refs/heads/ci-results:refs/remotes/origin/ci-results || true
