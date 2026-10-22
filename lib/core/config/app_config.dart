@@ -30,7 +30,7 @@ class AppConfig {
 
   /// Set to true once an Android Maps key is in AndroidManifest.xml (the web key
   /// above is restricted to websites and won't work in the Android app).
-  static const androidMapsEnabled = false;
+  static const androidMapsEnabled = true;
 
   /// Cloud Functions region. Must match `region` in functions/src/index.ts.
   static const functionsRegion = 'europe-west1';
