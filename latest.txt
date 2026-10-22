@@ -1,4 +1,4 @@
-commit: e121087d1cffe1885607f2f0d5580767194a22c3
+commit: c2c90f288491884df66cbdc90015bb0b03cba46c
 analyze exit: 0
 
 Resolving dependencies...
@@ -120,7 +120,7 @@ Downloading packages...
 + rxdart 0.28.0
 + sanitize_html 2.2.0
 + shared_preferences 2.5.6
-! shared_preferences_android 2.4.28 (overridden) (2.5.2 available)
+! shared_preferences_android 2.4.28 (overridden) (2.5.3 available)
 + shared_preferences_foundation 2.6.0
 + shared_preferences_linux 2.4.1
 + shared_preferences_platform_interface 2.4.2
@@ -198,7 +198,7 @@ Analyzing jdmart...
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/jobs/post_job_screen.dart:121:32 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation • lib/features/sell/add_product_screen.dart:298:23 • prefer_const_constructors
 
-31 issues found. (ran in 9.4s)
+31 issues found. (ran in 13.1s)
 
 ===== TESTS =====
 
@@ -223,6 +223,6 @@ Wasm dry run succeeded. Consider building and testing your application with the 
 Use --no-wasm-dry-run to disable these warnings.
 Font asset "CupertinoIcons.ttf" was tree-shaken, reducing it from 257628 to 1472 bytes (99.4% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
 Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 34336 bytes (97.9% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
-Compiling lib/main.dart for the Web...                             41.6s
+Compiling lib/main.dart for the Web...                             60.0s
 ✓ Built build/web
 exit=0
