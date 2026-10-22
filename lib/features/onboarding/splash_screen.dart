@@ -20,7 +20,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     super.initState();
     Future.delayed(const Duration(milliseconds: 1600), () {
       if (!mounted) return;
-      final seen = LocalStore.getBool('onboarding_seen');
+      var seen = false;
+      try {
+        seen = LocalStore.getBool('onboarding_seen');
+      } catch (e) {
+        debugPrint('JDMART splash: $e');
+      }
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
