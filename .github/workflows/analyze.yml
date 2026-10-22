@@ -27,6 +27,9 @@ jobs:
           set +e
           (cd functions && npm install --no-audit --no-fund > /dev/null 2>&1 && npx tsc --noEmit) > functions.txt 2>&1
           echo "exit=$?" >> functions.txt
+          echo "--- load test (same as Cloud Run start-up) ---" >> functions.txt
+          (cd functions && npx tsc && GCLOUD_PROJECT=jdmart-sl node -e "require('./lib/index.js'); console.log('LOADED OK', Object.keys(require('./lib/index.js')).length, 'functions')") >> functions.txt 2>&1
+          echo "load exit=$?" >> functions.txt
           cat functions.txt
       - name: Get packages
         run: flutter pub get 2>&1 | tee pub.txt
