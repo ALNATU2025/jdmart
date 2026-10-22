@@ -171,7 +171,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
                         selected: _type == t,
                         showCheckmark: false,
                         labelStyle: TextStyle(
-                          color: _type == t ? Colors.white : AppColors.navy,
+                          color: _type == t ? Colors.white : context.ink,
                           fontWeight: FontWeight.w600,
                         ),
                         onSelected: (_) => setState(() => _type = t),

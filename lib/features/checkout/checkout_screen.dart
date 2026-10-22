@@ -312,7 +312,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 style: TextStyle(
                     fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
                     fontSize: bold ? 18 : 14,
-                    color: bold ? AppColors.blue : AppColors.navy)),
+                    color: bold ? AppColors.blue : context.ink)),
           ],
         ),
       );

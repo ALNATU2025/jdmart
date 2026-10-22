@@ -219,7 +219,7 @@ class JobCategoryChips extends StatelessWidget {
             ),
             child: Text(label,
                 style: TextStyle(
-                  color: on ? Colors.white : AppColors.navy,
+                  color: on ? Colors.white : context.ink,
                   fontWeight: FontWeight.w600,
                   fontSize: 12.5,
                 )),

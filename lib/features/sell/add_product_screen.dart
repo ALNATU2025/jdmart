@@ -111,10 +111,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
       // Resized and compressed on the phone to save the seller's mobile data.
       if (source == ImageSource.camera) {
         final x = await _picker.pickImage(source: source, maxWidth: 1400, imageQuality: 78);
-        if (x != null) setState(() => _photos.add(_Photo.file(x)));
+        if (x != null) {
+          final mem = await keepInMemory(x);
+          if (mounted) setState(() => _photos.add(_Photo.file(mem)));
+        }
       } else {
         final xs = await _picker.pickMultiImage(maxWidth: 1400, imageQuality: 78);
-        setState(() => _photos.addAll(xs.take(_room).map((x) => _Photo.file(x))));
+        final mem = [for (final x in xs.take(_room)) await keepInMemory(x)];
+        if (mounted) setState(() => _photos.addAll(mem.map((x) => _Photo.file(x))));
       }
     } catch (e) {
       if (mounted) showSnack(context, "Couldn't open the camera or gallery.", error: true);
@@ -387,7 +391,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         selected: _condition == c,
                         showCheckmark: false,
                         selectedColor: AppColors.blue,
-                        labelStyle: TextStyle(color: _condition == c ? Colors.white : AppColors.navy),
+                        labelStyle: TextStyle(color: _condition == c ? Colors.white : context.ink),
                         onSelected: (_) => setState(() => _condition = c),
                       ))
                   .toList(),
@@ -435,6 +439,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
                   decoration: const InputDecoration(labelText: 'Was (optional)', prefixText: 'Le '),
+                  validator: (v) {
+                    final t = (v ?? '').replaceAll(',', '').trim();
+                    if (t.isEmpty) return null;
+                    final old = double.tryParse(t);
+                    final now = double.tryParse(_price.text.replaceAll(',', '').trim());
+                    if (old == null) return 'Enter a number';
+                    if (now != null && old <= now) return 'Must be higher than the price';
+                    return null;
+                  },
                 ),
               ),
             ],

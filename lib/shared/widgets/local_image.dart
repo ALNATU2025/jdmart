@@ -21,7 +21,7 @@ class _LocalImageState extends State<LocalImage> {
   @override
   void didUpdateWidget(covariant LocalImage old) {
     super.didUpdateWidget(old);
-    if (old.file.path != widget.file.path) _bytes = widget.file.readAsBytes();
+    if (!identical(old.file, widget.file)) _bytes = widget.file.readAsBytes();
   }
 
   @override
@@ -32,3 +32,9 @@ class _LocalImageState extends State<LocalImage> {
             : Container(width: widget.width, height: widget.height, color: context.skeleton),
       );
 }
+
+/// Copies a picked photo into memory right away. Android may delete the
+/// picker's temporary file (e.g. when the phone clears the app cache) before
+/// we upload it, which caused "PathNotFoundException ... scaled_xxx.jpg".
+Future<XFile> keepInMemory(XFile x) async =>
+    XFile.fromData(await x.readAsBytes(), name: x.name, mimeType: x.mimeType ?? 'image/jpeg');

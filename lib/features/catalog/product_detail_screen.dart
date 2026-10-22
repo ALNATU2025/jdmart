@@ -104,7 +104,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     if (mounted) context.read<WishlistProvider>().toggle(p.id);
                   },
                   'Save',
-                  color: saved ? AppColors.danger : AppColors.navy,
+                  color: saved ? AppColors.danger : context.ink,
                 ),
               if (!isMine)
                 PopupMenuButton<String>(
@@ -159,7 +159,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     runSpacing: 6,
                     children: [
                       _tag(cat.name, cat.color),
-                      _tag(p.condition, AppColors.navy),
+                      _tag(p.condition, context.ink),
                       if (p.negotiable) _tag('Negotiable', AppColors.success),
                       if (p.isSold) _tag('Sold', AppColors.danger),
                       if (p.status == ProductStatus.hidden) _tag('Hidden', context.muted),

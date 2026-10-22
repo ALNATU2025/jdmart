@@ -49,7 +49,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _pickAvatar() async {
     final x = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 600, imageQuality: 80);
-    if (x != null) setState(() => _newAvatar = x);
+    if (x == null) return;
+    final mem = await keepInMemory(x);
+    if (mounted) setState(() => _newAvatar = mem);
   }
 
   Future<void> _save() async {

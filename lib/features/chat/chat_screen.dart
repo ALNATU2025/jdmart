@@ -186,7 +186,7 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              SelectableText(m.text, style: TextStyle(color: mine ? Colors.white : AppColors.navy, height: 1.35)),
+              SelectableText(m.text, style: TextStyle(color: mine ? Colors.white : context.ink, height: 1.35)),
               const SizedBox(height: 2),
               Text(Fmt.time(m.at), style: TextStyle(fontSize: 10, color: mine ? Colors.white70 : context.muted)),
             ],

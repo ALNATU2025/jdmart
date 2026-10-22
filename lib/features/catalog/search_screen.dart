@@ -372,7 +372,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               label: Text(c ?? 'Any'),
                               selected: cond == c,
                               selectedColor: AppColors.blue,
-                              labelStyle: TextStyle(color: cond == c ? Colors.white : AppColors.navy),
+                              labelStyle: TextStyle(color: cond == c ? Colors.white : context.ink),
                               showCheckmark: false,
                               onSelected: (_) => setS(() => cond = c),
                             ))

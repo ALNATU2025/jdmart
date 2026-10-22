@@ -260,7 +260,7 @@ class OrderDetailScreen extends StatelessWidget {
             Text(v,
                 style: TextStyle(
                     fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
-                    color: bold ? AppColors.blue : AppColors.navy,
+                    color: bold ? AppColors.blue : context.ink,
                     fontSize: bold ? 17 : 14)),
           ],
         ),)

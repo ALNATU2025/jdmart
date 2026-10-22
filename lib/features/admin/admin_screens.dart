@@ -9,6 +9,7 @@ import '../../data/models/models.dart';
 import '../../data/repositories/admin_repository.dart';
 import '../../shared/widgets/common.dart';
 import '../../shared/widgets/motion.dart';
+import '../../shared/widgets/local_image.dart';
 import '../../shared/widgets/product_image.dart';
 import '../catalog/product_detail_screen.dart';
 import '../catalog/seller_profile_screen.dart';
@@ -73,7 +74,7 @@ class _ListHeader extends StatelessWidget {
                       selected: filter == f,
                       showCheckmark: false,
                       labelStyle: TextStyle(
-                        color: filter == f ? Colors.white : AppColors.navy,
+                        color: filter == f ? Colors.white : context.ink,
                         fontWeight: FontWeight.w600,
                       ),
                       onSelected: (_) => onFilter(f),
@@ -979,7 +980,9 @@ class _NewBannerSheetState extends State<_NewBannerSheet> {
 
   Future<void> _pick() async {
     final x = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1600, imageQuality: 85);
-    if (x != null && mounted) setState(() => _image = x);
+    if (x == null) return;
+    final mem = await keepInMemory(x);
+    if (mounted) setState(() => _image = mem);
   }
 
   Future<void> _save() async {
