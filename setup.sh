@@ -11,6 +11,17 @@ if [ -f config/google-services.json ] && [ -d android/app ]; then
   cp config/google-services.json android/app/google-services.json
 fi
 
+echo "▶ Android: keep rules for release builds (plugins called from Dart via JNI)…"
+cat > android/app/proguard-rules.pro <<'RULES'
+# Flutter plugins that are called by name from Dart (JNI) must not be renamed or removed by R8.
+-keep class io.flutter.plugins.** { *; }
+-keep class dev.flutter.** { *; }
+-keep class kotlin.coroutines.** { *; }
+-keep class kotlinx.coroutines.** { *; }
+-keep class kotlin.jvm.functions.** { *; }
+-dontwarn kotlinx.coroutines.**
+RULES
+
 echo "▶ Installing packages…"
 flutter pub get
 
