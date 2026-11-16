@@ -1,1 +1,146 @@
-no log
+Flutter 3.50.0 • channel stable • https://github.com/flutter/flutter.git
+Framework • revision ab2912035e (7 days ago) • 2026-11-09 08:50:21 -0800
+Engine • hash bf601093ad255aaf5c6d0fc5c4f9acfa60943b2a (revision 371f77202a) (7 days ago) • 2026-11-09 15:57:36.000Z
+Tools • Dart 3.14.0 • DevTools 2.61.0
+Running Gradle task 'assembleRelease'...                        
+Loading package information...                                                  
+Loading local repository...                                                     
+[                                       ] 3% Loading local repository...        
+[                                       ] 3% Fetch remote repository...         
+[=                                      ] 3% Fetch remote repository...         
+[=                                      ] 4% Fetch remote repository...         
+[=                                      ] 5% Fetch remote repository...         
+[==                                     ] 5% Fetch remote repository...         
+[==                                     ] 6% Fetch remote repository...         
+[==                                     ] 7% Fetch remote repository...         
+[==                                     ] 7% Computing updates...               
+[===                                    ] 8% Computing updates...               
+[===                                    ] 10% Computing updates...              
+[===                                    ] 10% Installing NDK (Side by side) 28.2
+[===                                    ] 10% Downloading android-ndk-r28c-linux
+[====                                   ] 10% Downloading android-ndk-r28c-linux
+[====                                   ] 11% Downloading android-ndk-r28c-linux
+[====                                   ] 12% Downloading android-ndk-r28c-linux
+[=====                                  ] 13% Downloading android-ndk-r28c-linux
+[=====                                  ] 14% Downloading android-ndk-r28c-linux
+[=====                                  ] 15% Downloading android-ndk-r28c-linux
+[======                                 ] 15% Downloading android-ndk-r28c-linux
+[======                                 ] 16% Downloading android-ndk-r28c-linux
+[======                                 ] 17% Downloading android-ndk-r28c-linux
+[=======                                ] 18% Downloading android-ndk-r28c-linux
+[=======                                ] 19% Downloading android-ndk-r28c-linux
+[=======                                ] 20% Downloading android-ndk-r28c-linux
+[========                               ] 20% Downloading android-ndk-r28c-linux
+[========                               ] 21% Downloading android-ndk-r28c-linux
+[========                               ] 22% Downloading android-ndk-r28c-linux
+[=========                              ] 23% Downloading android-ndk-r28c-linux
+[=========                              ] 24% Downloading android-ndk-r28c-linux
+[=========                              ] 25% Downloading android-ndk-r28c-linux
+[==========                             ] 25% Downloading android-ndk-r28c-linux
+[==========                             ] 26% Downloading android-ndk-r28c-linux
+[==========                             ] 27% Downloading android-ndk-r28c-linux
+[===========                            ] 28% Downloading android-ndk-r28c-linux
+[===========                            ] 29% Downloading android-ndk-r28c-linux
+[===========                            ] 30% Downloading android-ndk-r28c-linux
+[============                           ] 30% Downloading android-ndk-r28c-linux
+[============                           ] 31% Downloading android-ndk-r28c-linux
+[============                           ] 32% Downloading android-ndk-r28c-linux
+[============                           ] 33% Downloading android-ndk-r28c-linux
+[============                           ] 33% Unzipping...                      
+[============                           ] 33% Unzipping... android-ndk-r28c/    
+[============                           ] 33% Unzipping... android-ndk-r28c/READ
+[=============                          ] 33% Unzipping... android-ndk-r28c/READ
+[=============                          ] 33% Unzipping... android-ndk-r28c/meta
+[=============                          ] 33% Unzipping... android-ndk-r28c/shad
+[=============                          ] 33% Unzipping... android-ndk-r28c/ndk-
+[=============                          ] 33% Unzipping... android-ndk-r28c/wrap
+[=============                          ] 33% Unzipping... android-ndk-r28c/ndk-
+[=============                          ] 33% Unzipping... android-ndk-r28c/tool
+[=============                          ] 34% Unzipping... android-ndk-r28c/tool
+[=============                          ] 35% Unzipping... android-ndk-r28c/tool
+[==============                         ] 35% Unzipping... android-ndk-r28c/tool
+[==============                         ] 36% Unzipping... android-ndk-r28c/tool
+[==============                         ] 37% Unzipping... android-ndk-r28c/tool
+[===============                        ] 38% Unzipping... android-ndk-r28c/tool
+[===============                        ] 39% Unzipping... android-ndk-r28c/tool
+[===============                        ] 40% Unzipping... android-ndk-r28c/tool
+[================                       ] 40% Unzipping... android-ndk-r28c/tool
+[================                       ] 41% Unzipping... android-ndk-r28c/tool
+[================                       ] 42% Unzipping... android-ndk-r28c/tool
+[=================                      ] 43% Unzipping... android-ndk-r28c/tool
+[=================                      ] 44% Unzipping... android-ndk-r28c/tool
+[=================                      ] 45% Unzipping... android-ndk-r28c/tool
+[==================                     ] 45% Unzipping... android-ndk-r28c/tool
+[==================                     ] 46% Unzipping... android-ndk-r28c/tool
+[==================                     ] 47% Unzipping... android-ndk-r28c/tool
+[===================                    ] 48% Unzipping... android-ndk-r28c/tool
+[===================                    ] 49% Unzipping... android-ndk-r28c/tool
+[===================                    ] 50% Unzipping... android-ndk-r28c/tool
+[====================                   ] 50% Unzipping... android-ndk-r28c/tool
+[====================                   ] 51% Unzipping... android-ndk-r28c/tool
+[====================                   ] 52% Unzipping... android-ndk-r28c/tool
+[=====================                  ] 53% Unzipping... android-ndk-r28c/tool
+[=====================                  ] 54% Unzipping... android-ndk-r28c/tool
+[=====================                  ] 54% Unzipping... android-ndk-r28c/buil
+[=====================                  ] 54% Unzipping... android-ndk-r28c/sour
+[=====================                  ] 54% Unzipping... android-ndk-r28c/NOTI
+[=====================                  ] 54% Unzipping... android-ndk-r28c/ndk-
+[=====================                  ] 54% Unzipping... android-ndk-r28c/NOTI
+[=====================                  ] 54% Unzipping... android-ndk-r28c/pyth
+[=====================                  ] 54% Unzipping... android-ndk-r28c/preb
+[=====================                  ] 54% Unzipping... android-ndk-r28c/ndk-
+[=====================                  ] 54% Unzipping... android-ndk-r28c/sour
+[=====================                  ] 54% Unzipping... android-ndk-r28c/simp
+[=====================                  ] 55% Unzipping... android-ndk-r28c/simp
+[=====================                  ] 55% Unzipping... android-ndk-r28c/CHAN
+[=======================================] 100% Unzipping... android-ndk-r28c/CHA
+
+WARNING: Your app uses the following plugins that apply Kotlin Gradle Plugin (KGP): file_picker, package_info_plus
+Future versions of Flutter will fail to build if your app uses plugins that apply KGP.
+
+Please check the changelogs of these plugins and upgrade to a version that supports Built-in Kotlin.
+If no such version exists, report the issue to the plugin. If necessary, here is a guide on filing
+an issue against a plugin: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers#report-incompatible-kotlin-gradle-plugin-usage-to-plugin-authors
+
+If you are a plugin author, please migrate your plugin to Built-in Kotlin using this guide: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-plugin-authors
+Note: /home/runner/.pub-cache/hosted/pub.dev/cloud_firestore-7.2.0/android/src/main/java/io/flutter/plugins/firebase/firestore/utils/PipelineStageHandlers.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: /home/runner/.pub-cache/hosted/pub.dev/geolocator_android-5.2.1/android/src/main/java/com/baseflow/geolocator/location/LocationMapper.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Font asset "CupertinoIcons.ttf" was tree-shaken, reducing it from 257628 to 844 bytes (99.7% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 29528 bytes (98.2% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Caught exception: Already watching path: /opt/hostedtoolcache/flutter/stable-3.50.0-x64/flutter/packages/flutter_tools/gradle
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':firebase_core:lintVitalAnalyzeRelease' (registered by plugin 'com.android.internal.library').
+> A failure occurred while executing com.android.build.gradle.internal.lint.AndroidLintWorkAction
+   > Unexpected failure during lint analysis (this is a bug in lint or one of the libraries it depends on)
+
+     Message: Unexpected failure during lint analysis (this is a bug in lint or one of the libraries it depends on)
+
+     Message: Unexpected failure during lint analysis of FlutterFirebaseCorePlugin.kt (this is a bug in lint or one of the libraries it depends on)
+
+     Message: 'java.lang.Object java.util.List.removeLast()'
+     Stack: \\\`NoSuchMethodError:JavaDocParser.parseDataItem(JavaDocParser.kt:117)←JavaDocParser.parseDocCommentText(JavaDocParser.kt:66)←JavaDocElementType$DocCommentElementType.lambda$new$0(JavaDocElementType.java:167)←JavaParserUtil.lambda$parseFragment$9(JavaParserUtil.java:409)←ParsingUtil.parseFragment(ParsingUtil.kt:18)←JavaParserUtil.parseFragment(JavaParserUtil.java:408)←JavaParserUtil.parseFragmentWithHighestLanguageLevel(JavaParserUtil.java:379)←JavaDocElementType$DocCommentElementType.parseContents(JavaDocElementType.java:172)←LazyParseableElement.lambda$ensureParsed$2(LazyParseableElement.java:183)←DebugUtil.performPsiModification(DebugUtil.java:589)←LazyParseableElement.ensureParsed(LazyParseableElement.java:182)←LazyParseableElement.getFirstChildNode(LazyParseableElement.java:234)←PsiDocCommentImpl.findTagByName(PsiDocCommentImpl.java:86)←PsiImplUtil.isDeprecatedByDocTag(PsiImplUtil.java:614)←JavaStubImplUtil.isMemberDeprecated(JavaStubImplUtil.java:40)←PsiFieldImpl.isDeprecated(PsiFieldImpl.java:340)←JavaMemberImpl.isDeprecatedInJavaDoc(JavaMemberImpl.java:104)←FirLazyJavaAnnotationList.lazyFirAnnotations$lambda$0(FirJavaAnnotationList.kt:48)←SafePublicationLazyImpl.getValue(LazyJVM.kt:125)←FirLazyJavaAnnotationList.getFirAnnotations(FirJavaAnnotationList.kt:52)←FirLazyJavaAnnotationList.iterator(FirJavaAnnotationList.kt:61)←AbstractAnnotationTypeQualifierResolver.extractAndMergeDefaultQualifiers(AbstractAnnotationTypeQualifierResolver.kt:300)←AbstractAnnotationTypeQualifierResolver.extractAndMergeDefaultQualifiers$default(AbstractAnnotationTypeQualifierResolver.kt:192)←FirSignatureEnhancement.computeDefaultQualifiers(SignatureEnhancement.kt:142)←FirSignatureEnhancement.enhance$fir_jvm(SignatureEnhancement.kt:170)←FirEnhancedSymbolsStorage$EnhancementSymbolsCache.enhancedVariables$lambda$0(SignatureEnhancement.kt:1154)←FirThreadSafeCache.getValue(FirThreadSafeCache.kt:29)←FirSignatureEnhancement.enhancedProperty(SignatureEnhancement.kt:137)←JavaClassStaticEnhancementScope.processPropertiesByName$lambda$0(JavaClassStaticEnhancementScope.kt:27)←JavaClassStaticUseSiteScope.processPropertiesByName(JavaClassStaticUseSiteScope.kt:137)←JavaClassStaticEnhancementScope.processPropertiesByName(JavaClassStaticEnhancementScope.kt:26)←FirNameAwareOnlyCallablesScope.processPropertiesByName(FirOnlyCallablesScope.kt:44)←ScopeBasedTowerLevel.processPropertiesByName(TowerLevels.kt:476)←TowerLevelHandler.handleLevel(TowerLevelHandler.kt:50)←FirBaseTowerResolveTask.processLevel(FirTowerResolveTask.kt:165)←FirBaseTowerResolveTask.access$processLevel(FirTowerResolveTask.kt:53)←FirTowerResolveTask.processQualifierScopes(FirTowerResolveTask.kt:440)←FirTowerResolveTask.runResolverForQualifierReceiver(FirTowerResolveTask.kt:198)←FirTowerResolver$enqueueResolutionTasks$1.invokeSuspend(FirTowerResolver.kt:76)←BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)←TowerResolveManager.resumeTask(TowerResolveManager.kt:77)←TowerResolveManager.runTasks(TowerResolveManager.kt:83)←FirTowerResolver.runResolver(FirTowerResolver.kt:54)←FirTowerResolver.runResolver(FirTowerResolver.kt:40)←FirCallResolver.collectCandidates(FirCallResolver.kt:260)←FirCallResolver.collectCandidates$default(FirCallResolver.kt:218)←FirCallResolver.resolveVariableAccessAndSelectCandidateImpl$lambda$0(FirCallResolver.kt:334)←UnsafeLazyImpl.getValue(Lazy.kt:100)←FirCallResolver.resolveVariableAccessAndSelectCandidateImpl$lambda$1(FirCallResolver.kt:333)←FirCallResolver.resolveVariableAccessAndSelectCandidateImpl(FirCallResolver.kt:366)←FirCallResolver.resolveVariableAccessAndSelectCandidate(FirCallResolver.kt:310)←FirExpressionsResolveTransformer.resolveQualifiedAccessAndSelectCandidate(FirExpressionsResolveTransformer.kt:336)←FirExpressionsResolveTransformer.transformQualifiedAccessExpression(FirExpressionsResolveTransformer.kt:198)←FirExpressionsResolveTransformer.transformAsExplicitReceiver(FirExpressionsResolveTransformer.kt:309)←FirExpressionsResolveTransformer.transformExplicitReceiverOf(FirExpressionsResolveTransformer.kt:297)←FirExpressionsResolveTransformer.transformFunctionCallInternal$resolve(FirExpressionsResolveTransformer.kt:576)←FirExpressionsResolveTransformer.transformFunctionCall(FirExpressionsResolveTransformer.kt:520)←FirAbstractBodyResolveTransformerDispatcher.transformFunctionCall(FirAbstractBodyResolveTransformerDispatcher.kt:200)←FirAbstractBodyResolveTransformerDispatcher.transformFunctionCall(FirAbstractBodyResolveTransformerDispatcher.kt:27)←FirFunctionCall.transform(FirFunctionCall.kt:45)←FirExpressionUtilKt.transformStatementsIndexed(FirExpressionUtil.kt:253)←FirExpressionsResolveTransformer.transformBlockInCurrentScope$resolve(FirExpressionsResolveTransformer.kt:754)←FirExpressionsResolveTransformer.transformBlock(FirExpressionsResolveTransformer.kt:745)←FirPartialBodyExpressionResolveTransformer.transformBlock(LLFirBodyLazyResolver.kt:177)←FirAbstractBodyResolveTransformerDispatcher.transformBlock(FirAbstractBodyResolveTransformerDispatcher.kt:227)←FirAbstractBodyResolveTransformerDispatcher.transformBlock(FirAbstractBodyResolveTransformerDispatcher.kt:27)←FirBlock.transform(FirBlock.kt:33)←FirRegularWhenBranch.transformResult(FirRegularWhenBranch.kt:46)←FirRegularWhenBranch.transformResult(FirRegularWhenBranch.kt:20)←FirControlFlowStatementsResolveTransformer.transformWhenBranch(FirControlFlowStatementsResolveTransformer.kt:127)←FirAbstractBodyResolveTransformerDispatcher.transformWhenBranch(FirAbstractBodyResolveTransformerDispatcher.kt:697)←FirAbstractBodyResolveTransformerDispatcher.transformWhenBranch(FirAbstractBodyResolveTransformerDispatcher.kt:27)←FirWhenBranch.transform(FirWhenBranch.kt:31)←FirTransformerUtilKt.transformInplace(FirTransformerUtil.kt:20)←FirWhenExpressionImpl.transformBranches(FirWhenExpressionImpl.kt:68)←FirWhenExpressionImpl.transformBranches(FirWhenExpressionImpl.kt:24)←FirControlFlowStatementsResolveTransformer.transformWhenExpression$lambda$1(FirControlFlowStatementsResolveTransformer.kt:68)←BodyResolveContext.withWhenExpression(BodyResolveContext.kt:1132)←FirControlFlowStatementsResolveTransformer.transformWhenExpression(FirControlFlowStatementsResolveTransformer.kt:59)←FirAbstractBodyResolveTransformerDispatcher.transformWhenExpression(FirAbstractBodyResolveTransformerDispatcher.kt:688)←FirAbstractBodyResolveTransformerDispatcher.transformWhenExpression(FirAbstractBodyResolveTransformerDispatcher.kt:27)←FirWhenExpression.transform(FirWhenExpression.kt:38)←FirExpressionUtilKt.transformStatementsIndexed(FirExpressionUtil.kt:253)←FirExpressionsResolveTransformer.transformBlockInCurrentScope$resolve(FirExpressionsResolveTransformer.kt:754)←FirExpressionsResolveTransformer.transformBlock(FirExpressionsResolveTransformer.kt:745)←FirPartialBodyExpressionResolveTransformer.transformBlock(LLFirBodyLazyResolver.kt:177)←FirAbstractBodyResolveTransformerDispatcher.transformBlock(FirAbstractBodyResolveTransformerDispatcher.kt:227)←FirAbstractBodyResolveTransformerDispatcher.transformBlock(FirAbstractBodyResolveTransformerDispatcher.kt:27)←FirBlock.transform(FirBlock.kt:33)←FirTryExpressionImpl.transformTryBlock(FirTryExpressionImpl.kt:63)←FirTryExpressionImpl.transformTryBlock(FirTryExpressionImpl.kt:23)←FirControlFlowStatementsResolveTransformer.transformTryExpression(FirControlFlowStatementsResolveTransformer.kt:149)←FirAbstractBodyResolveTransformerDispatcher.transformTryExpression(FirAbstractBodyResolveTransformerDispatcher.kt:715)←FirAbstractBodyResolveTransformerDispatcher.transformTryExpression(FirAbstractBodyResolveTransformerDispatcher.kt:27)←FirTryExpression.transform(FirTryExpression.kt:36)←FirExpressionUtilKt.transformStatementsIndexed(FirExpressionUtil.kt:253)←FirExpressionsResolveTransformer.transformBlockInCurrentScope$resolve(FirExpressionsResolveTransformer.kt:754)←FirExpressionsResolveTransformer.transformBlock(FirExpressionsResolveTransformer.kt:745)←FirPartialBodyExpressionResolveTransformer.transformBlock(LLFirBodyLazyResolver.kt:177)←FirAbstractBodyResolveTransformerDispatcher.transformBlock(FirAbstractBodyResolveTransformerDispatcher.kt:227)\\\`
+
+     You can run with --stacktrace or set environment variable \\\`LINT_PRINT_STACKTRACE=true\\\` to dump a full stacktrace to stdout.
+     Stack: \`RuntimeException:LintDriver$Companion.handleDetectorError(LintDriver.kt:3603)←LintDriver$Companion.handleDetectorError$default(LintDriver.kt:3468)←LintDriver$Companion.handleDetectorError(LintDriver.kt:3464)←UElementVisitor.visitFile(UElementVisitor.kt:233)←LintDriver$visitUastDetectors$1.run(LintDriver.kt:2032)←LintClient.runReadAction(LintClient.kt:1655)←LintCliClient.runReadAction(LintCliClient.kt:231)←LintDriver$LintClientWrapper.runReadAction(LintDriver.kt:2694)←LintDriver.visitUastDetectors(LintDriver.kt:2030)←LintDriver.visitUast(LintDriver.kt:1977)←LintDriver.runFileDetectors(LintDriver.kt:1234)←LintDriver.checkProject(LintDriver.kt:1041)←LintDriver.checkProjectRoot(LintDriver.kt:607)←LintDriver.access$checkProjectRoot(LintDriver.kt:179)←LintDriver$analyzeOnly$1.invoke(LintDriver.kt:434)←LintDriver$analyzeOnly$1.invoke(LintDriver.kt:431)←LintDriver.doAnalyze(LintDriver.kt:490)←LintDriver.analyzeOnly(LintDriver.kt:431)←LintCliClient$analyzeOnly$1.invoke(LintCliClient.kt:265)←LintCliClient$analyzeOnly$1.invoke(LintCliClient.kt:262)←LintCliClient.run(LintCliClient.kt:311)←LintCliClient.analyzeOnly(LintCliClient.kt:262)←Main.run(Main.java:1786)←Main.run(Main.java:287)←NativeMethodAccessorImpl.invoke0(NativeMethodAccessorImpl.java:-2)←NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)←DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)←Method.invoke(Method.java:569)←AndroidLintWorkAction.invokeLintMainRunMethod(AndroidLintWorkAction.kt:103)←AndroidLintWorkAction.runLint(AndroidLintWorkAction.kt:90)←AndroidLintWorkAction.execute(AndroidLintWorkAction.kt:64)←DefaultWorkerServer.execute(DefaultWorkerServer.java:68)←NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)←NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:61)←ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:102)←NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:61)←AbstractWorker$1.call(AbstractWorker.java:44)←AbstractWorker$1.call(AbstractWorker.java:41)←DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)←DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)←DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)←DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)←DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)←DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)←DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)←AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)←NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:58)←DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:174)←FutureTask.run(FutureTask.java:264)←DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:191)←DefaultConditionalExecutionQueue$ExecutionRunner.access$500(DefaultConditionalExecutionQueue.java:112)←DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:168)←Factories$1.create(Factories.java:30)←DefaultWorkerLeaseService.lambda$withLocksAcquired$0(DefaultWorkerLeaseService.java:280)←ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)←DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:278)←DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:270)←DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:129)←DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:134)←DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:163)←DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:125)←Executors$RunnableAdapter.call(Executors.java:539)←FutureTask.run(FutureTask.java:264)←ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)←AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)←ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)←ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)←Thread.run(Thread.java:840)\`
+
+     You can run with --stacktrace or set environment variable \`LINT_PRINT_STACKTRACE=true\` to dump a full stacktrace to stdout.
+     Stack: `RuntimeException:LintDriver$Companion.handleDetectorError(LintDriver.kt:3603)←LintDriver$Companion.handleDetectorError$default(LintDriver.kt:3468)←LintDriver$Companion.handleDetectorError(LintDriver.kt:3464)←LintDriver$analyzeOnly$1.invoke(LintDriver.kt:436)←LintDriver$analyzeOnly$1.invoke(LintDriver.kt:431)←LintDriver.doAnalyze(LintDriver.kt:490)←LintDriver.analyzeOnly(LintDriver.kt:431)←LintCliClient$analyzeOnly$1.invoke(LintCliClient.kt:265)←LintCliClient$analyzeOnly$1.invoke(LintCliClient.kt:262)←LintCliClient.run(LintCliClient.kt:311)←LintCliClient.analyzeOnly(LintCliClient.kt:262)←Main.run(Main.java:1786)←Main.run(Main.java:287)←NativeMethodAccessorImpl.invoke0(NativeMethodAccessorImpl.java:-2)←NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)←DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)←Method.invoke(Method.java:569)←AndroidLintWorkAction.invokeLintMainRunMethod(AndroidLintWorkAction.kt:103)←AndroidLintWorkAction.runLint(AndroidLintWorkAction.kt:90)←AndroidLintWorkAction.execute(AndroidLintWorkAction.kt:64)←DefaultWorkerServer.execute(DefaultWorkerServer.java:68)←NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)←NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:61)←ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:102)←NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:61)←AbstractWorker$1.call(AbstractWorker.java:44)←AbstractWorker$1.call(AbstractWorker.java:41)←DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)←DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)←DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)←DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)←DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)←DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)←DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)←AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)←NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:58)←DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:174)←FutureTask.run(FutureTask.java:264)←DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:191)←DefaultConditionalExecutionQueue$ExecutionRunner.access$500(DefaultConditionalExecutionQueue.java:112)←DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:168)←Factories$1.create(Factories.java:30)←DefaultWorkerLeaseService.lambda$withLocksAcquired$0(DefaultWorkerLeaseService.java:280)←ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)←DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:278)←DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:270)←DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:129)←DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:134)←DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:163)←DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:125)←Executors$RunnableAdapter.call(Executors.java:539)←FutureTask.run(FutureTask.java:264)←ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)←AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)←ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)←ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)←Thread.run(Thread.java:840)`
+
+     You can run with --stacktrace or set environment variable `LINT_PRINT_STACKTRACE=true` to dump a full stacktrace to stdout.
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 7m 6s
+Running Gradle task 'assembleRelease'...                          427.2s
+Gradle task assembleRelease failed with exit code 1
