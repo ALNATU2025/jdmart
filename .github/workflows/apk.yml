@@ -51,17 +51,17 @@ jobs:
         if: always()
         run: |
           cp apk-build.txt /tmp/apk-build.txt 2>/dev/null || echo "no log" > /tmp/apk-build.txt
+          URL=$(git config --get remote.origin.url)
+          AUTH=$(git config --get http.https://github.com/.extraheader || true)
+          git -c http.extraheader="$AUTH" clone -q --depth 1 --branch ci-results "$URL" /tmp/ci
+          cd /tmp/ci
           git config user.name "ci-bot"
           git config user.email "ci-bot@users.noreply.github.com"
-          git fetch origin +refs/heads/ci-results:refs/remotes/origin/ci-results || true
-          git stash -u >/dev/null 2>&1 || true
-          git checkout -B ci-results origin/ci-results
           tail -250 /tmp/apk-build.txt > "apk-${GITHUB_SHA}.txt"
           cp "apk-${GITHUB_SHA}.txt" apk-latest.txt
           git add "apk-${GITHUB_SHA}.txt" apk-latest.txt
-          git commit -m "APK log for ${GITHUB_SHA}" || true
-          git push origin ci-results || true
-          git checkout -f "${GITHUB_SHA}"
+          git commit -qm "APK log for ${GITHUB_SHA}" || true
+          git -c http.extraheader="$AUTH" push -q origin ci-results || true
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
