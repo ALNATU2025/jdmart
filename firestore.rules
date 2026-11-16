@@ -14,7 +14,20 @@ service cloud.firestore {
     function str(v, min, max) { return v is string && v.size() >= min && v.size() <= max; }
     function validPhoneOrNull(v) { return v == null || (v is string && v.matches('^[+]232[0-9]{8}$')); }
     // Admins get the `admin` claim at sign-in (functions/src/admin.ts).
-    function isAdmin() { return signedIn() && request.auth.token.admin == true; }
+    // Admin: the server-set claim, or (works without Cloud Functions) a verified
+    // email that is the super admin's or is listed in /admins.
+    function verifiedEmail() {
+      return signedIn() && request.auth.token.email_verified == true && request.auth.token.email is string;
+    }
+    function isAdmin() {
+      return signedIn() && (
+        request.auth.token.admin == true
+        || (verifiedEmail() && (
+          request.auth.token.email.lower() == 'alusinebarrie578@gmail.com'
+          || exists(/databases/$(database)/documents/admins/$(request.auth.token.email.lower()))
+        ))
+      );
+    }
 
     // ---- Users ---------------------------------------------------------------
     match /users/{uid} {
@@ -201,7 +214,7 @@ service cloud.firestore {
       allow create, update: if false;
     }
     match /admins/{email} {
-      allow read: if isAdmin();
+      allow read: if isAdmin() || (verifiedEmail() && request.auth.token.email.lower() == email);
       allow write: if false; // adminSetRole function (super admin only)
     }
 

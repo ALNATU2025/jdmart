@@ -6,7 +6,7 @@ import '../data/repositories/user_repository.dart';
 import '../data/services/auth_service.dart';
 import '../data/services/push_service.dart';
 
-/// Who is signed in (by email code), and their profile. Guests can browse;
+/// Who is signed in (email + password), and their profile. Guests can browse;
 /// buying, selling and chatting require a signed-in user with a profile.
 class SessionProvider extends ChangeNotifier {
   SessionProvider(this.auth, this._users, this._push) {
@@ -85,15 +85,48 @@ class SessionProvider extends ChangeNotifier {
 
   Future<void> _loadClaims(User user) async {
     try {
-      final r = await user.getIdTokenResult(true);
+      // Roles come from the sign-in token when the server has set them, and
+      // otherwise from the database (super admin email or /admins list).
+      var r = await user.getIdTokenResult(true);
+      var c = r.claims ?? const <String, dynamic>{};
+      if (c['admin'] != true) {
+        await auth.refreshRoles();
+        if (_authUser?.uid != user.uid) return;
+        r = await user.getIdTokenResult(true);
+        c = r.claims ?? const <String, dynamic>{};
+      }
+      var admin = c['admin'] == true;
+      var superAdmin = c['superAdmin'] == true;
+      if (!admin) {
+        final db = await auth.rolesFromDatabase(user);
+        admin = db.admin;
+        superAdmin = db.superAdmin;
+      }
       if (_authUser?.uid != user.uid) return;
-      final c = r.claims ?? const <String, dynamic>{};
-      _isAdmin = c['admin'] == true;
-      _isSuperAdmin = c['superAdmin'] == true;
+      _isAdmin = admin;
+      _isSuperAdmin = superAdmin;
       notifyListeners();
     } catch (e) {
-      debugPrint('Could not read sign-in claims: $e');
+      debugPrint('Could not read sign-in roles: $e');
     }
+  }
+
+  /// True when the signed-in email address hasn't been confirmed yet.
+  bool get emailUnverified => _authUser != null && !_authUser!.emailVerified;
+
+  /// Re-reads the account (e.g. after the user clicked the verification link).
+  Future<void> reloadUser() async {
+    final u = _authUser;
+    if (u == null) return;
+    try {
+      await u.reload();
+      final fresh = auth.currentUser;
+      if (fresh != null) {
+        _authUser = fresh;
+        await _loadClaims(fresh);
+        notifyListeners();
+      }
+    } catch (_) {}
   }
 
   Future<void> signOut() async {

@@ -47,6 +47,19 @@ function requireAdmin(req: CallableRequest<unknown>, superOnly = false) {
 }
 
 /** Super admin: add or remove an admin by email. */
+/**
+ * Puts admin roles on the caller's sign-in token (email + password accounts
+ * don't go through verifyLoginCode). Only for verified email addresses.
+ */
+export const refreshClaims = onCall({ region: REGION }, async (req) => {
+  if (!req.auth) throw new HttpsError("unauthenticated", "Please sign in first.");
+  const token = req.auth.token as Record<string, unknown>;
+  const email = typeof token.email === "string" ? token.email : "";
+  const claims: RoleClaims = email && token.email_verified === true ? await roleClaims(email) : {};
+  await syncClaims(req.auth.uid, claims);
+  return { admin: claims.admin === true, superAdmin: claims.superAdmin === true };
+});
+
 export const adminSetRole = onCall({ region: REGION }, async (req) => {
   const caller = requireAdmin(req, true);
   const data = (req.data ?? {}) as { email?: unknown; admin?: unknown };

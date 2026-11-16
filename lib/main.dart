@@ -25,6 +25,7 @@ import 'data/services/local_store.dart';
 import 'data/models/app_notification.dart';
 import 'data/services/local_alerts.dart';
 import 'data/services/push_service.dart';
+import 'data/services/upload_service.dart';
 import 'features/notifications/notifications_screen.dart';
 import 'features/onboarding/splash_screen.dart';
 import 'firebase_options.dart';
@@ -114,14 +115,15 @@ Future<void> _start() async {
   final chats = ChatRepository(db);
   final wishlistRepo = WishlistRepository(db);
   final banners = BannerRepository(db);
-  final media = MediaRepository(FirebaseStorage.instance);
-  final jobs = JobRepository(db, FirebaseStorage.instance);
-  final admin = AdminRepository(db, functions, FirebaseStorage.instance);
+  final uploads = UploadService(FirebaseStorage.instance);
+  final media = MediaRepository(uploads);
+  final jobs = JobRepository(db, uploads);
+  final admin = AdminRepository(db, functions, uploads);
   final deliveries = DeliveryRepository(db, functions);
   final notifications = NotificationRepository(db);
-  final riders = RiderRepository(db, functions, FirebaseStorage.instance);
+  final riders = RiderRepository(db, functions, uploads);
 
-  final session = SessionProvider(AuthService(FirebaseAuth.instance, functions), users, PushService(users));
+  final session = SessionProvider(AuthService(FirebaseAuth.instance, functions, db), users, PushService(users));
   final cart = CartProvider(products);
   final wishlist = WishlistProvider(wishlistRepo);
 

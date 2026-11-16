@@ -76,6 +76,8 @@ class EmptyState extends StatelessWidget {
   final String message;
   final String? actionLabel;
   final VoidCallback? onAction;
+  final String? secondaryLabel;
+  final VoidCallback? onSecondary;
 
   const EmptyState({
     super.key,
@@ -84,6 +86,8 @@ class EmptyState extends StatelessWidget {
     required this.message,
     this.actionLabel,
     this.onAction,
+    this.secondaryLabel,
+    this.onSecondary,
   });
 
   @override
@@ -119,6 +123,10 @@ class EmptyState extends StatelessWidget {
             if (actionLabel != null) ...[
               const SizedBox(height: 24),
               SizedBox(width: 220, child: ElevatedButton(onPressed: onAction, child: Text(actionLabel!))),
+            ],
+            if (secondaryLabel != null) ...[
+              const SizedBox(height: 8),
+              TextButton(onPressed: onSecondary, child: Text(secondaryLabel!)),
             ],
           ],
           ),

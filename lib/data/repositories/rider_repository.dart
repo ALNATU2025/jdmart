@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import '../services/upload_service.dart';
 import '../models/rider.dart';
 
 /// Verified riders: applications, approval and assigning riders to deliveries.
@@ -9,7 +9,7 @@ class RiderRepository {
   RiderRepository(this._db, this._functions, this._storage);
   final FirebaseFirestore _db;
   final FirebaseFunctions _functions;
-  final FirebaseStorage _storage;
+  final UploadService _storage;
 
   CollectionReference<Map<String, dynamic>> get _col => _db.collection('riders');
   DocumentReference<Map<String, dynamic>> _kyc(String uid) => _col.doc(uid).collection('private').doc('kyc');
@@ -32,9 +32,7 @@ class RiderRepository {
       });
 
   Future<String> uploadImage(String uid, String name, Uint8List bytes) async {
-    final ref = _storage.ref().child('riders/$uid/${DateTime.now().millisecondsSinceEpoch}-$name.jpg');
-    await ref.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
-    return ref.getDownloadURL();
+    return _storage.upload(path: 'riders/$uid/${DateTime.now().millisecondsSinceEpoch}-$name.jpg', bytes: bytes);
   }
 
   /// Creates or updates the application. Any change sends it back for review.

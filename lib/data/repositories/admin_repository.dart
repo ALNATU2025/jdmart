@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import '../services/upload_service.dart';
 import '../models/firestore_helpers.dart';
 import '../models/models.dart';
 
@@ -73,7 +73,7 @@ class AdminRepository {
   AdminRepository(this._db, this._functions, this._storage);
   final FirebaseFirestore _db;
   final FirebaseFunctions _functions;
-  final FirebaseStorage _storage;
+  final UploadService _storage;
 
   Future<int> _count(Query<Map<String, dynamic>> q) async => (await q.count().get()).count ?? 0;
 
@@ -201,9 +201,7 @@ class AdminRepository {
   Future<void> deleteBanner(String id) => _db.collection('banners').doc(id).delete();
 
   Future<String> uploadBannerImage(Uint8List bytes) async {
-    final ref = _storage.ref().child('banners/${DateTime.now().millisecondsSinceEpoch}.jpg');
-    await ref.putData(bytes, SettableMetadata(contentType: 'image/jpeg', cacheControl: 'public,max-age=604800'));
-    return ref.getDownloadURL();
+    return _storage.upload(path: 'banners/${DateTime.now().millisecondsSinceEpoch}.jpg', bytes: bytes);
   }
 
   // ---- Admin team (super admin only) --------------------------------------------------------

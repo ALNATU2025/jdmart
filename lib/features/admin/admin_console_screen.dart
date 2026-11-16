@@ -31,11 +31,25 @@ class _AdminConsoleScreenState extends State<AdminConsoleScreen> {
     if (!session.isAdmin) {
       return Scaffold(
         appBar: AppBar(title: const Text('Admin console')),
-        body: const EmptyState(
-          icon: Icons.lock_outline_rounded,
-          title: 'Admins only',
-          message: 'If you were just made an admin, sign out and sign back in.',
-        ),
+        body: session.emailUnverified
+            ? EmptyState(
+                icon: Icons.mark_email_unread_outlined,
+                title: 'Confirm your email first',
+                message: 'Admin access needs a confirmed email address. Open the link we emailed to '
+                    '${session.email}, then tap "I\'ve confirmed".',
+                actionLabel: "I've confirmed",
+                onAction: session.reloadUser,
+                secondaryLabel: 'Send the link again',
+                onSecondary: () async {
+                  final err = await session.auth.resendVerification();
+                  if (context.mounted) showSnack(context, err ?? 'Link sent to ${session.email}', error: err != null);
+                },
+              )
+            : const EmptyState(
+                icon: Icons.lock_outline_rounded,
+                title: 'Admins only',
+                message: 'If you were just made an admin, sign out and sign back in.',
+              ),
       );
     }
 

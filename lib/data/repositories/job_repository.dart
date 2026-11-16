@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import '../services/upload_service.dart';
 import '../models/job.dart';
 
 /// jobs/{id}, jobs/{id}/applications/{uid}, talent/{uid} and CV files
@@ -8,7 +8,7 @@ import '../models/job.dart';
 class JobRepository {
   JobRepository(this._db, this._storage);
   final FirebaseFirestore _db;
-  final FirebaseStorage _storage;
+  final UploadService _storage;
 
   CollectionReference<Map<String, dynamic>> get _jobs => _db.collection('jobs');
   CollectionReference<Map<String, dynamic>> get _talent => _db.collection('talent');
@@ -136,8 +136,7 @@ class JobRepository {
             ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
             : 'application/msword';
     final safe = fileName.replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '_');
-    final ref = _storage.ref().child('cvs/$uid/${DateTime.now().millisecondsSinceEpoch}-$safe');
-    await ref.putData(bytes, SettableMetadata(contentType: type));
-    return ref.getDownloadURL();
+    return _storage.upload(
+        path: 'cvs/$uid/${DateTime.now().millisecondsSinceEpoch}-$safe', bytes: bytes, contentType: type, document: true);
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import '../services/upload_service.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/promo_banner.dart';
 
@@ -33,18 +33,16 @@ class BannerRepository {
       .map((s) => s.docs.map(PromoBanner.fromDoc).toList());
 }
 
-/// Photo uploads to Firebase Storage.
+/// Photo uploads (Cloudinary or Firebase Storage, see UploadService).
 ///   products/{uid}/{productId}/{timestamp}.jpg
 ///   avatars/{uid}/{timestamp}.jpg
 class MediaRepository {
   MediaRepository(this._storage);
-  final FirebaseStorage _storage;
+  final UploadService _storage;
 
   Future<String> _upload(String path, XFile file) async {
     final Uint8List bytes = await file.readAsBytes(); // works on mobile and web
-    final ref = _storage.ref().child(path);
-    await ref.putData(bytes, SettableMetadata(contentType: 'image/jpeg', cacheControl: 'public,max-age=604800'));
-    return ref.getDownloadURL();
+    return _storage.upload(path: path, bytes: bytes);
   }
 
   String _stamp() => DateTime.now().microsecondsSinceEpoch.toString();
@@ -54,9 +52,5 @@ class MediaRepository {
 
   Future<String> uploadAvatar(String uid, XFile file) => _upload('avatars/$uid/${_stamp()}.jpg', file);
 
-  Future<void> deleteByUrl(String url) async {
-    try {
-      await _storage.refFromURL(url).delete();
-    } catch (_) {}
-  }
+  Future<void> deleteByUrl(String url) => _storage.deleteByUrl(url);
 }

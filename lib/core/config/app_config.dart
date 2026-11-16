@@ -32,6 +32,12 @@ class AppConfig {
   /// above is restricted to websites and won't work in the Android app).
   static const androidMapsEnabled = true;
 
+  /// Free photo/CV hosting on Cloudinary (cloudinary.com). Put your "Cloud name"
+  /// and the name of an *unsigned* upload preset here. Not secret — unsigned
+  /// presets are meant to be used from apps. Leave empty to use Firebase Storage.
+  static const cloudinaryCloudName = '';
+  static const cloudinaryUploadPreset = '';
+
   /// Cloud Functions region. Must match `region` in functions/src/index.ts.
   static const functionsRegion = 'europe-west1';
 
