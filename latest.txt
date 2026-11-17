@@ -1,4 +1,4 @@
-commit: a3cbee889d3fa7e7a6c3d4902d9972fc5d35e61c
+commit: be5c9c3290d037013d68e95fc126032c2420e3da
 analyze exit: 0
 
 Resolving dependencies...
@@ -247,10 +247,6 @@ Analyzing jdmart...
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/features/onboarding/onboarding_screen.dart:1:1 • deprecated_member_use
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/features/onboarding/splash_screen.dart:1:1 • deprecated_member_use
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/features/onboarding/welcome_tour.dart:3:1 • deprecated_member_use
-   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/onboarding/welcome_tour.dart:133:24 • use_build_context_synchronously
-   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/onboarding/welcome_tour.dart:135:24 • use_build_context_synchronously
-   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/onboarding/welcome_tour.dart:137:24 • use_build_context_synchronously
-   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/onboarding/welcome_tour.dart:139:24 • use_build_context_synchronously
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/features/orders/order_detail_screen.dart:1:1 • deprecated_member_use
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/features/orders/orders_screen.dart:1:1 • deprecated_member_use
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/features/sell/add_product_screen.dart:2:1 • deprecated_member_use
@@ -270,7 +266,7 @@ Analyzing jdmart...
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/shared/widgets/theme_toggle.dart:1:1 • deprecated_member_use
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/state/theme_controller.dart:1:1 • deprecated_member_use
 
-98 issues found. (ran in 7.4s)
+94 issues found. (ran in 8.3s)
 
 ===== TESTS =====
 
@@ -295,7 +291,7 @@ Wasm dry run succeeded. Consider building and testing your application with the 
 Use --no-wasm-dry-run to disable these warnings.
 Font asset "CupertinoIcons.ttf" was tree-shaken, reducing it from 257628 to 844 bytes (99.7% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
 Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 29024 bytes (98.2% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
-Compiling lib/main.dart for the Web...                             35.9s
+Compiling lib/main.dart for the Web...                             43.6s
 ✓ Built build/web
 exit=0
 
