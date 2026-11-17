@@ -6,6 +6,7 @@ import '../../core/utils/formatters.dart';
 import '../../data/models/app_notification.dart';
 import '../../data/repositories/notification_repository.dart';
 import '../../data/repositories/order_repository.dart';
+import '../../data/services/ad_reminders.dart';
 import '../../shared/widgets/common.dart';
 import '../../shared/widgets/motion.dart';
 import '../../state/session_provider.dart';
@@ -96,14 +97,28 @@ class NotificationsScreen extends StatelessWidget {
             onPressed: () => repo.markAllRead(uid),
           ),
           PopupMenuButton<String>(
-            onSelected: (_) async {
+            onSelected: (v) async {
+              if (v == 'ads') {
+                final on = !AdReminders.enabled;
+                await AdReminders.setEnabled(on);
+                if (context.mounted) {
+                  showSnack(context, on ? 'Sponsored offer reminders are on' : 'Sponsored offer reminders are off');
+                }
+                return;
+              }
               if (await confirmDialog(context,
                       title: 'Clear all notifications?', message: 'This removes them from this list.', confirm: 'Clear') &&
                   context.mounted) {
                 await repo.clearAll(uid);
               }
             },
-            itemBuilder: (_) => const [PopupMenuItem(value: 'clear', child: Text('Clear all'))],
+            itemBuilder: (_) => [
+              PopupMenuItem(
+                value: 'ads',
+                child: Text(AdReminders.enabled ? 'Turn off sponsored offers' : 'Turn on sponsored offers'),
+              ),
+              const PopupMenuItem(value: 'clear', child: Text('Clear all')),
+            ],
           ),
         ],
       ),

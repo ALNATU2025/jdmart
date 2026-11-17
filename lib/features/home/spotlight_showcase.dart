@@ -9,6 +9,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/theme/palette.dart';
 import '../../core/utils/formatters.dart';
 import '../../data/models/models.dart';
+import '../../data/repositories/ad_repository.dart';
 import '../../data/repositories/job_repository.dart';
 import '../../data/repositories/misc_repositories.dart';
 import '../../data/repositories/product_repository.dart';
@@ -70,35 +71,40 @@ Future<List<SpotlightSlide>> loadSpotlight(BuildContext context) async {
   final products = context.read<ProductRepository>();
   final banners = context.read<BannerRepository>();
   final jobs = context.read<JobRepository>();
+  final adsRepo = context.read<AdRepository>();
 
   final results = await Future.wait<Object?>([
+    adsRepo.liveOnce(),
     _first(products.newest(limit: 16)),
     _first(products.deals(limit: 10)),
     _first(banners.active()),
     _first(jobs.openJobs(limit: 4)),
   ]);
-  final newest = ((results[0] as List<Product>?) ?? const <Product>[])
-      .where((p) => p.available && p.cover != null)
+  final ads = ((results[0] as List<SponsoredAd>?) ?? const <SponsoredAd>[]).take(5).toList();
+  final adProducts = ads.map((a) => a.productId).toSet();
+  final newest = ((results[1] as List<Product>?) ?? const <Product>[])
+      .where((p) => p.available && p.cover != null && !adProducts.contains(p.id))
       .take(6)
       .toList();
-  final seen = newest.map((p) => p.id).toSet();
-  final deals = ((results[1] as List<Product>?) ?? const <Product>[])
+  final seen = {...newest.map((p) => p.id), ...adProducts};
+  final deals = ((results[2] as List<Product>?) ?? const <Product>[])
       .where((p) => p.available && p.cover != null && p.discountPercent > 0 && !seen.contains(p.id))
       .take(2)
       .toList();
-  final promos = ((results[2] as List<PromoBanner>?) ?? const <PromoBanner>[])
+  final promos = ((results[3] as List<PromoBanner>?) ?? const <PromoBanner>[])
       .where((b) => (b.imageUrl ?? '').isNotEmpty)
       .take(2)
       .toList();
-  final openJobs = ((results[3] as List<Job>?) ?? const <Job>[]).take(2).toList();
+  final openJobs = ((results[4] as List<Job>?) ?? const <Job>[]).take(2).toList();
 
   final productSlides = [for (final p in newest) _productSlide(p, deal: false)];
   final dealSlides = [for (final p in deals) _productSlide(p, deal: true)];
   final promoSlides = [for (final b in promos) _bannerSlide(b)];
   final jobSlides = [for (final j in openJobs) _jobSlide(j)];
 
-  // Mix: new, new, deal, job, new, promo, new, deal, job, new, promo, new...
-  final out = <SpotlightSlide>[];
+  // Paid ads first (everyone sees the same ones), then a mix of
+  // new, new, deal, job, new, promo, new, deal, job, new, promo, new...
+  final out = <SpotlightSlide>[for (final a in ads) _adSlide(a)];
   final queues = [productSlides, productSlides, dealSlides, jobSlides, productSlides, promoSlides];
   var guard = 0;
   while ((productSlides.isNotEmpty || dealSlides.isNotEmpty || jobSlides.isNotEmpty || promoSlides.isNotEmpty) &&
@@ -133,6 +139,25 @@ SpotlightSlide _productSlide(Product p, {required bool deal}) {
     oldPrice: hasOld ? Fmt.price(p.oldPrice!) : null,
     discount: off,
     open: (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => ProductDetailScreen(productId: p.id))),
+  );
+}
+
+SpotlightSlide _adSlide(SponsoredAd a) {
+  final off = a.discountPercent;
+  return SpotlightSlide(
+    tag: 'SPONSORED',
+    heroTop: off > 0 ? 'Save $off%' : 'Top pick',
+    heroAccent: off > 0 ? 'Limited offer' : 'on JDMart',
+    title: '${a.title} ⭐',
+    body: [if (a.city.isNotEmpty) a.city, 'Sold by ${a.sellerName}', 'Featured seller'].join(' • '),
+    cta: off > 0 ? 'Grab the deal' : 'View item',
+    colors: const [Color(0xFF4A1500), Color(0xFFB45309), Color(0xFFF59E0B)],
+    imageUrl: a.imageUrl,
+    fallback: const Center(child: Icon(Icons.star_rounded, color: Color(0xFFF59E0B), size: 72)),
+    price: Fmt.price(a.price),
+    oldPrice: (a.oldPrice != null && a.oldPrice! > a.price) ? Fmt.price(a.oldPrice!) : null,
+    discount: off,
+    open: (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => ProductDetailScreen(productId: a.productId))),
   );
 }
 

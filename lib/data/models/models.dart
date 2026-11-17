@@ -6,3 +6,5 @@ export 'product.dart';
 export 'promo_banner.dart';
 export 'review.dart';
 export 'job.dart';
+export 'skill_pro.dart';
+export 'sponsored_ad.dart';

@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/palette.dart';
+import '../../data/models/sponsored_ad.dart';
+import '../../data/repositories/ad_repository.dart';
+import '../../data/services/ad_reminders.dart';
 import '../../data/services/local_store.dart';
 import '../../shared/widgets/motion.dart';
 import '../../state/session_provider.dart';
@@ -30,7 +33,7 @@ class WelcomeTour extends StatefulWidget {
   State<WelcomeTour> createState() => _WelcomeTourState();
 }
 
-class _WelcomeTourState extends State<WelcomeTour> {
+class _WelcomeTourState extends State<WelcomeTour> with WidgetsBindingObserver {
   static const _lastStep = 4;
   String? _uid;
   Timer? _timer;
@@ -42,8 +45,38 @@ class _WelcomeTourState extends State<WelcomeTour> {
   String _stepKey(String uid) => 'tour_step_$uid';
   int _step(String uid) => int.tryParse(LocalStore.getString(_stepKey(uid)) ?? '') ?? 0;
 
+  DateTime? _adsRefreshedAt;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _refreshAdReminders());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refreshAdReminders();
+  }
+
+  /// Paid ads become phone reminders (scheduled on this phone).
+  Future<void> _refreshAdReminders() async {
+    final last = _adsRefreshedAt;
+    if (last != null && DateTime.now().difference(last) < const Duration(minutes: 20)) return;
+    _adsRefreshedAt = DateTime.now();
+    try {
+      final repo = context.read<AdRepository>();
+      final settings = await repo.settingsOnce();
+      final List<SponsoredAd> ads = settings.enabled ? await repo.liveOnce() : const [];
+      await AdReminders.refresh(ads, everyHours: settings.reminderHours);
+    } catch (e) {
+      debugPrint('Ad reminders not refreshed: $e');
+    }
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     _spotTimer?.cancel();
     super.dispose();

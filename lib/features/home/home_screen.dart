@@ -15,6 +15,8 @@ import '../../state/session_provider.dart';
 import '../account/wishlist_screen.dart';
 import '../catalog/search_screen.dart';
 import '../jobs/jobs_home_screen.dart';
+import '../../core/constants/skills_catalog.dart';
+import '../skills/find_skills_screen.dart';
 import '../shell/main_shell.dart';
 import '../../core/theme/palette.dart';
 import '../../shared/widgets/theme_toggle.dart';
@@ -109,6 +111,9 @@ class _HomeScreenState extends State<HomeScreen> {
             const SliverToBoxAdapter(child: _CategoryStrip()),
             const SliverToBoxAdapter(
               child: FadeSlideIn(delay: Duration(milliseconds: 260), child: _JobsPromo()),
+            ),
+            const SliverToBoxAdapter(
+              child: FadeSlideIn(delay: Duration(milliseconds: 320), child: _SkillsPromo()),
             ),
             _strip(_deals, const _FlashDealsHeader()),
             _strip(_featured, const SectionHeader(title: 'Featured')),
@@ -638,4 +643,86 @@ class _JobsPromo extends StatelessWidget {
           ),
         ),)
       );
+}
+
+/// "Need a plumber or electrician?" — opens Find skills.
+class _SkillsPromo extends StatelessWidget {
+  const _SkillsPromo();
+
+  @override
+  Widget build(BuildContext context) {
+    void open([String? skill]) =>
+        Navigator.push(context, MaterialPageRoute(builder: (_) => FindSkillsScreen(initialSkill: skill)));
+    final picks = SkillsCatalog.all.take(8).toList();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+        decoration: BoxDecoration(color: context.surface, borderRadius: BorderRadius.circular(22), boxShadow: softShadow()),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Find skilled people near you',
+                          style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w800)),
+                      const SizedBox(height: 2),
+                      Text('Plumbers, electricians, tailors, mechanics — call them directly.',
+                          style: TextStyle(color: context.muted, fontSize: 12.5)),
+                    ],
+                  ),
+                ),
+                TextButton(onPressed: open, child: const Text('See all')),
+              ],
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 78,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: picks.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                itemBuilder: (_, i) {
+                  final t = picks[i];
+                  return Pressable(
+                    scale: 0.9,
+                    onTap: () => open(t.id),
+                    child: SizedBox(
+                      width: 64,
+                      child: Column(
+                        children: [
+                          Floating(
+                            distance: 2.5,
+                            phase: i / picks.length,
+                            child: Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: t.color.withValues(alpha: 0.13),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Icon(t.icon, color: t.color, size: 25),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(t.name.split(' ').first,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600)),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

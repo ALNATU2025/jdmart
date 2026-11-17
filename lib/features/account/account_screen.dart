@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../ads/my_ads_screen.dart';
+import '../skills/find_skills_screen.dart';
+import '../skills/skill_edit_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/config/app_config.dart';
 import '../../core/theme/app_theme.dart';
@@ -126,6 +129,8 @@ class AccountScreen extends StatelessWidget {
             _tile(context, Icons.inventory_2_outlined, 'My listings', 'Edit, mark sold or relist', const MyListingsScreen()),
             _tile(context, Icons.point_of_sale_rounded, 'Sales orders', 'Orders from your buyers',
                 const OrdersScreen(sellerView: true)),
+            _tile(context, Icons.campaign_rounded, 'Advertise my items', 'Sponsored ads shown to every user',
+                const MyAdsScreen(), color: AppColors.orange),
           ], index: 1),
           _section('Buying', [
             _tile(context, Icons.notifications_rounded, 'Notifications', 'Orders, messages, jobs and deliveries',
@@ -144,6 +149,10 @@ class AccountScreen extends StatelessWidget {
                 const MyJobsScreen()),
             _tile(context, Icons.badge_outlined, 'My CV profile', 'Let employers find and contact you',
                 const TalentEditScreen(), color: AppColors.success),
+            _tile(context, Icons.handyman_rounded, 'Find skills', 'Plumbers, electricians, tailors near you',
+                const FindSkillsScreen(), color: const Color(0xFF0EA5E9)),
+            _tile(context, Icons.engineering_rounded, 'My skill profile', 'Offer your skills to people nearby',
+                const SkillEditScreen()),
           ], index: 3),
           _section('Help & legal', [
             if (AppConfig.supportWhatsApp.isNotEmpty || AppConfig.supportPhone.isNotEmpty)

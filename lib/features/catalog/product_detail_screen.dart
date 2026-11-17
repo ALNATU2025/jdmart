@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../ads/promote_product_screen.dart';
 import '../../core/constants/catalog.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
@@ -522,7 +523,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, -4))],
       ),
       child: isMine
-          ? Row(
+          ? Column(mainAxisSize: MainAxisSize.min, children: [
+              if (p.status == ProductStatus.active) ...[
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.orange, minimumSize: const Size(0, 48)),
+                    onPressed: () =>
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => PromoteProductScreen(product: p))),
+                    icon: const Icon(Icons.campaign_rounded),
+                    label: const Text('Advertise to all users'),
+                  ),
+                ),
+                const SizedBox(height: 10),
+              ],
+              Row(
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
@@ -544,7 +559,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                 ),
               ],
-            )
+            ),
+            ])
           : Row(
               children: [
                 SizedBox(

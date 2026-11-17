@@ -32,3 +32,4 @@ export {
   onTalentCreated,
 } from "./activity";
 export { onRiderWritten, assignRider } from "./riders";
+export { onAdCreated, onAdUpdated } from "./ads";

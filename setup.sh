@@ -66,6 +66,11 @@ fi
 if ! grep -q "default_notification_channel_id" "$MANIFEST"; then
   perl -0pi -e 's#(<application[^>]*>)#$1\n        <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="jdmart_alerts"/>\n        <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="\@drawable/ic_stat_jdmart"/>\n        <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="\@color/jdmart_blue"/>#' "$MANIFEST"
 fi
+if ! grep -q "ScheduledNotificationReceiver" "$MANIFEST"; then
+  # Scheduled local notifications (sponsored-ad reminders), kept after reboot.
+  perl -0pi -e 's#(<manifest[^>]*>)#$1\n    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>#' "$MANIFEST"
+  perl -0pi -e 's#</application>#        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"/>\n        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">\n            <intent-filter>\n                <action android:name="android.intent.action.BOOT_COMPLETED"/>\n                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>\n                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>\n            </intent-filter>\n        </receiver>\n    </application>#' "$MANIFEST"
+fi
 if ! grep -q "com.google.android.geo.API_KEY" "$MANIFEST"; then
   echo "▶ Android: Google Maps key placeholder (replace YOUR_MAPS_KEY)…"
   perl -0pi -e 's#(<application[^>]*>)#$1\n        <meta-data android:name="com.google.android.geo.API_KEY" android:value="YOUR_MAPS_KEY"/>#' "$MANIFEST"

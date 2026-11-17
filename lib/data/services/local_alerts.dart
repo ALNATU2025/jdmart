@@ -23,6 +23,18 @@ class LocalAlerts {
     enableVibration: true,
   );
 
+  /// Sponsored-ad reminders (users can turn these off).
+  static const promoChannel = AndroidNotificationChannel(
+    'jdmart_promos',
+    'Sponsored offers',
+    description: 'Deals and products advertised on JDMart',
+    importance: Importance.high,
+    playSound: true,
+  );
+
+  static FlutterLocalNotificationsPlugin get plugin => _plugin;
+  static bool get ready => _ready;
+
   /// Called with the notification's data when the user taps a banner.
   static void Function(Map<String, String> data)? onTap;
 
@@ -45,7 +57,19 @@ class LocalAlerts {
     await _plugin
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
+    await _plugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(promoChannel);
     _ready = true;
+    // Opened the app by tapping a scheduled reminder while it was closed.
+    try {
+      final launch = await _plugin.getNotificationAppLaunchDetails();
+      final p = launch?.notificationResponse?.payload;
+      if ((launch?.didNotificationLaunchApp ?? false) && p != null && p.isNotEmpty) {
+        final m = (jsonDecode(p) as Map).map((k, v) => MapEntry(k.toString(), v.toString()));
+        Future.delayed(const Duration(seconds: 2), () => onTap?.call(m));
+      }
+    } catch (_) {}
   }
 
   /// Shows a push message as a banner while the app is in the foreground.

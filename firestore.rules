@@ -396,6 +396,48 @@ service cloud.firestore {
         && d.keywords is list && d.keywords.size() <= 200;
     }
 
+    // Find skills: plumbers, electricians, tailors… (contact details: signed-in members only).
+    match /skills/{uid} {
+      allow read: if signedIn() && (resource.data.visible == true || isUser(uid) || isAdmin());
+      allow create: if isUser(uid) && hasProfile()
+        && request.resource.data.keys().hasOnly([
+             'name', 'photoUrl', 'headline', 'skills', 'skillKeys', 'about', 'city', 'area', 'lat', 'lng',
+             'phone', 'whatsApp', 'rate', 'experienceYears', 'available', 'visible', 'createdAt', 'updatedAt'])
+        && request.resource.data.skillKeys is list && request.resource.data.skillKeys.size() <= 30;
+      allow update: if (isUser(uid)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+               'name', 'photoUrl', 'headline', 'skills', 'skillKeys', 'about', 'city', 'area', 'lat', 'lng',
+               'phone', 'whatsApp', 'rate', 'experienceYears', 'available', 'visible', 'updatedAt'])
+          && request.resource.data.skillKeys.size() <= 30)
+        || isAdmin();
+      allow delete: if isUser(uid) || isAdmin();
+    }
+
+    // Paid ads: sellers request (pending), admins approve after checking payment.
+    match /ads/{adId} {
+      allow read: if resource.data.status == 'active'
+        || (signedIn() && resource.data.sellerId == request.auth.uid)
+        || isAdmin();
+      allow create: if hasProfile()
+        && request.resource.data.sellerId == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.keys().hasOnly([
+             'productId', 'sellerId', 'sellerName', 'title', 'imageUrl', 'price', 'oldPrice', 'city', 'days',
+             'amount', 'payMethod', 'payPhone', 'payRef', 'status', 'createdAt'])
+        && get(/databases/$(database)/documents/products/$(request.resource.data.productId)).data.sellerId == request.auth.uid;
+      allow update: if isAdmin()
+        || (signedIn() && resource.data.sellerId == request.auth.uid && resource.data.status == 'pending'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+            && request.resource.data.status == 'cancelled');
+      allow delete: if isAdmin();
+    }
+
+    // App settings (ad prices, payment number…): everyone reads, admins write.
+    match /config/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /talent/{uid} {
       // Contact details: signed-in members only.
       allow read: if signedIn() && (resource.data.visible == true || isUser(uid) || isAdmin());
