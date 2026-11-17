@@ -1,4 +1,4 @@
-commit: 18b88eae62aaab45268b5fc9123380bc1aa498bb
+commit: 3a0287c59f8c0f6b968c3feca7b8a067e03261bb
 analyze exit: 0
 
 Resolving dependencies...
@@ -265,7 +265,7 @@ Analyzing jdmart...
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/shared/widgets/theme_toggle.dart:1:1 • deprecated_member_use
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/state/theme_controller.dart:1:1 • deprecated_member_use
 
-93 issues found. (ran in 6.0s)
+93 issues found. (ran in 8.0s)
 
 ===== TESTS =====
 
@@ -290,7 +290,7 @@ Wasm dry run succeeded. Consider building and testing your application with the 
 Use --no-wasm-dry-run to disable these warnings.
 Font asset "CupertinoIcons.ttf" was tree-shaken, reducing it from 257628 to 844 bytes (99.7% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
 Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 29024 bytes (98.2% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
-Compiling lib/main.dart for the Web...                             34.3s
+Compiling lib/main.dart for the Web...                             40.9s
 ✓ Built build/web
 exit=0
 
