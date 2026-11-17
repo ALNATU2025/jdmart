@@ -118,8 +118,5 @@ Note: /home/runner/.pub-cache/hosted/pub.dev/geolocator_android-5.2.1/android/sr
 Note: Recompile with -Xlint:deprecation for details.
 3 warnings
 Font asset "CupertinoIcons.ttf" was tree-shaken, reducing it from 257628 to 844 bytes (99.7% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
-Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 33860 bytes (97.9% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 34024 bytes (97.9% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
 Caught exception: Already watching path: /opt/hostedtoolcache/flutter/stable-3.50.0-x64/flutter/packages/flutter_tools/gradle
-Running Gradle task 'assembleRelease'...                          467.3s
-✓ Built build/app/outputs/flutter-apk/app-arm64-v8a-release.apk (29.6MB)
-✓ Built build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk (27.6MB)
