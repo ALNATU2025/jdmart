@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import '../repositories/user_repository.dart';
 import 'local_alerts.dart';
+import 'local_store.dart';
 
 /// Registers this device for push notifications (new orders, order updates,
 /// chat messages). Messages are sent by Cloud Functions.
@@ -25,6 +26,26 @@ class PushService {
     if (initial != null) {
       // Opened from a notification while the app was closed: wait for the first screen.
       Future<void>.delayed(const Duration(seconds: 3), () => onOpen?.call(initial.data.map((k, v) => MapEntry(k, '$v'))));
+    }
+  }
+
+  /// Admin announcements go to the "all" topic and to "city_<town>".
+  static Future<void> syncTopics(String? city) async {
+    if (kIsWeb) return;
+    try {
+      final m = FirebaseMessaging.instance;
+      await m.subscribeToTopic('all');
+      final next = (city == null || city.isEmpty)
+          ? ''
+          : 'city_${city.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_')}';
+      final prev = LocalStore.getString('city_topic') ?? '';
+      if (prev != next) {
+        if (prev.isNotEmpty) await m.unsubscribeFromTopic(prev);
+        if (next.isNotEmpty) await m.subscribeToTopic(next);
+        await LocalStore.setString('city_topic', next);
+      }
+    } catch (e) {
+      debugPrint('Topic subscription failed: $e');
     }
   }
 

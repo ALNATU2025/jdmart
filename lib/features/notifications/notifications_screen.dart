@@ -17,6 +17,7 @@ import '../delivery/live_tracking_screen.dart';
 import '../jobs/job_detail_screen.dart';
 import '../jobs/talent_detail_screen.dart';
 import '../orders/order_detail_screen.dart';
+import '../skills/skill_detail_screen.dart';
 
 /// Icon and colour for each kind of notification.
 (IconData, Color) notificationStyle(String type) => switch (type) {
@@ -31,6 +32,8 @@ import '../orders/order_detail_screen.dart';
       'welcome' => (Icons.celebration_rounded, AppColors.orange),
       'rider' => (Icons.delivery_dining_rounded, AppColors.orange),
       'admin' => (Icons.admin_panel_settings_rounded, AppColors.navy),
+      'broadcast' => (Icons.campaign_rounded, AppColors.orange),
+      'skill' => (Icons.handyman_rounded, const Color(0xFF0EA5E9)),
       _ => (Icons.notifications_rounded, AppColors.blue),
     };
 
@@ -61,6 +64,9 @@ Future<void> openNotificationTarget(BuildContext context, AppNotification n) asy
     case 'talent':
       final talentId = d['userId'] ?? '';
       if (talentId.isNotEmpty) page = TalentDetailScreen(uid: talentId);
+    case 'skill':
+      final skillId = d['userId'] ?? '';
+      if (skillId.isNotEmpty) page = SkillDetailScreen(uid: skillId);
   }
   final target = page;
   if (target != null && context.mounted) {
@@ -122,7 +128,10 @@ class NotificationsScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: StreamView<List<AppNotification>>(
+      body: Column(children: [
+        const _Announcements(),
+        Expanded(
+          child: StreamView<List<AppNotification>>(
         id: uid,
         create: () => repo.watch(uid),
         loading: const ListSkeleton(),
@@ -178,6 +187,8 @@ class NotificationsScreen extends StatelessWidget {
           return ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 32), children: items);
         },
       ),
+        ),
+      ]),
     );
   }
 }
@@ -246,6 +257,54 @@ class NotificationTile extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Latest admin announcements ("From JDMart") at the top of Notifications.
+class _Announcements extends StatelessWidget {
+  const _Announcements();
+
+  @override
+  Widget build(BuildContext context) {
+    final city = context.select<SessionProvider, String?>((s) => s.profile?.city);
+    return StreamBuilder<List<Broadcast>>(
+      stream: context.read<NotificationRepository>().broadcasts(limit: 5),
+      builder: (context, snap) {
+        final week = DateTime.now().subtract(const Duration(days: 7));
+        final list = (snap.data ?? const <Broadcast>[])
+            .where((b) => b.createdAt.isAfter(week) && b.reaches(city))
+            .take(2)
+            .toList();
+        if (list.isEmpty) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          child: Column(
+            children: [
+              for (final b in list)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: NotificationTile(
+                    showUnread: false,
+                    n: AppNotification(
+                      id: b.id,
+                      title: '📣 ${b.title}',
+                      body: b.body,
+                      type: 'broadcast',
+                      data: {if (b.productId != null) 'productId': b.productId!},
+                      read: true,
+                      createdAt: b.createdAt,
+                    ),
+                    onTap: b.productId == null
+                        ? null
+                        : () => Navigator.push(
+                            context, MaterialPageRoute(builder: (_) => ProductDetailScreen(productId: b.productId!))),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

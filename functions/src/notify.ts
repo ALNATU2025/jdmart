@@ -12,9 +12,12 @@ async function push(uid: string, title: string, body: string, data: Record<strin
   const tokens: string[] = (snap.data()?.pushTokens as string[] | undefined) ?? [];
   if (tokens.length === 0) return;
 
+  // A picture (product photo or the sender's profile photo) shows on the
+  // notification, like other apps' rich notifications.
+  const image = data.image && /^https:\/\//.test(data.image) ? data.image : undefined;
   const res = await getMessaging().sendEachForMulticast({
     tokens,
-    notification: { title, body: body.slice(0, 180) },
+    notification: { title, body: body.slice(0, 180), imageUrl: image },
     data,
     // "jdmart_alerts" is a high-importance channel created by the app, so Android
     // shows a pop-up banner (also on the lock screen) with sound and vibration.
@@ -24,13 +27,14 @@ async function push(uid: string, title: string, body: string, data: Record<strin
         channelId: "jdmart_alerts",
         color: "#0029A8",
         icon: "ic_stat_jdmart",
+        imageUrl: image,
         sound: "default",
         defaultVibrateTimings: true,
         priority: "max",
         visibility: "public",
       },
     },
-    apns: { payload: { aps: { sound: "default" } } },
+    apns: { payload: { aps: { sound: "default", "mutable-content": 1 } }, fcmOptions: { imageUrl: image } },
   });
 
   const dead = res.responses
@@ -103,5 +107,16 @@ export async function notifyAdmins(title: string, body: string, data: Record<str
     await Promise.all(uids.map((u) => push(u, `Admin • ${title}`, body, { ...data, admin: "1" }).catch(() => undefined)));
   } catch (e) {
     logger.warn("notifyAdmins failed", e);
+  }
+}
+
+/** Profile photo of a user, for rich notifications ("" if none). */
+export async function avatarOf(uid: string): Promise<string> {
+  try {
+    const u = (await db().collection("users").doc(uid).get()).data();
+    const url = u?.avatarUrl;
+    return typeof url === "string" && url.startsWith("https://") ? url : "";
+  } catch {
+    return "";
   }
 }

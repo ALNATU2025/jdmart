@@ -432,6 +432,17 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Admin "Send notification" messages.
+    match /broadcasts/{id} {
+      allow read: if true;
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly([
+             'title', 'body', 'imageUrl', 'audience', 'city', 'productId', 'createdAt', 'by', 'byName'])
+        && request.resource.data.title is string && request.resource.data.title.size() <= 80
+        && request.resource.data.body is string && request.resource.data.body.size() <= 400;
+      allow update, delete: if isAdmin();
+    }
+
     // App settings (ad prices, payment number…): everyone reads, admins write.
     match /config/{docId} {
       allow read: if true;

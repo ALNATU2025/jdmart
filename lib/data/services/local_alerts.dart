@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:typed_data';
 import 'package:flutter/material.dart' show Color;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:http/http.dart' as http;
 
 /// Pop-up (heads-up) notifications on Android.
 ///
@@ -74,13 +76,42 @@ class LocalAlerts {
 
   /// Shows a push message as a banner while the app is in the foreground.
   static Future<void> show(RemoteMessage m) async {
-    if (kIsWeb || !_ready) return;
     final n = m.notification;
     if (n == null) return;
+    final image = n.android?.imageUrl ?? m.data['image']?.toString();
+    await showLocal(
+      id: m.hashCode & 0x7fffffff,
+      title: n.title ?? 'JDMart',
+      body: n.body ?? '',
+      data: m.data.map((k, v) => MapEntry(k, '$v')),
+      imageUrl: image,
+    );
+  }
+
+  static Future<Uint8List?> _download(String? url) async {
+    if (url == null || !url.startsWith('https://')) return null;
+    final small = url.contains('/image/upload/') ? url.replaceFirst('/image/upload/', '/image/upload/w_720,c_limit/') : url;
+    try {
+      final r = await http.get(Uri.parse(small)).timeout(const Duration(seconds: 8));
+      if (r.statusCode == 200 && r.bodyBytes.length < 2500000) return r.bodyBytes;
+    } catch (_) {}
+    return null;
+  }
+
+  /// Heads-up banner (pops over other apps) with an optional picture.
+  static Future<void> showLocal({
+    required int id,
+    required String title,
+    required String body,
+    Map<String, String> data = const {},
+    String? imageUrl,
+  }) async {
+    if (kIsWeb || !_ready) return;
+    final bytes = await _download(imageUrl);
     await _plugin.show(
-      m.hashCode & 0x7fffffff,
-      n.title,
-      n.body,
+      id,
+      title,
+      body,
       NotificationDetails(
         android: AndroidNotificationDetails(
           channel.id,
@@ -90,11 +121,19 @@ class LocalAlerts {
           priority: Priority.high,
           icon: 'ic_stat_jdmart',
           color: const Color(0xFF0029A8),
-          styleInformation: BigTextStyleInformation(n.body ?? ''),
+          largeIcon: bytes == null ? null : ByteArrayAndroidBitmap(bytes),
+          styleInformation: bytes == null
+              ? BigTextStyleInformation(body)
+              : BigPictureStyleInformation(
+                  ByteArrayAndroidBitmap(bytes),
+                  contentTitle: title,
+                  summaryText: body,
+                  hideExpandedLargeIcon: true,
+                ),
           visibility: NotificationVisibility.public,
         ),
       ),
-      payload: jsonEncode(m.data),
+      payload: jsonEncode(data),
     );
   }
 }

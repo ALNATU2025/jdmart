@@ -11,7 +11,7 @@ import { onRequest } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { PAYMENT_WINDOW_MINUTES } from "./catalog";
 import { MONIME_ACCESS_TOKEN, MONIME_SPACE_ID } from "./monime";
-import { notifyAdmins, notifyUser } from "./notify";
+import { avatarOf, notifyAdmins, notifyUser } from "./notify";
 import { expireCheckout, reconcile } from "./orders";
 import { REGION } from "./region";
 
@@ -27,20 +27,25 @@ export const onOrderCreated = onDocumentCreated({ document: "orders/{orderId}", 
   if (!o) return;
   const id = event.params.orderId;
   const cod = o.paymentMethod === "cod";
+  const first = Array.isArray(o.items) ? o.items[0] : undefined;
+  const image = typeof first?.image === "string" ? first.image : "";
   await Promise.all([
     notifyUser(o.buyerId, "Order placed 🧾", `Order #${short(id)} • ${money(o.total)} sent to ${o.sellerName}.${cod ? " Pay on delivery." : ""}`, {
       type: "order",
       orderId: id,
+      image,
     }),
     notifyAdmins("New order 🛒", `${o.buyerName} → ${o.sellerName} • ${money(o.total)} (${cod ? "cash on delivery" : "online"})`, {
       type: "order",
       orderId: id,
+      image,
     }),
     // Online orders notify the seller once paid (onOrderUpdated).
     cod
       ? notifyUser(o.sellerId, "New order 🛒", `${o.buyerName} ordered ${o.items.length} item(s) • ${money(o.total)} (cash on delivery)`, {
           type: "order",
           orderId: id,
+          image,
         })
       : Promise.resolve(),
   ]);
@@ -98,7 +103,8 @@ export const onMessageCreated = onDocumentCreated(
     const toBuyer = m.senderId !== chat.buyerId;
     const to = toBuyer ? chat.buyerId : chat.sellerId;
     const from = toBuyer ? chat.sellerName : chat.buyerName;
-    await notifyUser(to, from, String(m.text ?? ""), { type: "chat", chatId: event.params.chatId });
+    const image = await avatarOf(String(m.senderId ?? ""));
+    await notifyUser(to, from, String(m.text ?? "") || "📷 Photo", { type: "chat", chatId: event.params.chatId, image });
   },
 );
 

@@ -5,7 +5,11 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/palette.dart';
 import '../../data/models/sponsored_ad.dart';
+import '../../data/models/app_notification.dart';
 import '../../data/repositories/ad_repository.dart';
+import '../../data/repositories/notification_repository.dart';
+import '../../data/services/local_alerts.dart';
+import '../../data/services/push_service.dart';
 import '../../data/services/ad_reminders.dart';
 import '../../data/services/local_store.dart';
 import '../../shared/widgets/motion.dart';
@@ -47,6 +51,43 @@ class _WelcomeTourState extends State<WelcomeTour> with WidgetsBindingObserver {
   int _step(String uid) => int.tryParse(LocalStore.getString(_stepKey(uid)) ?? '') ?? 0;
 
   DateTime? _adsRefreshedAt;
+  StreamSubscription<List<Broadcast>>? _bcSub;
+  StreamSubscription<bool>? _spSub;
+  bool _serverPush = false;
+
+  /// Admin announcements: shown as phone notifications by the app itself
+  /// until the server sends them (config/notify.serverPush).
+  void _listenBroadcasts() {
+    final repo = context.read<NotificationRepository>();
+    _spSub = repo.serverPush().listen((v) => _serverPush = v, onError: (Object _) {});
+    _bcSub = repo.broadcasts(limit: 5).listen(_onBroadcasts, onError: (Object _) {});
+  }
+
+  Future<void> _onBroadcasts(List<Broadcast> list) async {
+    final seen = LocalStore.getStringList('bc_seen').toList();
+    if (!LocalStore.getBool('bc_init')) {
+      // First run on this phone: don't replay old announcements.
+      await LocalStore.setStringList('bc_seen', list.map((b) => b.id).toList());
+      await LocalStore.setBool('bc_init', true);
+      return;
+    }
+    if (!mounted) return;
+    final city = context.read<SessionProvider>().profile?.city;
+    for (final b in list.reversed) {
+      if (seen.contains(b.id)) continue;
+      seen.add(b.id);
+      if (_serverPush || b.pushed) continue; // the server already pushed it
+      if (DateTime.now().difference(b.createdAt) > const Duration(days: 3) || !b.reaches(city)) continue;
+      await LocalAlerts.showLocal(
+        id: b.id.hashCode & 0x7fffffff,
+        title: b.title,
+        body: b.body,
+        imageUrl: b.imageUrl,
+        data: {'type': b.productId != null ? 'product' : 'broadcast', if (b.productId != null) 'productId': b.productId!},
+      );
+    }
+    await LocalStore.setStringList('bc_seen', seen.length > 100 ? seen.sublist(seen.length - 100) : seen);
+  }
   Timer? _dealTimer;
   bool _foreground = true;
   bool _dealBusy = false;
@@ -75,6 +116,11 @@ class _WelcomeTourState extends State<WelcomeTour> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) => _refreshAdReminders());
     DealPopups.newSession();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _listenBroadcasts();
+      PushService.syncTopics(context.read<SessionProvider>().profile?.city);
+    });
     _dealTimer = Timer.periodic(const Duration(seconds: 40), (_) => _maybeDeal());
   }
 
@@ -103,6 +149,8 @@ class _WelcomeTourState extends State<WelcomeTour> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _dealTimer?.cancel();
+    _bcSub?.cancel();
+    _spSub?.cancel();
     _timer?.cancel();
     _spotTimer?.cancel();
     super.dispose();
@@ -247,7 +295,12 @@ class _WelcomeTourState extends State<WelcomeTour> with WidgetsBindingObserver {
       _uid = uid;
       _timer?.cancel();
       _spotTimer?.cancel();
-      if (uid != null) WidgetsBinding.instance.addPostFrameCallback((_) => _start());
+      if (uid != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _start();
+          if (mounted) PushService.syncTopics(context.read<SessionProvider>().profile?.city);
+        });
+      }
     }
     return widget.child;
   }

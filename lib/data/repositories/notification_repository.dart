@@ -41,6 +41,50 @@ class NotificationRepository {
     await batch.commit();
   }
 
+  // ---- "Send notification" (admins) -----------------------------------------
+  Stream<List<Broadcast>> broadcasts({int limit = 30}) => _db
+      .collection('broadcasts')
+      .orderBy('createdAt', descending: true)
+      .limit(limit)
+      .snapshots()
+      .map((s) => s.docs.map(Broadcast.fromDoc).toList());
+
+  Future<void> sendBroadcast({
+    required String title,
+    required String body,
+    String? imageUrl,
+    required String audience,
+    String city = '',
+    String? productId,
+    required String by,
+    required String byName,
+  }) =>
+      _db.collection('broadcasts').add({
+        'title': title.trim(),
+        'body': body.trim(),
+        'imageUrl': imageUrl,
+        'audience': audience,
+        'city': city,
+        'productId': productId,
+        'by': by,
+        'byName': byName,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+  Future<void> deleteBroadcast(String id) => _db.collection('broadcasts').doc(id).delete();
+
+  /// True once the server (Cloud Functions) sends pushes; until then the app
+  /// itself shows announcements as notifications.
+  Stream<bool> serverPush() => _db
+      .collection('config')
+      .doc('notify')
+      .snapshots()
+      .map((d) => d.data()?['serverPush'] == true)
+      .handleError((Object _) => false);
+
+  Future<void> setServerPush(bool on) =>
+      _db.collection('config').doc('notify').set({'serverPush': on}, SetOptions(merge: true));
+
   /// Admins: everything happening in the app.
   Stream<List<AppNotification>> adminFeed({int limit = 200}) => _db
       .collection('adminFeed')

@@ -11,6 +11,7 @@ import '../../core/theme/palette.dart';
 import 'admin_activity_screen.dart';
 import 'admin_riders_screen.dart';
 import 'admin_ads_screen.dart';
+import 'admin_broadcast_screen.dart';
 
 /// Admin console: numbers at a glance and tools to manage JDMart.
 /// Only visible to accounts with the admin claim (see functions/src/admin.ts).
@@ -57,6 +58,8 @@ class _AdminConsoleScreenState extends State<AdminConsoleScreen> {
     final tools = <_Tool>[
       _Tool(Icons.timeline_rounded, 'Live activity', 'Everything happening now', AppColors.orange,
           const AdminActivityScreen()),
+      _Tool(Icons.campaign_rounded, 'Send notification', 'Message all users or a town', AppColors.blue,
+          const AdminBroadcastScreen()),
       _Tool(Icons.inventory_2_rounded, 'Listings', 'Feature, hide or remove', AppColors.blue, const AdminListingsScreen()),
       _Tool(Icons.flag_rounded, 'Reports', 'Reported listings', AppColors.danger, const AdminReportsScreen()),
       _Tool(Icons.people_alt_rounded, 'Users', 'Verify or suspend', const Color(0xFF7C3AED), const AdminUsersScreen()),

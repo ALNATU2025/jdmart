@@ -35,3 +35,50 @@ class AppNotification {
     );
   }
 }
+
+/// broadcasts/{id} — "Send notification" messages from admins.
+class Broadcast {
+  final String id;
+  final String title;
+  final String body;
+  final String? imageUrl;
+  final String audience; // all | city
+  final String city;
+  final String? productId;
+  final String byName;
+  final DateTime createdAt;
+  final bool pushed; // sent to phones by the server
+
+  const Broadcast({
+    required this.id,
+    required this.title,
+    required this.body,
+    this.imageUrl,
+    required this.audience,
+    required this.city,
+    this.productId,
+    required this.byName,
+    required this.createdAt,
+    required this.pushed,
+  });
+
+  bool reaches(String? userCity) => audience != 'city' || city.isEmpty || city == userCity;
+
+  factory Broadcast.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
+    final j = doc.data() ?? const {};
+    final img = j['imageUrl'];
+    final pid = j['productId'];
+    return Broadcast(
+      id: doc.id,
+      title: (j['title'] ?? '') as String,
+      body: (j['body'] ?? '') as String,
+      imageUrl: img is String && img.isNotEmpty ? img : null,
+      audience: (j['audience'] ?? 'all') as String,
+      city: (j['city'] ?? '') as String,
+      productId: pid is String && pid.isNotEmpty ? pid : null,
+      byName: (j['byName'] ?? '') as String,
+      createdAt: tsToDate(j['createdAt']),
+      pushed: j['sentAt'] != null,
+    );
+  }
+}
