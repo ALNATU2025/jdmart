@@ -26,6 +26,9 @@ class AdSettings {
   final String payName;
   final String instructions;
   final int reminderHours; // how often each phone shows an ad reminder
+  final int dealEveryMinutes; // in-app deal pop-up for paid ads, while browsing
+  final int freeSharePercent; // % of users who see free deals from active sellers each day
+  final int freePerDay; // free deal pop-ups per user per day
 
   const AdSettings({
     required this.enabled,
@@ -34,6 +37,9 @@ class AdSettings {
     required this.payName,
     required this.instructions,
     required this.reminderHours,
+    this.dealEveryMinutes = 6,
+    this.freeSharePercent = 40,
+    this.freePerDay = 2,
   });
 
   /// Example prices until an admin sets real ones.
@@ -72,6 +78,9 @@ class AdSettings {
       payName: (j['payName'] ?? defaults.payName) as String,
       instructions: (j['instructions'] ?? '') as String,
       reminderHours: (toInt(j['reminderHours'], 2)).clamp(1, 12),
+      dealEveryMinutes: toInt(j['dealEveryMinutes'], 6).clamp(2, 120),
+      freeSharePercent: toInt(j['freeSharePercent'], 40).clamp(0, 100),
+      freePerDay: toInt(j['freePerDay'], 2).clamp(0, 10),
     );
   }
 
@@ -82,6 +91,9 @@ class AdSettings {
         'payName': payName.trim(),
         'instructions': instructions.trim(),
         'reminderHours': reminderHours,
+        'dealEveryMinutes': dealEveryMinutes,
+        'freeSharePercent': freeSharePercent,
+        'freePerDay': freePerDay,
       };
 }
 

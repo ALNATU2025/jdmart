@@ -10,6 +10,7 @@ import '../../data/services/ad_reminders.dart';
 import '../../data/services/local_store.dart';
 import '../../shared/widgets/motion.dart';
 import '../../state/session_provider.dart';
+import '../home/deal_popup.dart';
 import '../home/spotlight_showcase.dart';
 import '../jobs/jobs_home_screen.dart';
 import '../shell/main_shell.dart';
@@ -46,16 +47,40 @@ class _WelcomeTourState extends State<WelcomeTour> with WidgetsBindingObserver {
   int _step(String uid) => int.tryParse(LocalStore.getString(_stepKey(uid)) ?? '') ?? 0;
 
   DateTime? _adsRefreshedAt;
+  Timer? _dealTimer;
+  bool _foreground = true;
+  bool _dealBusy = false;
+
+  /// Deal pop-ups while the user is browsing (checked every 40 seconds).
+  Future<void> _maybeDeal() async {
+    if (!mounted || !_foreground || _showing || _dealBusy) return;
+    if (!(ModalRoute.of(context)?.isCurrent ?? true)) return; // not over other pages, forms or dialogs
+    _dealBusy = true;
+    try {
+      final offer = await DealPopups.next(context);
+      if (offer == null || !mounted || _showing || !(ModalRoute.of(context)?.isCurrent ?? true)) return;
+      _showing = true;
+      await showDealPopup(context, offer);
+    } catch (e) {
+      debugPrint('Deal pop-up skipped: $e');
+    } finally {
+      _showing = false;
+      _dealBusy = false;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) => _refreshAdReminders());
+    DealPopups.newSession();
+    _dealTimer = Timer.periodic(const Duration(seconds: 40), (_) => _maybeDeal());
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _foreground = state == AppLifecycleState.resumed;
     if (state == AppLifecycleState.resumed) _refreshAdReminders();
   }
 
@@ -77,6 +102,7 @@ class _WelcomeTourState extends State<WelcomeTour> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _dealTimer?.cancel();
     _timer?.cancel();
     _spotTimer?.cancel();
     super.dispose();
@@ -125,6 +151,7 @@ class _WelcomeTourState extends State<WelcomeTour> with WidgetsBindingObserver {
       await LocalStore.setString('spotlight_last', '${DateTime.now().millisecondsSinceEpoch}');
       if (!mounted) return;
       await showSpotlight(context, slides);
+      DealPopups.markShown(); // give them a few minutes before a deal pop-up
     } catch (e) {
       debugPrint('Spotlight skipped: $e');
     } finally {
@@ -154,6 +181,7 @@ class _WelcomeTourState extends State<WelcomeTour> with WidgetsBindingObserver {
     _showing = true;
     final name = context.read<SessionProvider>().profile?.firstName ?? '';
     final action = await showPromo(context, _promo(step, name));
+    DealPopups.markShown();
     _showing = false;
     await LocalStore.setString(_stepKey(uid), '${step + 1}');
     if (!mounted) return;

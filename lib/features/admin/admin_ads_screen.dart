@@ -192,6 +192,9 @@ class _AdSettingsScreenState extends State<AdSettingsScreen> {
   final _instructions = TextEditingController();
   bool _enabled = true;
   int _hours = 2;
+  int _dealMinutes = 6;
+  int _freeShare = 40;
+  int _freePerDay = 2;
   bool _loading = true;
   bool _saving = false;
 
@@ -209,6 +212,9 @@ class _AdSettingsScreenState extends State<AdSettingsScreen> {
         _instructions.text = s.instructions;
         _enabled = s.enabled;
         _hours = s.reminderHours;
+        _dealMinutes = s.dealEveryMinutes;
+        _freeShare = s.freeSharePercent;
+        _freePerDay = s.freePerDay;
         _loading = false;
       });
     });
@@ -246,6 +252,9 @@ class _AdSettingsScreenState extends State<AdSettingsScreen> {
             payName: _name.text,
             instructions: _instructions.text,
             reminderHours: _hours,
+            dealEveryMinutes: _dealMinutes,
+            freeSharePercent: _freeShare,
+            freePerDay: _freePerDay,
           ));
       if (!mounted) return;
       Navigator.pop(context);
@@ -330,6 +339,52 @@ class _AdSettingsScreenState extends State<AdSettingsScreen> {
                 const SizedBox(height: 4),
                 Text('Between 8am and 9pm only. Users can turn ad reminders off.',
                     style: TextStyle(color: context.muted, fontSize: 12)),
+                const SizedBox(height: 18),
+                const Text('Deal pop-up while browsing (paid ads)', style: TextStyle(fontWeight: FontWeight.w800)),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 6,
+                  children: [
+                    for (final m in const [3, 5, 6, 10, 15, 30])
+                      ChoiceChip(
+                        label: Text('Every $m min'),
+                        selected: _dealMinutes == m,
+                        showCheckmark: false,
+                        labelStyle:
+                            TextStyle(color: _dealMinutes == m ? Colors.white : context.ink, fontWeight: FontWeight.w600),
+                        onSelected: (_) => setState(() => _dealMinutes = m),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                const Text('Free deal pop-ups for active sellers', style: TextStyle(fontWeight: FontWeight.w800)),
+                const SizedBox(height: 4),
+                Text('Discounted items listed in the last 2 weeks by sellers who didn\'t pay. '
+                    'Verified and well-rated sellers are picked more often.',
+                    style: TextStyle(color: context.muted, fontSize: 12)),
+                const SizedBox(height: 8),
+                Text('Shown to $_freeShare% of users each day', style: const TextStyle(fontWeight: FontWeight.w600)),
+                Slider(
+                  value: _freeShare.toDouble(),
+                  min: 0,
+                  max: 100,
+                  divisions: 20,
+                  label: '$_freeShare%',
+                  onChanged: (v) => setState(() => _freeShare = v.round()),
+                ),
+                Row(
+                  children: [
+                    const Expanded(child: Text('Times per day for each of them', style: TextStyle(fontWeight: FontWeight.w600))),
+                    IconButton(
+                        onPressed: _freePerDay > 0 ? () => setState(() => _freePerDay--) : null,
+                        icon: const Icon(Icons.remove_circle_outline_rounded)),
+                    Text('$_freePerDay', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                    IconButton(
+                        onPressed: _freePerDay < 6 ? () => setState(() => _freePerDay++) : null,
+                        icon: const Icon(Icons.add_circle_outline_rounded)),
+                  ],
+                ),
                 const SizedBox(height: 22),
                 ElevatedButton(
                   onPressed: _saving ? null : _save,
