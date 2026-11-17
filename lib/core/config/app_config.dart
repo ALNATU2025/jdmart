@@ -35,8 +35,8 @@ class AppConfig {
   /// Free photo/CV hosting on Cloudinary (cloudinary.com). Put your "Cloud name"
   /// and the name of an *unsigned* upload preset here. Not secret — unsigned
   /// presets are meant to be used from apps. Leave empty to use Firebase Storage.
-  static const cloudinaryCloudName = '';
-  static const cloudinaryUploadPreset = '';
+  static const cloudinaryCloudName = 'sn2ecip5';
+  static const cloudinaryUploadPreset = 'jdmart_unsigned';
 
   /// Cloud Functions region. Must match `region` in functions/src/index.ts.
   static const functionsRegion = 'europe-west1';
