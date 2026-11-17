@@ -7,11 +7,15 @@ import '../../core/theme/palette.dart';
 import '../../data/services/local_store.dart';
 import '../../shared/widgets/motion.dart';
 import '../../state/session_provider.dart';
+import '../home/spotlight_showcase.dart';
 import '../jobs/jobs_home_screen.dart';
 import '../shell/main_shell.dart';
 
 /// Marks the signed-in user as brand new, so the welcome tour runs for them.
 Future<void> markNewUser(String uid) => LocalStore.setBool('new_user_$uid', true);
+
+/// Call after a successful login/sign-up: the spotlight pop-up shows right away.
+Future<void> requestSpotlight() => LocalStore.setBool('spotlight_force', true);
 
 /// Friendly pop-ups for new members, one at a time:
 ///  1. Welcome (right after sign-up)
@@ -30,7 +34,9 @@ class _WelcomeTourState extends State<WelcomeTour> {
   static const _lastStep = 4;
   String? _uid;
   Timer? _timer;
+  Timer? _spotTimer;
   bool _showing = false;
+  String? _spotlightDoneFor; // once per user per app session
   bool _firstThisSession = true;
 
   String _stepKey(String uid) => 'tour_step_$uid';
@@ -39,6 +45,7 @@ class _WelcomeTourState extends State<WelcomeTour> {
   @override
   void dispose() {
     _timer?.cancel();
+    _spotTimer?.cancel();
     super.dispose();
   }
 
@@ -58,6 +65,52 @@ class _WelcomeTourState extends State<WelcomeTour> {
     _timer = Timer(delay, () => _show(uid, step));
   }
 
+  /// New products, deals, promos and jobs ("Today on JDMart").
+  void _scheduleSpotlight(Duration delay) {
+    _spotTimer?.cancel();
+    final uid = _uid;
+    if (uid == null || _spotlightDoneFor == uid) return;
+    _spotTimer = Timer(delay, () => _showSpotlight(uid));
+  }
+
+  Future<void> _showSpotlight(String uid) async {
+    if (!mounted || uid != _uid || _spotlightDoneFor == uid) return;
+    if (_showing || !(ModalRoute.of(context)?.isCurrent ?? true)) {
+      _spotTimer = Timer(const Duration(seconds: 3), () => _showSpotlight(uid));
+      return;
+    }
+    final forced = LocalStore.getBool('spotlight_force');
+    final last = int.tryParse(LocalStore.getString('spotlight_last') ?? '') ?? 0;
+    final age = DateTime.now().millisecondsSinceEpoch - last;
+    _spotlightDoneFor = uid;
+    if (!forced && age < const Duration(hours: 3).inMilliseconds) return;
+    _showing = true;
+    try {
+      final slides = await loadSpotlight(context);
+      if (!mounted || uid != _uid || slides.isEmpty) return;
+      await LocalStore.setBool('spotlight_force', false);
+      await LocalStore.setString('spotlight_last', '${DateTime.now().millisecondsSinceEpoch}');
+      if (!mounted) return;
+      await showSpotlight(context, slides);
+    } catch (e) {
+      debugPrint('Spotlight skipped: $e');
+    } finally {
+      _showing = false;
+    }
+  }
+
+  void _start() {
+    final uid = _uid;
+    if (uid == null) return;
+    final newUser = LocalStore.getBool('new_user_$uid');
+    if (newUser && _step(uid) == 0) {
+      _resume(); // welcome pop-up first; the spotlight follows it
+    } else {
+      _scheduleSpotlight(const Duration(milliseconds: 1500));
+      _resume();
+    }
+  }
+
   Future<void> _show(String uid, int step) async {
     if (!mounted || _showing || uid != _uid) return;
     // Wait while the user is on another page or a dialog is open.
@@ -71,6 +124,10 @@ class _WelcomeTourState extends State<WelcomeTour> {
     _showing = false;
     await LocalStore.setString(_stepKey(uid), '${step + 1}');
     if (!mounted) return;
+    if ((step == 0 && action == null) || action == 'explore') {
+      await LocalStore.setBool('spotlight_force', true);
+      _scheduleSpotlight(const Duration(milliseconds: 1200));
+    }
     switch (action) {
       case 'sell':
         MainShell.goTo(context, -1);
@@ -127,7 +184,8 @@ class _WelcomeTourState extends State<WelcomeTour> {
     if (uid != _uid) {
       _uid = uid;
       _timer?.cancel();
-      if (uid != null) WidgetsBinding.instance.addPostFrameCallback((_) => _resume());
+      _spotTimer?.cancel();
+      if (uid != null) WidgetsBinding.instance.addPostFrameCallback((_) => _start());
     }
     return widget.child;
   }

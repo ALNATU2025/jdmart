@@ -132,6 +132,7 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
     if (_finished || !s.ready || s.authUser == null) return;
     if (s.isLoggedIn) {
       _finished = true;
+      requestSpotlight();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         showSnack(context, 'Welcome, ${s.profile!.firstName}!');
