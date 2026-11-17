@@ -172,6 +172,7 @@ class _RiderApplyScreenState extends State<RiderApplyScreen> {
                       backgroundImage: photo != null
                           ? MemoryImage(photo)
                           : (_photoUrl != null ? netImageProvider(_photoUrl!) : null),
+                      onBackgroundImageError: (photo != null || _photoUrl != null) ? (_, __) {} : null,
                       child: (photo == null && _photoUrl == null)
                           ? Icon(Icons.face_retouching_natural_rounded, size: 46, color: context.brand)
                           : null,
