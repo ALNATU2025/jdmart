@@ -1,4 +1,4 @@
-commit: d87add8aa8cabeff09bc6704935683f8f006aae2
+commit: 6c4600275e9e90cd4df682674dc0d460a4adb33c
 analyze exit: 0
 
 Resolving dependencies...
@@ -234,7 +234,7 @@ Analyzing jdmart...
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/features/delivery/rider_apply_screen.dart:2:1 • deprecated_member_use
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/features/delivery/rider_screen.dart:1:1 • deprecated_member_use
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/features/delivery/rider_widgets.dart:1:1 • deprecated_member_use
-   info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/features/home/deal_popup.dart:3:1 • deprecated_member_use
+   info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/features/home/deal_popup.dart:4:1 • deprecated_member_use
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/features/home/home_screen.dart:2:1 • deprecated_member_use
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/features/home/spotlight_showcase.dart:4:1 • deprecated_member_use
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/features/jobs/job_applications_screen.dart:1:1 • deprecated_member_use
@@ -280,7 +280,7 @@ Analyzing jdmart...
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/shared/widgets/theme_toggle.dart:1:1 • deprecated_member_use
    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/state/theme_controller.dart:1:1 • deprecated_member_use
 
-108 issues found. (ran in 8.0s)
+108 issues found. (ran in 10.6s)
 
 ===== TESTS =====
 
@@ -303,9 +303,9 @@ exit=0
 Compiling lib/main.dart for the Web...                          
 Wasm dry run succeeded. Consider building and testing your application with the `--wasm` flag. See docs for more info: https://docs.flutter.dev/platform-integration/web/wasm
 Use --no-wasm-dry-run to disable these warnings.
-Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 33520 bytes (98.0% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
 Font asset "CupertinoIcons.ttf" was tree-shaken, reducing it from 257628 to 844 bytes (99.7% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
-Compiling lib/main.dart for the Web...                             40.7s
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 33520 bytes (98.0% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Compiling lib/main.dart for the Web...                             51.4s
 ✓ Built build/web
 exit=0
 
