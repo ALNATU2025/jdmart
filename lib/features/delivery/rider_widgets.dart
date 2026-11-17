@@ -26,6 +26,7 @@ class RiderAvatar extends StatelessWidget {
           radius: radius,
           backgroundColor: AppColors.orange.withValues(alpha: 0.15),
           backgroundImage: (url != null && url.isNotEmpty) ? netImageProvider(url) : null,
+          onBackgroundImageError: (url != null && url.isNotEmpty) ? (_, __) {} : null,
           child: (url == null || url.isEmpty)
               ? Icon(Icons.delivery_dining_rounded, color: AppColors.orange, size: radius)
               : null,

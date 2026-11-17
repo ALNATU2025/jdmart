@@ -222,14 +222,23 @@ class UserAvatar extends StatelessWidget {
     final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty);
     final initials = parts.take(2).map((p) => p[0].toUpperCase()).join();
     final url = imageUrl;
+    final fallback = Text(initials.isEmpty ? '?' : initials,
+        style: TextStyle(color: context.brand, fontWeight: FontWeight.w700, fontSize: radius * 0.7));
     return CircleAvatar(
       radius: radius,
       backgroundColor: context.blueTint,
-      backgroundImage: (url != null && url.isNotEmpty) ? netImageProvider(url) : null,
       child: (url == null || url.isEmpty)
-          ? Text(initials.isEmpty ? '?' : initials,
-              style: TextStyle(color: context.brand, fontWeight: FontWeight.w700, fontSize: radius * 0.7))
-          : null,
+          ? fallback
+          : ClipOval(
+              child: Image(
+                image: netImageProvider(url),
+                width: radius * 2,
+                height: radius * 2,
+                fit: BoxFit.cover,
+                // Old photos on Firebase Storage can fail (e.g. billing off): show initials instead.
+                errorBuilder: (_, __, ___) => Center(child: fallback),
+              ),
+            ),
     );
   }
 }

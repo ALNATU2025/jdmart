@@ -40,6 +40,16 @@ final startupErrors = ValueNotifier<List<String>>([]);
 
 void _recordError(Object e, StackTrace? st) {
   debugPrint('JDMART ERROR: $e\n$st');
+  // A photo that can't be downloaded just shows a placeholder; don't alarm the user.
+  final text = '$e';
+  if (text.contains('HttpException') ||
+      text.contains('NetworkImageLoadException') ||
+      text.contains('Invalid statusCode') ||
+      text.contains('Failed host lookup') ||
+      text.contains('Unable to load asset') ||
+      text.contains('image codec')) {
+    return;
+  }
   final lines = '$e\n${st ?? ''}'.split('\n').take(8).join('\n');
   startupErrors.value = [...startupErrors.value, lines].take(5).toList();
 }
