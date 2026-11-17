@@ -71,7 +71,7 @@ class _ApplicantCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              UserAvatar(name: app.applicantName, radius: 22),
+              UserAvatar(name: app.applicantName, uid: app.applicantId, radius: 22),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(

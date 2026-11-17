@@ -59,7 +59,7 @@ class ChatsScreen extends StatelessWidget {
       leading: Stack(
         clipBehavior: Clip.none,
         children: [
-          UserAvatar(name: c.otherName(myId), radius: 26),
+          UserAvatar(name: c.otherName(myId), uid: c.otherId(myId), radius: 26),
           Positioned(
             right: -4,
             bottom: -4,

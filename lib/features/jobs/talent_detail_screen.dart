@@ -54,7 +54,7 @@ class TalentDetailScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(3),
                         decoration: BoxDecoration(color: context.surface, shape: BoxShape.circle),
-                        child: UserAvatar(name: t.name, imageUrl: t.photoUrl, radius: 42),
+                        child: UserAvatar(name: t.name, imageUrl: t.photoUrl, uid: t.id, radius: 42),
                       ),
                       const SizedBox(height: 12),
                       Text(t.name,

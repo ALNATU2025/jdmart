@@ -95,7 +95,7 @@ class SkillDetailScreen extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(3),
                                   decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                                  child: UserAvatar(name: p.name, imageUrl: p.photoUrl, radius: 40),
+                                  child: UserAvatar(name: p.name, imageUrl: p.photoUrl, uid: p.id, radius: 40),
                                 ),
                                 const SizedBox(height: 10),
                                 Row(

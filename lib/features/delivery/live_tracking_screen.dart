@@ -430,6 +430,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                   children: [
                     if (r == 'rider' && d.riderId != null)
                       RiderAvatar(name: name ?? '', photoUrl: d.riderPhotoUrl, radius: 22)
+                    else if (d.uidFor(r) != null && d.uidFor(r)!.isNotEmpty)
+                      UserAvatar(name: name ?? '', uid: d.uidFor(r), radius: 22)
                     else
                       CircleAvatar(
                         radius: 22,

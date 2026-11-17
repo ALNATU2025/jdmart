@@ -756,7 +756,7 @@ class AdminJobsScreen extends StatelessWidget {
                   (t) => _AdminTile(
                     onTap: () =>
                         Navigator.push(context, MaterialPageRoute(builder: (_) => TalentDetailScreen(uid: t.id))),
-                    leading: UserAvatar(name: t.name, imageUrl: t.photoUrl),
+                    leading: UserAvatar(name: t.name, imageUrl: t.photoUrl, uid: t.id),
                     title: t.name,
                     subtitle: '${t.headline} • ${t.city}',
                     badge: JobTag(t.visible ? 'Visible' : 'Hidden by owner',

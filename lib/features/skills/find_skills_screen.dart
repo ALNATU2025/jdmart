@@ -313,7 +313,7 @@ class SkillCard extends StatelessWidget {
               children: [
                 Stack(
                   children: [
-                    UserAvatar(name: p.name, imageUrl: p.photoUrl, radius: 28),
+                    UserAvatar(name: p.name, imageUrl: p.photoUrl, uid: p.id, radius: 28),
                     Positioned(
                       right: 0,
                       bottom: 0,

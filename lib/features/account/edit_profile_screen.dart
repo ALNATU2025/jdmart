@@ -63,7 +63,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() => _saving = true);
     try {
       String? url;
-      if (_newAvatar != null) url = await media.uploadAvatar(uid, _newAvatar!);
+      if (_newAvatar != null) {
+        url = await media.uploadAvatar(uid, _newAvatar!);
+        AvatarCache.forget(uid);
+      }
       await users.updateProfile(
         uid: uid,
         name: _name.text,

@@ -68,7 +68,7 @@ class _ChatScreenState extends State<ChatScreen> {
             titleSpacing: 0,
             title: Row(
               children: [
-                UserAvatar(name: c.otherName(myId), radius: 18),
+                UserAvatar(name: c.otherName(myId), uid: c.otherId(myId), radius: 18),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(c.otherName(myId), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 16)),

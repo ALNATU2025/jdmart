@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
@@ -211,14 +212,47 @@ class _StreamViewState<T> extends State<StreamView<T>> {
       );
 }
 
+/// Looks up profile photos by user id (users/{uid}.avatarUrl), once per app run.
+class AvatarCache {
+  static final _cache = <String, Future<String?>>{};
+
+  static Future<String?> of(String uid) => _cache.putIfAbsent(uid, () async {
+        try {
+          final d = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+          final u = d.data()?['avatarUrl'];
+          return u is String && u.isNotEmpty ? u : null;
+        } catch (_) {
+          _cache.remove(uid);
+          return null;
+        }
+      });
+
+  /// Call after someone changes their own photo.
+  static void forget(String uid) => _cache.remove(uid);
+}
+
+/// Round profile picture with initials as a fallback. Pass [uid] to load the
+/// person's profile photo when [imageUrl] isn't known.
 class UserAvatar extends StatelessWidget {
   final String name;
   final String? imageUrl;
+  final String? uid;
   final double radius;
-  const UserAvatar({super.key, required this.name, this.imageUrl, this.radius = 22});
+  const UserAvatar({super.key, required this.name, this.imageUrl, this.uid, this.radius = 22});
 
   @override
   Widget build(BuildContext context) {
+    final id = uid;
+    if ((imageUrl == null || imageUrl!.isEmpty) && id != null && id.isNotEmpty) {
+      return FutureBuilder<String?>(
+        future: AvatarCache.of(id),
+        builder: (_, snap) => _circle(context, snap.data),
+      );
+    }
+    return _circle(context, imageUrl);
+  }
+
+  Widget _circle(BuildContext context, String? url) {
     final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty);
     final initials = parts.take(2).map((p) => p[0].toUpperCase()).join();
     final url = imageUrl;

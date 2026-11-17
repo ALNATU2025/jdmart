@@ -325,7 +325,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), border: Border.all(color: context.line)),
             child: Row(
               children: [
-                UserAvatar(name: name, imageUrl: seller?.avatarUrl, radius: 24),
+                UserAvatar(name: name, imageUrl: seller?.avatarUrl, uid: p.sellerId, radius: 24),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -395,7 +395,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      UserAvatar(name: r.userName, radius: 17),
+                      UserAvatar(name: r.userName, uid: r.userId, radius: 17),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(

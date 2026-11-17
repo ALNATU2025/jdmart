@@ -140,7 +140,7 @@ class TalentCard extends StatelessWidget {
           children: [
             Stack(
               children: [
-                UserAvatar(name: t.name, imageUrl: t.photoUrl, radius: 27),
+                UserAvatar(name: t.name, imageUrl: t.photoUrl, uid: t.id, radius: 27),
                 if (t.openToWork)
                   Positioned(
                     right: 0,

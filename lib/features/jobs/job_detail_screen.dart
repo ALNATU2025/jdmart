@@ -129,8 +129,16 @@ class _Header extends StatelessWidget {
             if (job.salary.isNotEmpty) pill(Icons.payments_outlined, job.salary),
           ]),
           const SizedBox(height: 12),
-          Text('Posted ${Fmt.ago(job.createdAt)} by ${job.ownerName}',
-              style: const TextStyle(color: Colors.white70, fontSize: 12)),
+          Row(
+            children: [
+              UserAvatar(name: job.ownerName, uid: job.ownerId, radius: 13),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text('Posted ${Fmt.ago(job.createdAt)} by ${job.ownerName}',
+                    style: const TextStyle(color: Colors.white70, fontSize: 12)),
+              ),
+            ],
+          ),
           if (!job.isOpen) ...[
             const SizedBox(height: 12),
             Container(
