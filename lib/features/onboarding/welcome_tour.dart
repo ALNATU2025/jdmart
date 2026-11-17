@@ -128,6 +128,7 @@ class _WelcomeTourState extends State<WelcomeTour> {
       await LocalStore.setBool('spotlight_force', true);
       _scheduleSpotlight(const Duration(milliseconds: 1200));
     }
+    if (!mounted) return;
     switch (action) {
       case 'sell':
         MainShell.goTo(context, -1);
