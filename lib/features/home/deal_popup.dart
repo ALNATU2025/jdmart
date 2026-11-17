@@ -88,7 +88,14 @@ class DealPopups {
     final s = await adsRepo.settingsOnce();
     if (!s.enabled) return null;
 
-    // Paid ads: throughout the session.
+    // Free spots for active sellers come first when due (only a couple a day),
+    // otherwise paid ads would always take the slot.
+    if (last == null || now.difference(last) >= const Duration(minutes: 2)) {
+      final free = await _freeDeal(products, s, now);
+      if (free != null) return free;
+    }
+
+    // Paid ads: throughout the session, rotating through every live ad.
     if (last == null || now.difference(last) >= Duration(minutes: s.dealEveryMinutes)) {
       final ads = (await adsRepo.liveOnce()).where((a) => (a.imageUrl ?? '').isNotEmpty).toList();
       if (ads.isNotEmpty) {
@@ -97,9 +104,10 @@ class DealPopups {
         return DealOffer.fromAd(ads[turn]);
       }
     }
+    return null;
+  }
 
-    // Free spots for active sellers: a few users, a couple of times a day.
-    if (last != null && now.difference(last) < const Duration(minutes: 5)) return null;
+  static Future<DealOffer?> _freeDeal(ProductRepository products, AdSettings s, DateTime now) async {
     final day = _today;
     if (LocalStore.getString('free_deal_day') != day) {
       await LocalStore.setString('free_deal_day', day);
