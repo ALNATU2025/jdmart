@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -78,64 +79,88 @@ class DealPopups {
 
   static void markShown() => _lastShown = DateTime.now();
 
-  /// The next deal to show now, or null.
-  static Future<DealOffer?> next(BuildContext context) async {
+  /// The deals to show now (3–5 when there are enough), or an empty list.
+  static Future<List<DealOffer>> next(BuildContext context) async {
     final now = DateTime.now();
-    if (now.difference(_sessionStart) < const Duration(seconds: 50)) return null; // let them settle in first
+    if (now.difference(_sessionStart) < const Duration(seconds: 50)) return const []; // let them settle in first
     final last = _lastShown;
     final adsRepo = context.read<AdRepository>();
     final products = context.read<ProductRepository>();
     final s = await adsRepo.settingsOnce();
-    if (!s.enabled) return null;
+    if (!s.enabled) return const [];
 
     // Free spots for active sellers come first when due (only a couple a day),
     // otherwise paid ads would always take the slot.
     if (last == null || now.difference(last) >= const Duration(minutes: 2)) {
-      final free = await _freeDeal(products, s, now);
-      if (free != null) return free;
+      final free = await _freeDeals(products, s, now, count: 3, countsAsSlot: true);
+      if (free.isNotEmpty) return free;
     }
 
     // Paid ads: throughout the session, rotating through every live ad.
     if (last == null || now.difference(last) >= Duration(minutes: s.dealEveryMinutes)) {
       final ads = (await adsRepo.liveOnce()).where((a) => (a.imageUrl ?? '').isNotEmpty).toList();
       if (ads.isNotEmpty) {
+        // Start with a different paid ad each time, show up to 5.
         final turn = (int.tryParse(LocalStore.getString('deal_turn') ?? '') ?? 0) % ads.length;
         await LocalStore.setString('deal_turn', '${turn + 1}');
-        return DealOffer.fromAd(ads[turn]);
+        final paid = [for (var i = 0; i < math.min(ads.length, 5); i++) DealOffer.fromAd(ads[(turn + i) % ads.length])];
+        if (paid.length >= 3) return paid;
+        // Fewer than 3 paid ads: fill up with top-seller discounts.
+        final taken = paid.map((o) => o.productId).toSet();
+        final extra = await _freeDeals(products, s, now, count: 5 - paid.length, exclude: taken, countsAsSlot: false);
+        return [...paid, ...extra];
       }
     }
-    return null;
+    return const [];
   }
 
-  static Future<DealOffer?> _freeDeal(ProductRepository products, AdSettings s, DateTime now) async {
-    final day = _today;
-    if (LocalStore.getString('free_deal_day') != day) {
-      await LocalStore.setString('free_deal_day', day);
-      await LocalStore.setString('free_deal_count', '0');
-      await LocalStore.setBool('free_deal_lucky', _rand.nextInt(100) < s.freeSharePercent);
-      await LocalStore.setString('free_deal_last', '0');
+  /// Discounted items from active sellers. As its own pop-up ([countsAsSlot])
+  /// it's limited to a share of users and a few times a day; as filler next to
+  /// paid ads it isn't.
+  static Future<List<DealOffer>> _freeDeals(
+    ProductRepository products,
+    AdSettings s,
+    DateTime now, {
+    required int count,
+    Set<String> exclude = const {},
+    required bool countsAsSlot,
+  }) async {
+    var used = 0;
+    if (countsAsSlot) {
+      final day = _today;
+      if (LocalStore.getString('free_deal_day') != day) {
+        await LocalStore.setString('free_deal_day', day);
+        await LocalStore.setString('free_deal_count', '0');
+        await LocalStore.setBool('free_deal_lucky', _rand.nextInt(100) < s.freeSharePercent);
+        await LocalStore.setString('free_deal_last', '0');
+      }
+      if (!LocalStore.getBool('free_deal_lucky')) return const [];
+      used = int.tryParse(LocalStore.getString('free_deal_count') ?? '') ?? 0;
+      if (used >= s.freePerDay) return const [];
+      final lastFree = int.tryParse(LocalStore.getString('free_deal_last') ?? '') ?? 0;
+      if (now.millisecondsSinceEpoch - lastFree < const Duration(hours: 2).inMilliseconds) return const [];
     }
-    if (!LocalStore.getBool('free_deal_lucky')) return null;
-    final count = int.tryParse(LocalStore.getString('free_deal_count') ?? '') ?? 0;
-    if (count >= s.freePerDay) return null;
-    final lastFree = int.tryParse(LocalStore.getString('free_deal_last') ?? '') ?? 0;
-    if (now.millisecondsSinceEpoch - lastFree < const Duration(hours: 2).inMilliseconds) return null;
 
     List<Product> deals;
     try {
       deals = await products.deals(limit: 30).first.timeout(const Duration(seconds: 8));
     } catch (_) {
-      return null;
+      return const [];
     }
     final fresh = now.subtract(const Duration(days: 14));
-    final pool = deals.where((p) => p.available && p.cover != null && p.createdAt.isAfter(fresh)).toList();
-    if (pool.isEmpty) return null;
-    // Verified / well-rated sellers get picked more often.
+    final pool = deals
+        .where((p) => p.available && p.cover != null && p.createdAt.isAfter(fresh) && !exclude.contains(p.id))
+        .toList();
+    if (pool.isEmpty) return const [];
+    // Verified / well-rated sellers first, with some variety.
     pool.sort((a, b) => _score(b).compareTo(_score(a)));
-    final pick = pool[_rand.nextInt(math.min(pool.length, 8))];
-    await LocalStore.setString('free_deal_count', '${count + 1}');
-    await LocalStore.setString('free_deal_last', '${now.millisecondsSinceEpoch}');
-    return DealOffer.fromProduct(pick);
+    final top = pool.take(math.max(count * 2, 6)).toList()..shuffle(_rand);
+    final picks = top.take(count).map(DealOffer.fromProduct).toList();
+    if (countsAsSlot && picks.isNotEmpty) {
+      await LocalStore.setString('free_deal_count', '${used + 1}');
+      await LocalStore.setString('free_deal_last', '${now.millisecondsSinceEpoch}');
+    }
+    return picks;
   }
 
   static double _score(Product p) =>
@@ -144,8 +169,9 @@ class DealPopups {
 
 /// Reward-style pop-up: big headline, glowing deal card with floating coins,
 /// shiny "Shop now" button and a round close button.
-Future<void> showDealPopup(BuildContext context, DealOffer offer) async {
-  final img = offer.imageUrl;
+Future<void> showDealPopup(BuildContext context, List<DealOffer> offers) async {
+  if (offers.isEmpty) return;
+  final img = offers.first.imageUrl;
   if (img != null) {
     try {
       await precacheImage(netImageProvider(img), context).timeout(const Duration(seconds: 5));
@@ -153,13 +179,13 @@ Future<void> showDealPopup(BuildContext context, DealOffer offer) async {
   }
   if (!context.mounted) return;
   DealPopups.markShown();
-  final go = await showGeneralDialog<bool>(
+  final go = await showGeneralDialog<DealOffer>(
     context: context,
     barrierDismissible: true,
     barrierLabel: 'Close',
     barrierColor: Colors.black.withValues(alpha: 0.72),
     transitionDuration: const Duration(milliseconds: 600),
-    pageBuilder: (_, __, ___) => _DealPopup(offer: offer),
+    pageBuilder: (_, __, ___) => _DealPopup(offers: offers),
     transitionBuilder: (_, a, __, child) {
       final c = CurvedAnimation(parent: a, curve: Curves.elasticOut, reverseCurve: Curves.easeInCubic);
       return BackdropFilter(
@@ -171,8 +197,8 @@ Future<void> showDealPopup(BuildContext context, DealOffer offer) async {
       );
     },
   );
-  if (go == true && context.mounted) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(productId: offer.productId)));
+  if (go != null && context.mounted) {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(productId: go.productId)));
   }
 }
 
@@ -180,8 +206,8 @@ const _gold = Color(0xFFFFD84D);
 const _goldDeep = Color(0xFFF5A300);
 
 class _DealPopup extends StatefulWidget {
-  final DealOffer offer;
-  const _DealPopup({required this.offer});
+  final List<DealOffer> offers;
+  const _DealPopup({required this.offers});
 
   @override
   State<_DealPopup> createState() => _DealPopupState();
@@ -189,15 +215,38 @@ class _DealPopup extends StatefulWidget {
 
 class _DealPopupState extends State<_DealPopup> with SingleTickerProviderStateMixin {
   late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(seconds: 4))..repeat();
+  final _pager = PageController();
+  Timer? _auto;
+  int _index = 0;
+  bool _touched = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.offers.length > 1) {
+      _auto = Timer.periodic(const Duration(milliseconds: 3800), (_) {
+        if (_touched || !_pager.hasClients) return;
+        _pager.animateToPage((_index + 1) % widget.offers.length,
+            duration: const Duration(milliseconds: 600), curve: Curves.easeInOutCubic);
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        for (final o in widget.offers.skip(1)) {
+          final u = o.imageUrl;
+          if (u != null && mounted) precacheImage(netImageProvider(u), context).catchError((Object _) {});
+        }
+      });
+    }
+  }
 
   @override
   void dispose() {
+    _auto?.cancel();
+    _pager.dispose();
     _c.dispose();
     super.dispose();
   }
 
-  (String, String, String) _headline() {
-    final o = widget.offer;
+  (String, String, String) _headline(DealOffer o) {
     if (o.saving > 0) return ('Save ', Fmt.price(o.saving), ' On This Deal!');
     if (o.discount > 0) return ('', '${o.discount}% OFF', ' Is Waiting For You!');
     return ('Hot Deal ', 'Just For You', '!');
@@ -205,8 +254,11 @@ class _DealPopupState extends State<_DealPopup> with SingleTickerProviderStateMi
 
   @override
   Widget build(BuildContext context) {
-    final o = widget.offer;
-    final (a, highlight, b) = _headline();
+    final offers = widget.offers;
+    final o = offers[_index.clamp(0, offers.length - 1)];
+    final (a, highlight, b) = offers.length > 1 && _index == 0 && offers.first.saving == 0 && offers.first.discount == 0
+        ? ('', '${offers.length} Hot Deals', ' Picked For You!')
+        : _headline(o);
     final width = math.min(MediaQuery.sizeOf(context).width - 32, 400.0);
     final headline = TextStyle(
       fontSize: 30,
@@ -226,9 +278,14 @@ class _DealPopupState extends State<_DealPopup> with SingleTickerProviderStateMi
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Glow behind the headline
-                FadeSlideIn(
-                  offset: const Offset(0, -0.3),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 350),
+                  transitionBuilder: (c, an) => FadeTransition(
+                    opacity: an,
+                    child: ScaleTransition(scale: Tween(begin: 0.92, end: 1.0).animate(an), child: c),
+                  ),
                   child: Text.rich(
+                    key: ValueKey('h$_index'),
                     TextSpan(children: [
                       TextSpan(text: a),
                       TextSpan(text: highlight, style: const TextStyle(color: _gold)),
@@ -241,20 +298,47 @@ class _DealPopupState extends State<_DealPopup> with SingleTickerProviderStateMi
                 const SizedBox(height: 18),
                 SizedBox(
                   height: width * 0.92,
-                  child: AnimatedBuilder(
-                    animation: _c,
-                    builder: (_, __) => _scene(width),
+                  child: Listener(
+                    onPointerDown: (_) => _touched = true,
+                    child: PageView.builder(
+                      controller: _pager,
+                      itemCount: offers.length,
+                      onPageChanged: (i) => setState(() => _index = i),
+                      itemBuilder: (_, i) => AnimatedBuilder(
+                        animation: _c,
+                        builder: (_, __) => _scene(width, offers[i]),
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 18),
+                if (offers.length > 1) ...[
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      for (var i = 0; i < offers.length; i++)
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          margin: const EdgeInsets.symmetric(horizontal: 3),
+                          width: i == _index ? 22 : 7,
+                          height: 7,
+                          decoration: BoxDecoration(
+                            color: i == _index ? _gold : Colors.white.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+                const SizedBox(height: 16),
                 _ShinyButton(
                   label: o.discount > 0 ? 'Shop Now' : 'View Deal',
                   progress: _c,
-                  onTap: () => Navigator.pop(context, true),
+                  onTap: () => Navigator.pop(context, o),
                 ),
                 const SizedBox(height: 26),
                 Pressable(
-                  onTap: () => Navigator.pop(context, false),
+                  onTap: () => Navigator.pop(context),
                   scale: 0.85,
                   child: Container(
                     width: 44,
@@ -274,8 +358,7 @@ class _DealPopupState extends State<_DealPopup> with SingleTickerProviderStateMi
     );
   }
 
-  Widget _scene(double w) {
-    final o = widget.offer;
+  Widget _scene(double w, DealOffer o) {
     final t = _c.value * 2 * math.pi;
     final cardW = w * 0.68;
     final cardH = cardW * 1.08;

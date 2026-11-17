@@ -98,10 +98,10 @@ class _WelcomeTourState extends State<WelcomeTour> with WidgetsBindingObserver {
     if (!(ModalRoute.of(context)?.isCurrent ?? true)) return; // not over other pages, forms or dialogs
     _dealBusy = true;
     try {
-      final offer = await DealPopups.next(context);
-      if (offer == null || !mounted || _showing || !(ModalRoute.of(context)?.isCurrent ?? true)) return;
+      final offers = await DealPopups.next(context);
+      if (offers.isEmpty || !mounted || _showing || !(ModalRoute.of(context)?.isCurrent ?? true)) return;
       _showing = true;
-      await showDealPopup(context, offer);
+      await showDealPopup(context, offers);
     } catch (e) {
       debugPrint('Deal pop-up skipped: $e');
     } finally {
